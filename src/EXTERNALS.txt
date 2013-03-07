@@ -1,5 +1,0 @@
-#
-# taken into account by: svn propset svn:externals -F ./EXTERNALS.txt .
-#
-#communesplone.iconified_document_actions http://svn.communesplone.org/svn/communesplone/communesplone.iconified_document_actions/trunk/
-#communesplone.layout http://svn.communesplone.org/svn/communesplone/communesplone.layout/trunk
