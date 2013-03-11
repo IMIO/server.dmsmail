@@ -1,7 +1,7 @@
 This buildout relates the configuration of the application zope instance of the CommunesPlone central server.
 
 The main config file is buildout.cfg.
-Is is empty by default.
+Is is in development mode by default (dev.cfg).
 It's necessary to call in it a subconfig file name: dev.cfg, prod.cfg, ...
 
 The included external products are listed in cfg file:
