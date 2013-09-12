@@ -17,7 +17,7 @@ def correct_ref(self, change=''):
             new_ref = '%s/%d' % (begin, int(nb)+1)
             # for cpas mons
             #nb = prev_ref
-            #new_ref = str(int(nb)+1)
+            #new_ref = '%03d' % (int(nb) + 1)
             out.append("<a href='%s'>%s</a>, %s, %s" % (obj.absolute_url(), obj.Title(), prev_ref, new_ref))
             prev_ref = new_ref
             if change == '1':
