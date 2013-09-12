@@ -25,3 +25,17 @@ def correct_ref(self, change=''):
                 obj.reindexObject()
                 out[-1] += " => %s" % obj.Title()
     return '\n<br />'.join(out)
+
+
+def check_sender(self):
+    """
+        Check the sender
+    """
+    pc = self.portal_catalog
+    brains = pc(portal_type='dmsincomingmail', sort_on='created')
+    out = []
+    for brain in brains:
+        obj = brain.getObject()
+        if obj.sender.isBroken():
+            out.append("<a href='%s'>%s</a>" % (obj.absolute_url(), obj.Title()))
+    return '\n<br />'.join(out)
