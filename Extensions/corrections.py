@@ -13,8 +13,8 @@ def correct_ref(self, change=''):
         else:
             obj = brain.getObject()
             (begin, nb) = prev_ref.split('/')
-            nbi = int(nb)
-            new_ref = '%s/%d' % (begin, nbi+1)
+            #nb = prev_ref
+            new_ref = '%s/%d' % (begin, int(nb)+1)
             out.append("<a href='%s'>%s</a>, %s, %s" % (obj.absolute_url(), obj.Title(), prev_ref, new_ref))
             prev_ref = new_ref
             if change == '1':
