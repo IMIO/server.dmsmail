@@ -12,9 +12,12 @@ def correct_ref(self, change=''):
             prev_ref = brain.internal_reference_number
         else:
             obj = brain.getObject()
+            # with default config value
             (begin, nb) = prev_ref.split('/')
-            #nb = prev_ref
             new_ref = '%s/%d' % (begin, int(nb)+1)
+            # for cpas mons
+            #nb = prev_ref
+            #new_ref = str(int(nb)+1)
             out.append("<a href='%s'>%s</a>, %s, %s" % (obj.absolute_url(), obj.Title(), prev_ref, new_ref))
             prev_ref = new_ref
             if change == '1':
