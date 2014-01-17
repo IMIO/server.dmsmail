@@ -17,8 +17,11 @@ We install the necessary libraries
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
 
-> apt-get install ruby1.9.1
+Documentviewer dependencies
+> apt-get install rubygems
 > gem install docsplit
+> apt-get install graphicsmagick
+> apt-get install poppler-utils
 
 We work in the folder /srv
 > cd /srv
