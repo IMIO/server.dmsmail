@@ -17,6 +17,9 @@ We install the necessary libraries
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
 
+> apt-get install ruby1.9.1
+> gem install docsplit
+
 We work in the folder /srv
 > cd /srv
 
