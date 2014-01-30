@@ -1,0 +1,21 @@
+Changelog
+=========
+
+0.2dev (unreleased)
+-------------------
+
+- remove unused parts
+  [cedric, jfroche]
+
+- use policy (imio.dms.policy)
+  [cedric, jfroche]
+
+- create port.cfg (to be used by puppet)
+  [cedric, jfroche]
+
+
+0.1 (2014-01-30)
+----------------
+
+- Initial release
+  [stephan]
