@@ -4,8 +4,8 @@ Changelog
 0.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- move standard recipe to base. use zeoserver in standard in prod
+  [cedric, jfroche]
 
 0.2 (2014-01-30)
 ----------------
