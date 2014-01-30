@@ -4,8 +4,8 @@ Changelog
 0.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- really use zeoserver in standard in prod
+  [cedric, jfroche]
 
 0.3 (2014-01-30)
 ----------------
