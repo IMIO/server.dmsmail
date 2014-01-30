@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.3 (unreleased)
+0.3 (2014-01-30)
 ----------------
 
 - move standard recipe to base. use zeoserver in standard in prod
