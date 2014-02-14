@@ -4,8 +4,8 @@ Changelog
 0.5 (2014-02-13)
 ----------------
 
-- Nothing changed yet.
-
+- pinned for imio.dms.mail 0.2.
+  [stephan]
 
 0.4 (2014-01-30)
 ----------------
