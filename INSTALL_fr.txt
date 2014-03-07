@@ -23,6 +23,7 @@ DÃ©pendances de documentviewer:
 > gem install docsplit
 > apt-get install graphicsmagick
 > apt-get install poppler-utils
+> apt-get install wv
 
 On va travailler dans le dossier /srv
 > cd /srv

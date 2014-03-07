@@ -22,6 +22,7 @@ Documentviewer dependencies
 > gem install docsplit
 > apt-get install graphicsmagick
 > apt-get install poppler-utils
+> apt-get install wv
 
 We work in the folder /srv
 > cd /srv
