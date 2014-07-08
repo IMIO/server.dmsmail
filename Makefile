@@ -4,9 +4,8 @@ all: run
 
 .PHONY: bootstrap
 bootstrap:
-	virtualenv-2.7 --no-setuptools .
-	bin/python ez_setup.py 
-	./bin/python bootstrap.py -v 2.2.0
+	virtualenv-2.7 .
+	./bin/python bootstrap.py -v 2.2.1
 
 .PHONY: buildout
 buildout:
@@ -24,7 +23,7 @@ run:
 	bin/instance1 fg
 
 .PHONY: coverage
-run:
+coverage:
 	bin/coverage
 	bin/coverageme
 
