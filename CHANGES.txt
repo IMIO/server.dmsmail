@@ -1,45 +1,48 @@
 Changelog
 =========
 
-0.8 (unreleased)
+0.3-1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added amqp config [mpeeters, sgeulette]
+- Use now imio.dms.mail 0.3 [sgeulette]
+- Upgraded to plone 4.3.3 [sgeulette]
+- Upgraded various eggs [sgeulette]
 
 
-0.7 (2014-04-04)
+0.2-3 (2014-04-04)
 ----------------
 
 - upgraded plone.api, collective.dms.mailcontent, collective.dms.batchcontent [sgeulette]
 
 
-0.6 (2014-03-18)
+0.2-2 (2014-03-18)
 ----------------
 
 - added ws.cfg to configure webservice if necessary.
   [stephan]
 
 
-0.5 (2014-02-13)
+0.2-1 (2014-02-13)
 ----------------
 
 - pinned for imio.dms.mail 0.2.
   [stephan]
 
 
-0.4 (2014-01-30)
+0.1-4 (2014-01-30)
 ----------------
 
 - really use zeoserver in standard in prod
   [cedric, jfroche]
 
-0.3 (2014-01-30)
+0.1-3 (2014-01-30)
 ----------------
 
 - move standard recipe to base. use zeoserver in standard in prod
   [cedric, jfroche]
 
-0.2 (2014-01-30)
+0.1-2 (2014-01-30)
 ----------------
 
 - remove unused parts
@@ -52,7 +55,7 @@ Changelog
   [cedric, jfroche]
 
 
-0.1 (2014-01-30)
+0.1-1 (2014-01-30)
 ----------------
 
 - Initial release
