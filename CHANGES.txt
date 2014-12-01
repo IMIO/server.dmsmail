@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.3-1 (unreleased)
-----------------
+0.3-1 (2014-12-01)
+------------------
 
 - Added amqp config [mpeeters, sgeulette]
 - Use now imio.dms.mail 0.3 [sgeulette]
