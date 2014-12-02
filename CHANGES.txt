@@ -4,7 +4,8 @@ Changelog
 0.3-2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added an import script useful for demo site [sgeulette]
+- Added global Extensions in prod [sgeulette]
 
 
 0.3-1 (2014-12-01)
