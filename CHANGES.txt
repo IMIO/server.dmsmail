@@ -4,17 +4,25 @@ Changelog
 0.3-2 (unreleased)
 ------------------
 
-- Added an import script useful for demo site [sgeulette]
-- Added global Extensions in prod [sgeulette]
+- Added an import script useful for demo site
+  [sgeulette]
+- Added global Extensions in prod
+  [sgeulette]
+- Upgraded collective.contact.core (widget backrefs)
+  [sgeulette]
 
 
 0.3-1 (2014-12-01)
 ------------------
 
-- Added amqp config [mpeeters, sgeulette]
-- Use now imio.dms.mail 0.3 [sgeulette]
-- Upgraded to plone 4.3.3 [sgeulette]
-- Upgraded various eggs [sgeulette]
+- Added amqp config
+  [mpeeters, sgeulette]
+- Use now imio.dms.mail 0.3
+  [sgeulette]
+- Upgraded to plone 4.3.3
+  [sgeulette]
+- Upgraded various eggs
+  [sgeulette]
 
 
 0.2-3 (2014-04-04)
