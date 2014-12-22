@@ -4,7 +4,10 @@ Changelog
 0.3-3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added communesplone.layout
+  [sgeulette]
+- Added iw.debug in instance-debug
+  [sgeulette]
 
 
 0.3-2 (2014-12-11)
