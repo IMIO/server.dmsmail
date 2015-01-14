@@ -4,7 +4,8 @@ Changelog
 0.3-4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use Products.PasswordStrength egg, last version of collective.dms.mailcontent
+  [sgeulette]
 
 
 0.3-3 (2014-12-22)
