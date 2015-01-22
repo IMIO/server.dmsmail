@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.3-4 (unreleased)
+0.3-4 (2015-01-22)
 ------------------
 
 - Use Products.PasswordStrength egg, last version of collective.dms.mailcontent, imio.migrator
