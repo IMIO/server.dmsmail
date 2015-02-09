@@ -6,6 +6,10 @@ Changelog
 
 - Use imio.helpers.
   [sgeulette]
+- Use last version of collective.contact.widget
+  [sgeulette]
+- Use develop versions of Products.PasswordStrength, Products.PasswordResetTool, plone.app.locales
+  [sgeulette]
 
 
 0.3-4 (2015-01-22)
