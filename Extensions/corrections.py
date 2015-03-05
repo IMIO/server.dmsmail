@@ -39,3 +39,17 @@ def check_sender(self):
         if obj.sender.isBroken():
             out.append("<a href='%s'>%s</a>" % (obj.absolute_url(), obj.Title()))
     return '\n<br />'.join(out)
+
+
+def list_relations(self):
+    from zope.component import queryUtility
+    from zope.app.intid.interfaces import IIntIds
+    from zc.relation.interfaces import ICatalog
+    catalog = queryUtility(ICatalog)
+    intids = queryUtility(IIntIds)
+    rels = list(catalog.findRelations())
+    for rel in rels:
+        print rel.__dict__
+    return printed
+
+
