@@ -4,7 +4,12 @@ Changelog
 0.3-6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use last version of collective.dms.basecontent
+  [sgeulette]
+- Use imio.actionspanel
+  [sgeulette]
+- Corrected buildout to use imio.dms.amqp only on specific instance with one thread
+  [sgeulette]
 
 
 0.3-5 (2015-02-10)
