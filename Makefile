@@ -5,7 +5,7 @@ all: run
 .PHONY: bootstrap
 bootstrap:
 	virtualenv-2.7 .
-	./bin/python bootstrap.py -v 2.2.1
+	./bin/python bootstrap.py -v 2.2.5
 
 .PHONY: buildout
 buildout:
