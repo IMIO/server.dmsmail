@@ -1,10 +1,12 @@
 Changelog
 =========
 
-0.3-6 (unreleased)
+0.3.1-1 (unreleased)
 ------------------
 
-- Use last version of collective.dms.basecontent
+- Use imio.dms.mail tag 0.3.1
+  [sgeulette]
+- Use last released eggs
   [sgeulette]
 - Use imio.actionspanel
   [sgeulette]
