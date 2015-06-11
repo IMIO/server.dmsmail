@@ -15,7 +15,7 @@ buildout:
 .PHONY: standard-config
 standard-config:
 	if ! test -f bin/buildout;then make bootstrap;fi
-	bin/buildout -t 10 -c standard-config.cfg
+	bin/buildout -vt 10 -c standard-config.cfg
 
 .PHONY: run
 run:
