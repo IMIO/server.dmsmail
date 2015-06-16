@@ -10,19 +10,19 @@ def import_scanned(self):
     """
         Import some incoming mail for demo site
     """
-    now = datetime.now().strftime('%Y%m%d %H:%M')
+    now = datetime.now()
     path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
     docs = {
         '59.PDF':
         {
             'c': {'mail_type': 'courrier', 'file_title': 'IMIO010500000000001.pdf'},
-            'f': {'scan_id': 'IMIO010500000000001', 'pages_number': '1', 'scan_date': now,
+            'f': {'scan_id': 'IMIO010500000000001', 'pages_number': 1, 'scan_date': now,
                   'scan_user': 'Opérateur', 'scanner': 'Ricola'}
         },
         '60.PDF':
         {
             'c': {'mail_type': 'courrier', 'file_title': 'IMIO010500000000002.pdf'},
-            'f': {'scan_id': 'IMIO010500000000002', 'pages_number': '1', 'scan_date': now,
+            'f': {'scan_id': 'IMIO010500000000002', 'pages_number': 1, 'scan_date': now,
                   'scan_user': 'Opérateur', 'scanner': 'Ricola'}
         },
     }
