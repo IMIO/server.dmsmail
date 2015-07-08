@@ -4,12 +4,22 @@ from plone import api
 from imio.pyutils import system
 
 
+def safe_encode(value, encoding='utf-8'):
+    """
+        Converts a value to encoding, even if it is already encoded.
+    """
+    if isinstance(value, unicode):
+        return value.encode(encoding)
+    return value
+
+
 def import_principals(self, create='', dochange=''):
     exm = self.REQUEST['PUBLISHED']
     path = os.path.dirname(exm.filepath())
     #path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
     # Open file
     lines = system.read_file(os.path.join(path, 'principals.csv'), skip_empty=True)
+    regtool = self.portal_registration
     cu = False
     if create not in ('', '0', 'False', 'false'):
         cu = True
@@ -32,7 +42,7 @@ def import_principals(self, create='', dochange=''):
             validateur = data[5]
             encodeur = data[6]
         except Exception, ex:
-            return "Problem line %d, '%s': %s" % (i, line, ex)
+            return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         # check userid
         if not userid.isalpha() or not userid.islower():
             out.append("Line %d: userid '%s' is not alpha lowercase" % (i, userid))
@@ -47,18 +57,17 @@ def import_principals(self, create='', dochange=''):
                 try:
                     out.append("=> Create user '%s': '%s', '%s'" % (userid, fullname, email))
                     if doit:
-                        user = api.user.create(username=userid,
-                                               email=email,
+                        user = api.user.create(username=userid, email=email, password=regtool.generatePassword(),
                                                properties={'fullname': fullname},
                                                )
                 except Exception, ex:
-                    out.append("Line %d, cannot create user: %s" % (i, ex))
+                    out.append("Line %d, cannot create user: %s" % (i, safe_encode(ex.message)))
                     continue
         # groups
         try:
             groups = api.group.get_groups(username=userid)
         except Exception, ex:
-            out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, ex))
+            out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
         for (name, value) in [('validateur', validateur), ('encodeur', encodeur)]:
             value = value.strip()
             if not value:
@@ -76,5 +85,6 @@ def import_principals(self, create='', dochange=''):
                     try:
                         api.group.add_user(groupname=gid, username=userid)
                     except Exception, ex:
-                        out.append("Line %d, cannot add userid '%s' to group '%s': %s" % (i, userid, gid, ex))
+                        out.append("Line %d, cannot add userid '%s' to group '%s': %s"
+                                   % (i, userid, gid, safe_encode(ex.message)))
     return '\n'.join(out)
