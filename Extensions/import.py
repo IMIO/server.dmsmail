@@ -54,7 +54,10 @@ def import_principals(self, create='', dochange=''):
                 except Exception, ex:
                     out.append("Line %d, cannot create user: %s" % (i, ex))
         # groups
-        groups = api.group.get_groups(username=userid)
+        try:
+            groups = api.group.get_groups(username=userid)
+        except Exception, ex:
+            out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, ex))
         for (name, value) in [('validateur', validateur), ('encodeur', encodeur)]:
             value = value.strip()
             if not value:
