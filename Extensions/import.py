@@ -48,11 +48,12 @@ def import_principals(self, create='', dochange=''):
                     out.append("=> Create user '%s': '%s', '%s'" % (userid, fullname, email))
                     if doit:
                         user = api.user.create(username=userid,
-                                               #email='bob@plone.org',
-                                               #properties={'fullname': fullname},
+                                               email=email,
+                                               properties={'fullname': fullname},
                                                )
                 except Exception, ex:
                     out.append("Line %d, cannot create user: %s" % (i, ex))
+                    continue
         # groups
         try:
             groups = api.group.get_groups(username=userid)
