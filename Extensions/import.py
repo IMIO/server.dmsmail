@@ -71,5 +71,9 @@ def import_principals(self, create='', dochange=''):
             # add user in group
             if gid not in groups:
                 out.append("=> Add user '%s' to group '%s' (%s)" % (userid, gid, orgtit))
-                api.group.add_user(groupname=gid, username=userid)
+                if doit:
+                    try:
+                        api.group.add_user(groupname=gid, username=userid)
+                    except Exception, ex:
+                        out.append("Line %d, cannot add userid '%s' to group '%s': %s" % (i, userid, gid, ex))
     return '\n'.join(out)
