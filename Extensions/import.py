@@ -6,7 +6,7 @@ from imio.pyutils import system
 
 def safe_encode(value, encoding='utf-8'):
     """
-        Converts a value to encoding, only when it is not already encoded.
+        Converts a value to encoding, even if it is already encoded.
     """
     if isinstance(value, unicode):
         return value.encode(encoding)
@@ -40,7 +40,7 @@ def import_principals(self, create='', dochange=''):
             fullname = data[3]
             email = data[4]
             validateur = data[5]
-            encodeur = data[6]
+            editeur = data[6]
         except Exception, ex:
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         # check userid
@@ -68,7 +68,7 @@ def import_principals(self, create='', dochange=''):
             groups = api.group.get_groups(username=userid)
         except Exception, ex:
             out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
-        for (name, value) in [('validateur', validateur), ('encodeur', encodeur)]:
+        for (name, value) in [('validateur', validateur), ('editeur', editeur)]:
             value = value.strip()
             if not value:
                 continue
