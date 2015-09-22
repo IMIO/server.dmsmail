@@ -4,6 +4,7 @@ from zope.component import getUtility
 from plone import api
 from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
+from Products.CMFPlone.utils import safe_unicode
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
 from imio.pyutils import system
 
@@ -92,7 +93,7 @@ def import_principals(self, create='', dochange=''):
                 out.append("Line %d, cannot find org_uid '%s' in organizations" % (i, orgid))
                 continue
         else:
-            tmp = [uid for uid, tit in orgas if tit == orgtit]
+            tmp = [uid for uid, tit in orgas if tit == safe_unicode(orgtit)]
             if tmp:
                 orgid = tmp[0]
             else:
@@ -102,6 +103,7 @@ def import_principals(self, create='', dochange=''):
         for (name, value) in [('validateur', validateur), ('editeur', editeur), ('lecteur', lecteur)]:
             value = value.strip()
             if not value:
+                # We don't remove a user from a group
                 continue
             # check groupid
             gid = "%s_%s" % (orgid, name)
