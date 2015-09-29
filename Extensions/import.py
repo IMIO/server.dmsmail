@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
+from zope.component import getUtility
 from plone import api
+from plone.app.uuid.utils import uuidToObject
+from plone.registry.interfaces import IRegistry
+from Products.CMFPlone.utils import safe_unicode
+from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
 from imio.pyutils import system
 
 
@@ -11,6 +16,17 @@ def safe_encode(value, encoding='utf-8'):
     if isinstance(value, unicode):
         return value.encode(encoding)
     return value
+
+
+def get_organizations(self, obj=False):
+    registry = getUtility(IRegistry)
+    terms = []
+    for uid in registry[ORGANIZATIONS_REGISTRY]:
+        title = uuidToObject(uid).get_full_title(separator=' - ', first_index=1)
+        terms.append((uid, title))
+    if obj:
+        return terms
+    return '\n'.join(['%s;%s' % (t[0], t[1]) for t in terms])
 
 
 def import_principals(self, create='', dochange=''):
@@ -26,6 +42,7 @@ def import_principals(self, create='', dochange=''):
     doit = False
     if dochange not in ('', '0', 'False', 'false'):
         doit = True
+    orgas = get_organizations(self, obj=True)
     i = 0
     out = []
     for line in lines:
@@ -35,16 +52,17 @@ def import_principals(self, create='', dochange=''):
         try:
             data = line.split(';')
             orgid = data[0]
-            orgtit = data[1]
+            orgtit = data[1].strip()
             userid = data[2]
             fullname = data[3]
             email = data[4]
             validateur = data[5]
             editeur = data[6]
+            lecteur = data[7]
         except Exception, ex:
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         # check userid
-        if not userid.isalpha() or not userid.islower():
+        if not userid.isalnum() or not userid.islower():
             out.append("Line %d: userid '%s' is not alpha lowercase" % (i, userid))
             continue
         # check user
@@ -64,13 +82,33 @@ def import_principals(self, create='', dochange=''):
                     out.append("Line %d, cannot create user: %s" % (i, safe_encode(ex.message)))
                     continue
         # groups
-        try:
-            groups = api.group.get_groups(username=userid)
-        except Exception, ex:
-            out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
-        for (name, value) in [('validateur', validateur), ('editeur', editeur)]:
+        if user is not None:
+            try:
+                groups = api.group.get_groups(username=userid)
+            except Exception, ex:
+                if user is not None:
+                    out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
+                # continue
+        else:
+            groups = []
+
+        # check organization
+        if orgid:
+            if not [uid for uid, tit in orgas if uid == orgid]:
+                out.append("Line %d, cannot find org_uid '%s' in organizations" % (i, orgid))
+                continue
+        else:
+            tmp = [uid for uid, tit in orgas if tit == safe_unicode(orgtit)]
+            if tmp:
+                orgid = tmp[0]
+            else:
+                out.append("Line %d, cannot find org_uid from org title '%s'" % (i, orgtit))
+                continue
+
+        for (name, value) in [('validateur', validateur), ('editeur', editeur), ('lecteur', lecteur)]:
             value = value.strip()
             if not value:
+                # We don't remove a user from a group
                 continue
             # check groupid
             gid = "%s_%s" % (orgid, name)
