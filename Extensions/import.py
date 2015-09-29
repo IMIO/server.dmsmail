@@ -42,6 +42,7 @@ def import_principals(self, create='', dochange=''):
     doit = False
     if dochange not in ('', '0', 'False', 'false'):
         doit = True
+    orgas = get_organizations(self, obj=True)
     i = 0
     out = []
     for line in lines:
@@ -51,7 +52,7 @@ def import_principals(self, create='', dochange=''):
         try:
             data = line.split(';')
             orgid = data[0]
-            orgtit = data[1]
+            orgtit = data[1].strip()
             userid = data[2]
             fullname = data[3]
             email = data[4]
@@ -61,7 +62,7 @@ def import_principals(self, create='', dochange=''):
         except Exception, ex:
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         # check userid
-        if not userid.isalpha() or not userid.islower():
+        if not userid.isalnum() or not userid.islower():
             out.append("Line %d: userid '%s' is not alpha lowercase" % (i, userid))
             continue
         # check user
@@ -81,13 +82,17 @@ def import_principals(self, create='', dochange=''):
                     out.append("Line %d, cannot create user: %s" % (i, safe_encode(ex.message)))
                     continue
         # groups
-        try:
-            groups = api.group.get_groups(username=userid)
-        except Exception, ex:
-            out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
-            # continue
+        if user is not None:
+            try:
+                groups = api.group.get_groups(username=userid)
+            except Exception, ex:
+                if user is not None:
+                    out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
+                # continue
+        else:
+            groups = []
+
         # check organization
-        orgas = get_organizations(self, obj=True)
         if orgid:
             if not [uid for uid, tit in orgas if uid == orgid]:
                 out.append("Line %d, cannot find org_uid '%s' in organizations" % (i, orgid))
