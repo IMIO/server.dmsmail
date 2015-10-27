@@ -1,0 +1,7 @@
+[report]
+omit =
+    */Extensions/*
+    */test*
+    */__init__.py
+    */migrate_to_*.py
+    
