@@ -5,6 +5,7 @@ from plone import api
 from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
 from Products.CMFPlone.utils import safe_unicode
+from Products.CPUtils.Extensions.utils import check_zope_admin
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
 from imio.pyutils import system
 
@@ -30,6 +31,12 @@ def get_organizations(self, obj=False):
 
 
 def import_principals(self, create='', dochange=''):
+    """
+        Import principals from the file 'Extensions/principals.csv' containing
+        GroupId;GroupTitle;Userid;Name;email;Validateur;Éditeur;Lecteur
+    """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
     exm = self.REQUEST['PUBLISHED']
     path = os.path.dirname(exm.filepath())
     #path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
