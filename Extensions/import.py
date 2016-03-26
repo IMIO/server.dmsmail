@@ -133,3 +133,55 @@ def import_principals(self, create='', dochange=''):
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
                                    % (i, userid, gid, safe_encode(ex.message)))
     return '\n'.join(out)
+
+
+def import_contacts(self, dochange=''):
+    """
+        Import contacts from several files in 'Extensions'
+        * organisations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
+                                Courriel;Site;Région;Pays
+        * fonctions.csv
+        * personnes.csv
+    """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    exm = self.REQUEST['PUBLISHED']
+    path = os.path.dirname(exm.filepath())
+    lines = system.read_file(os.path.join(path, 'organisations.csv'), strip_chars=' ', skip_empty=True)
+    doit = False
+    if dochange not in ('', '0', 'False', 'false'):
+        doit = True
+    orgs = {}
+    childs = {}
+    i = 0
+    out = []
+    for line in lines:
+        i += 1
+        if i == 1:
+            continue
+        try:
+            data = [item.strip() for item in line.split(';')]
+            id = data[0]
+            idp = data[1]
+            last = data[16]  # just to check the number of columns
+        except Exception, ex:
+            return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+        if not id or id in orgs:
+            return "Problem line %d, invalid id: %s" % (i, id)
+        orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'typ': data[4], 'st': data[5], 'nb': data[6],
+                    'box': data[7], 'zip': data[8], 'loc': data[9], 'tel': data[10], 'mob': data[11], 'fax': data[12],
+                    'eml': data[13], 'www': data[14], 'dep': data[15], 'cty': data[16]}
+        if idp:
+            if idp not in childs:
+                childs[idp] = []
+            childs[idp].append(id)
+
+    def change_levels(ids, lvl):
+        for id in ids:
+            orgs[id]['lev'] = lvl
+            if id in childs:
+                change_levels(childs[id], orgs[id]['lev']+1)
+
+    # we adapt levels
+    for idp in childs:
+        change_levels(childs[idp], orgs[idp]['lev']+1)
