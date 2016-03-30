@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import os
 from collections import OrderedDict
 from zope.component import getUtility
@@ -141,10 +142,10 @@ def import_principals(self, create='', dochange=''):
 def import_contacts(self, dochange=''):
     """
         Import contacts from several files in 'Extensions'
-        * organisations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
+        * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
                                 Courriel;Site;Région;Pays
-        * fonctions.csv
-        * personnes.csv
+        * functions.csv
+        * persons.csv
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -154,22 +155,20 @@ def import_contacts(self, dochange=''):
     exm = self.REQUEST['PUBLISHED']
     portal = api.portal.get()
     contacts = portal['contacts']
-    org_infos = {'types': {}, 'levels': {}}
-    org_infos['types'] = OrderedDict([(t['name'], t['token']) for t in contacts.organization_types])
-    org_infos['levels'] = OrderedDict([(t['name'], t['token']) for t in contacts.organization_levels])
-    org_infos_o = org_infos.copy()
+    org_infos = {}
+    for typ in ['types', 'levels']:
+        org_infos[typ] = OrderedDict([(t['name'], t['token']) for t in getattr(contacts, 'organization_%s' % typ)])
+        if not len(org_infos[typ]):
+            org_infos[typ] = OrderedDict([(u'Non défini', 'non-defini')])
+    org_infos_o = copy.deepcopy(org_infos)
     # read the organization file
     path = os.path.dirname(exm.filepath())
-    lines = system.read_file(os.path.join(path, 'organisations.csv'), strip_chars=' ', skip_empty=True)
+    lines = system.read_file(os.path.join(path, 'organizations.csv'), strip_chars=' "', skip_empty=True, skip_lines=1)
     orgs = OrderedDict()
     childs = {}
-    i = 0
     idnormalizer = getUtility(IIDNormalizer)
     out = []
-    for line in lines:
-        i += 1
-        if i == 1:
-            continue
+    for i, line in enumerate(lines):
         try:
             data = [item.strip() for item in line.split(';')]
             id = data[0]
@@ -180,7 +179,7 @@ def import_contacts(self, dochange=''):
         if not id or id in orgs:
             return "Problem line %d, invalid id: %s" % (i, id)
 # ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays
-        orgs[id] = {'prt': idp, 'tit': data[2], 'desc': data[3], 'typ': data[4], 'st': data[5], 'nb': data[6],
+        orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'st': data[5], 'nb': data[6],
                     'box': data[7], 'zip': data[8], 'loc': data[9], 'tel': data[10], 'mob': data[11], 'fax': data[12],
                     'eml': data[13], 'www': data[14], 'dep': data[15], 'cty': last}
         typ = 'types'
@@ -189,8 +188,12 @@ def import_contacts(self, dochange=''):
             if idp not in childs:
                 childs[idp] = []
             childs[idp].append(id)
-        if data[4] not in org_infos[typ]:
-            org_infos[typ][safe_unicode(data[4])] = idnormalizer.normalize(safe_encode(data[4]))
+        if data[4]:
+            if data[4] not in org_infos[typ]:
+                org_infos[typ][safe_unicode(data[4])] = idnormalizer.normalize(safe_encode(data[4]))
+            orgs[id]['typ'] = org_infos[typ][safe_unicode(data[4])]
+        else:  # we take the first value
+            orgs[id]['typ'] = org_infos[typ].values()[0]
 
     # adapt organization levels and sort
     for idp in childs:
@@ -199,13 +202,16 @@ def import_contacts(self, dochange=''):
 
     # updating contacts options
     for typ in ['types', 'levels']:
-        if len(org_infos[typ] != len(org_infos_o[typ])):
+        if len(org_infos[typ]) != len(org_infos_o[typ]):
+            out.append("Contacts parameter modification 'organization_%s'" % typ)
             if doit:
-                contacts.setattr('organization_%s' % typ,
-                                 [{'name': i[0], 'token': i[1]} for i in org_infos[typ].items()])
+                setattr(contacts, 'organization_%s' % typ,
+                        [{'name': i[0], 'token': i[1]} for i in org_infos[typ].items()])
+                out.append("New value: %s" % [{'name': safe_encode(i[0]),
+                                               'token': i[1]} for i in org_infos[typ].items()])
             else:
-                out.append("Contacts parameter modification 'organization_%s'" % typ)
-                out.append("Value: %s" % [{'name': safe_encode(i[0]), 'token': i[1]} for i in org_infos[typ].items()])
+                out.append("New value will be: %s" % [{'name': safe_encode(i[0]),
+                                                       'token': i[1]} for i in org_infos[typ].items()])
 
     # creating organization
     for id in orgs:
@@ -217,14 +223,17 @@ def import_contacts(self, dochange=''):
             cont = orgs[det['prt']].get('obj', orgs[det['prt']]['tit'])
         if doit:
             obj = api.content.create(container=cont, type='organization', title=safe_unicode(det['tit']),
-                                     description=safe_unicode(det['desc']), street=safe_unicode(det['desc']),
-                                     number=safe_unicode(det['nb']),
+                                     description=safe_unicode(det['desc']), organization_type=det['typ'],
+                                     street=safe_unicode(det['st']), number=safe_unicode(det['nb']),
                                      additional_address_details=safe_unicode(det['box']),
                                      zip_code=safe_unicode(det['zip']), city=safe_unicode(det['loc']),
                                      phone=safe_unicode(det['tel']), cell_phone=safe_unicode(det['mob']),
                                      fax=safe_unicode(det['fax']), email=safe_unicode(det['eml']),
                                      website=safe_unicode(det['www']), region=safe_unicode(det['dep']),
-                                     country=safe_unicode(det['cty']))
+                                     country=safe_unicode(det['cty']), use_parent_address=False)
             det['obj'] = obj
+            out.append("org: new orga '%s' created in %s" % (safe_encode(det['tit']), safe_encode(cont)))
         else:
-            out.append('org: new orga %s created in %s' % (safe_encode(det['tit']), safe_encode(cont)))
+            out.append("org: new orga '%s' will be created in %s" % (safe_encode(det['tit']), safe_encode(cont)))
+
+    return '\n'.join(out)
