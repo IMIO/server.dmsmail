@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
+from collections import OrderedDict
 from zope.component import getUtility
 from plone import api
+from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
 from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
+from imio.dms.mail.Extensions.imports import change_levels, sort_by_level
 from imio.pyutils import system
 
 
@@ -145,15 +148,23 @@ def import_contacts(self, dochange=''):
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
-    exm = self.REQUEST['PUBLISHED']
-    path = os.path.dirname(exm.filepath())
-    lines = system.read_file(os.path.join(path, 'organisations.csv'), strip_chars=' ', skip_empty=True)
     doit = False
     if dochange not in ('', '0', 'False', 'false'):
         doit = True
-    orgs = {}
+    exm = self.REQUEST['PUBLISHED']
+    portal = api.portal.get()
+    contacts = portal['contacts']
+    org_infos = {'types': {}, 'levels': {}}
+    org_infos['types'] = OrderedDict([(t['name'], t['token']) for t in contacts.organization_types])
+    org_infos['levels'] = OrderedDict([(t['name'], t['token']) for t in contacts.organization_levels])
+    org_infos_o = org_infos.copy()
+    # read the organization file
+    path = os.path.dirname(exm.filepath())
+    lines = system.read_file(os.path.join(path, 'organisations.csv'), strip_chars=' ', skip_empty=True)
+    orgs = OrderedDict()
     childs = {}
     i = 0
+    idnormalizer = getUtility(IIDNormalizer)
     out = []
     for line in lines:
         i += 1
@@ -168,20 +179,52 @@ def import_contacts(self, dochange=''):
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         if not id or id in orgs:
             return "Problem line %d, invalid id: %s" % (i, id)
-        orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'typ': data[4], 'st': data[5], 'nb': data[6],
+# ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays
+        orgs[id] = {'prt': idp, 'tit': data[2], 'desc': data[3], 'typ': data[4], 'st': data[5], 'nb': data[6],
                     'box': data[7], 'zip': data[8], 'loc': data[9], 'tel': data[10], 'mob': data[11], 'fax': data[12],
-                    'eml': data[13], 'www': data[14], 'dep': data[15], 'cty': data[16]}
+                    'eml': data[13], 'www': data[14], 'dep': data[15], 'cty': last}
+        typ = 'types'
         if idp:
+            typ = 'levels'
             if idp not in childs:
                 childs[idp] = []
             childs[idp].append(id)
+        if data[4] not in org_infos[typ]:
+            org_infos[typ][safe_unicode(data[4])] = idnormalizer.normalize(safe_encode(data[4]))
 
-    def change_levels(ids, lvl):
-        for id in ids:
-            orgs[id]['lev'] = lvl
-            if id in childs:
-                change_levels(childs[id], orgs[id]['lev']+1)
-
-    # we adapt levels
+    # adapt organization levels and sort
     for idp in childs:
-        change_levels(childs[idp], orgs[idp]['lev']+1)
+        change_levels(idp, childs, orgs)
+    orgs = sort_by_level(orgs)
+
+    # updating contacts options
+    for typ in ['types', 'levels']:
+        if len(org_infos[typ] != len(org_infos_o[typ])):
+            if doit:
+                contacts.setattr('organization_%s' % typ,
+                                 [{'name': i[0], 'token': i[1]} for i in org_infos[typ].items()])
+            else:
+                out.append("Contacts parameter modification 'organization_%s'" % typ)
+                out.append("Value: %s" % [{'name': safe_encode(i[0]), 'token': i[1]} for i in org_infos[typ].items()])
+
+    # creating organization
+    for id in orgs:
+        det = orgs[id]
+        if det['lev'] == 1:
+            cont = contacts
+        else:
+            # get the container organization, already created
+            cont = orgs[det['prt']].get('obj', orgs[det['prt']]['tit'])
+        if doit:
+            obj = api.content.create(container=cont, type='organization', title=safe_unicode(det['tit']),
+                                     description=safe_unicode(det['desc']), street=safe_unicode(det['desc']),
+                                     number=safe_unicode(det['nb']),
+                                     additional_address_details=safe_unicode(det['box']),
+                                     zip_code=safe_unicode(det['zip']), city=safe_unicode(det['loc']),
+                                     phone=safe_unicode(det['tel']), cell_phone=safe_unicode(det['mob']),
+                                     fax=safe_unicode(det['fax']), email=safe_unicode(det['eml']),
+                                     website=safe_unicode(det['www']), region=safe_unicode(det['dep']),
+                                     country=safe_unicode(det['cty']))
+            det['obj'] = obj
+        else:
+            out.append('org: new orga %s created in %s' % (safe_encode(det['tit']), safe_encode(cont)))
