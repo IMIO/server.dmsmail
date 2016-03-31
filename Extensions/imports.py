@@ -214,7 +214,7 @@ def import_contacts(self, dochange=''):
                                                        'token': i[1]} for i in org_infos[typ].items()])
 
     # creating organization
-    for id in orgs:
+    for i, id in enumerate(orgs):
         det = orgs[id]
         if det['lev'] == 1:
             cont = contacts
@@ -232,8 +232,9 @@ def import_contacts(self, dochange=''):
                                      website=safe_unicode(det['www']), region=safe_unicode(det['dep']),
                                      country=safe_unicode(det['cty']), use_parent_address=False)
             det['obj'] = obj
-            out.append("org: new orga '%s' created in %s" % (safe_encode(det['tit']), safe_encode(cont)))
+            out.append("%04d org: new orga '%s' created in %s" % (i, safe_encode(det['tit']), safe_encode(cont)))
         else:
-            out.append("org: new orga '%s' will be created in %s" % (safe_encode(det['tit']), safe_encode(cont)))
+            out.append("%04d org: new orga '%s' will be created in %s" % (i, safe_encode(det['tit']),
+                                                                          safe_encode(cont)))
 
     return '\n'.join(out)
