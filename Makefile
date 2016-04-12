@@ -22,6 +22,14 @@ run:
 	if ! test -f bin/instance1;then make buildout;fi
 	bin/instance1 fg
 
+.PHONY: robot-server
+robot-server:
+	bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
+
+.PHONY: doc
+doc:
+	bin/robot src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
+
 .PHONY: coverage
 coverage:
 	bin/coverage
