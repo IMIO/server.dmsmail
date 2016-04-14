@@ -28,7 +28,8 @@ robot-server:
 
 .PHONY: doc
 doc:
-	bin/robot src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
+	# can be run by example with: make doc opt='-t "Contacts *"'
+	bin/robot $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 
 .PHONY: coverage
 coverage:
