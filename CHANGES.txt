@@ -4,7 +4,10 @@ Changelog
 1.0-2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Use imio.dms.mail tag 1.1
+  [sgeulette]
+- Added contacts import script
+  [sgeulette]
 
 
 1.0-1 (2015-11-25)
