@@ -1,8 +1,8 @@
 On suppose l'installation dans un répertoire /srv/zinstances/site421
  (qui peut être changé) et sur une distribution ubuntu.
 Le nom de votre utilisateur est remplacé dans nos commandes par "votreuser".
- Veuillez utiliser le votre à la place. 
-Chaque commande, précisée ci-dessous après le symbole ">", peut être exécutée 
+ Veuillez utiliser le votre à la place.
+Chaque commande, précisée ci-dessous après le symbole ">", peut être exécutée
  (sans taper le symbole >).
 
 On passe d'abord en root
@@ -17,8 +17,9 @@ On installe des librairies nécessaires
 > apt-get install libpq-dev
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
+> apt-get install graphviz-dev
 
-DÃ©pendances de documentviewer:
+Dépendances de documentviewer:
 > apt-get install rubygems
 > gem install docsplit
 > apt-get install graphicsmagick
@@ -63,8 +64,8 @@ On télécharge le buildout dans un dossier
 > svn co http://svn.communesplone.org/svn/communesplone/buildout/server.sites/tags/make421/ site421
 > cd site421
 
-On modifie le fichier Makefile pour indiquer le chemin réel de virtualenv. 
-Pour cela, on peut ouvrir le fichier avec un éditeur de texte. 
+On modifie le fichier Makefile pour indiquer le chemin réel de virtualenv.
+Pour cela, on peut ouvrir le fichier avec un éditeur de texte.
 Il faut remplacer la ligne "virtualenv-2.7 --no-site-packages ." par
     "/srv/python273/bin/virtualenv --no-site-packages ."
 OU
@@ -76,14 +77,14 @@ On initialise le buildout
 
 1) Utilisation en développement (sans ZEO, avec des outils de debug)
 
-Le fichier buildout.cfg utilise par défaut dev.cfg. 
+Le fichier buildout.cfg utilise par défaut dev.cfg.
 
 On exécute le buildout après chaque modification du fichier buildout.cfg
 > make buildout
 OU
 > bin/buildout -v
 
-On démarre le serveur zope. 
+On démarre le serveur zope.
 > bin/instance1 fg
 OU
 > bin/instance1 start
@@ -92,24 +93,24 @@ On peut se connecter à zope dans un navigateur sur l'adresse http://localhost:8
 
 On peut ajouter un mount point (fichier db séparé à définir dans le fichier zope_add.conf)
 => choisir dans la liste (en haut à droite de la page du navigateur) "ZODB Mount Point"
-Sélectionner le nom du mount point désiré ("xxx" et cliquer sur "Create selected mount points"). 
+Sélectionner le nom du mount point désiré ("xxx" et cliquer sur "Create selected mount points").
 
 Tout ce qui va être ajouté dans le dossier "xxx" sera maintenant localisé dans le fichier db "xxx.fs"
- plutôt que dans "Data.fs". 
+ plutôt que dans "Data.fs".
 
 2) Utilisation en production (plusieurs instances Zope pour la même database, ZEO)
 
-Il faut remplacer dans le fichier buildout.cfg l'appel à dev.cfg par prod.cf. 
+Il faut remplacer dans le fichier buildout.cfg l'appel à dev.cfg par prod.cf.
 
 On exécute le buildout après chaque modification du fichier buildout.cfg
 > make buildout
 OU
 > bin/buildout -v
 
-On démarre le serveur ZEO. 
+On démarre le serveur ZEO.
 > bin/zeoserver start
 
-On démarre chaque instance zope (suivant le nom de la section définie). 
+On démarre chaque instance zope (suivant le nom de la section définie).
 > bin/instance1 fg
 OU
 > bin/instance1 start
@@ -118,7 +119,7 @@ On peut se connecter à zope dans un navigateur sur l'adresse http://localhost:8
 
 On peut ajouter un mount point (fichier db séparé à définir dans les fichiers zeo_add.conf et zope_add_zeo.conf)
 => choisir dans la liste (en haut à droite de la page du navigateur) "ZODB Mount Point"
-Sélectionner le nom du mount point désiré ("xxx" et cliquer sur "Create selected mount points"). 
+Sélectionner le nom du mount point désiré ("xxx" et cliquer sur "Create selected mount points").
 
 Tout ce qui va être ajouté dans le dossier "xxx" sera maintenant localisé dans le fichier db "xxx.fs"
- plutôt que dans "Data.fs". 
+ plutôt que dans "Data.fs".

@@ -1,7 +1,7 @@
 We assume the installation in the folder /srv/zinstances/site421
  (that can be changed) and on an ubuntu distribution.
 Your real username must replace in our commands the string "username".
-Each command, specified by the symbol ">", can be executed 
+Each command, specified by the symbol ">", can be executed
  (without the symbol >).
 
 First we become root
@@ -16,6 +16,7 @@ We install the necessary libraries
 > apt-get install libpq-dev
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
+> apt-get install graphviz-dev
 
 Documentviewer dependencies
 > apt-get install rubygems
@@ -62,8 +63,8 @@ We download the buildout files in our folder
 > svn co http://svn.communesplone.org/svn/communesplone/buildout/server.sites/tags/make421/ site421
 > cd site421
 
-We modify the Makefile file to indicate the real path of the virtualenv utility. 
-To do that, you can edit the file in a simple text editor. 
+We modify the Makefile file to indicate the real path of the virtualenv utility.
+To do that, you can edit the file in a simple text editor.
 It's necessary to replace the line "virtualenv-2.7 --no-site-packages ." by
     "/srv/python273/bin/virtualenv --no-site-packages ."
 OR
@@ -80,7 +81,7 @@ We execute the buildout after each modification in the buildout.cfg file
 OR
 > bin/buildout -v
 
-We start the zope server. 
+We start the zope server.
 > bin/instance1 fg
 OR
 > bin/instance1 start
@@ -89,14 +90,14 @@ We can connect the zope server in a browser on the following address http://loca
 
 We can add a mount point (separate database file, defined in the file zope_add.conf)
 => choose in the list (up right in the browser page) "ZODB Mount Point"
-Select a mount point name ("xxx" and click on "Create selected mount points"). 
+Select a mount point name ("xxx" and click on "Create selected mount points").
 
 All objects added in the zope folder "xxx" will be stored in the db file "xxx.fs"
- in place of in "Data.fs". 
+ in place of in "Data.fs".
 
 2) Usage in production (multiple Zope instances for the same database, ZEO mode)
 
-We can replace in the file buildout.cfg the name dev.cfg by prod.cfg. 
+We can replace in the file buildout.cfg the name dev.cfg by prod.cfg.
 
 We execute the buildout after each modification in the buildout.cfg file
 > make buildout
@@ -106,7 +107,7 @@ OR
 We start the zeo server.
 > bin/zeoserver start
 
-We start each zope server (following instance name section). 
+We start each zope server (following instance name section).
 > bin/instance1 fg
 OR
 > bin/instance1 start
@@ -115,7 +116,7 @@ We can connect the zope server in a browser on the following address http://loca
 
 We can add a mount point (separate database file, defined in the file zeo_add.conf and zope_add_zeo.conf)
 => choose in the list (up right in the browser page) "ZODB Mount Point"
-Select a mount point name ("xxx" and click on "Create selected mount points"). 
+Select a mount point name ("xxx" and click on "Create selected mount points").
 
 All objects added in the zope folder "xxx" will be stored in the db file "xxx.fs"
- in place of in "Data.fs". 
+ in place of in "Data.fs".
