@@ -17,7 +17,7 @@ On installe des librairies nécessaires
 > apt-get install libpq-dev
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
-> apt-get install graphviz-dev
+> apt-get install graphviz graphviz-dev
 
 Dépendances de documentviewer:
 > apt-get install rubygems
