@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 
 def correct_ref(self, change=''):
     """
@@ -43,13 +45,11 @@ def check_sender(self):
 
 def list_relations(self):
     from zope.component import queryUtility
-    from zope.app.intid.interfaces import IIntIds
+    # from zope.app.intid.interfaces import IIntIds
     from zc.relation.interfaces import ICatalog
     catalog = queryUtility(ICatalog)
-    intids = queryUtility(IIntIds)
+    # intids = queryUtility(IIntIds)
     rels = list(catalog.findRelations())
     for rel in rels:
         print rel.__dict__
     return printed
-
-
