@@ -9,8 +9,11 @@ from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
 from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
+
+from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
-from imio.dms.mail.Extensions.imports import change_levels, sort_by_level
+
+from imio.dms.mail.Extensions.imports import change_levels, sort_by_level, assert_value_in_list, assert_date
 from imio.pyutils import system
 
 
@@ -145,7 +148,8 @@ def import_contacts(self, dochange=''):
         * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
                                 Courriel;Site;Région;Pays
         * functions.csv
-        * persons.csv
+        * persons.csv:  ID;ID org;ID fct;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
+                        Fax;Courriel;Site;Région;Pays;Intitulé fct;Début fct;Fin fct;Num int
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -167,10 +171,10 @@ def import_contacts(self, dochange=''):
     orgs = OrderedDict()
     childs = {}
     idnormalizer = getUtility(IIDNormalizer)
-    out = []
+    out = ["!! ORGANIZATIONS !!\n"]
     for i, line in enumerate(lines):
         try:
-            data = [item.strip() for item in line.split(';')]
+            data = [item.strip(' "') for item in line.split(';')]
             id = data[0]
             idp = data[1]
             last = data[16]  # just to check the number of columns
@@ -178,7 +182,7 @@ def import_contacts(self, dochange=''):
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         if not id or id in orgs:
             return "Problem line %d, invalid id: %s" % (i, id)
-# ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays
+        # ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays
         orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'st': data[5], 'nb': data[6],
                     'box': data[7], 'zip': data[8], 'loc': data[9], 'tel': data[10], 'mob': data[11], 'fax': data[12],
                     'eml': data[13], 'www': data[14], 'dep': data[15], 'cty': last}
@@ -214,7 +218,7 @@ def import_contacts(self, dochange=''):
                                                        'token': i[1]} for i in org_infos[typ].items()])
 
     # creating organization
-    for i, id in enumerate(orgs):
+    for i, id in enumerate(orgs, start=1):
         det = orgs[id]
         if det['lev'] == 1:
             cont = contacts
@@ -237,4 +241,57 @@ def import_contacts(self, dochange=''):
             out.append("%04d org: new orga '%s' will be created in %s" % (i, safe_encode(det['tit']),
                                                                           safe_encode(cont)))
 
+    # read the persons file
+    lines = system.read_file(os.path.join(path, 'persons.csv'), strip_chars=' "', skip_empty=True, skip_lines=1)
+    # ID;ID org;ID fct;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
+    # Fax;Courriel;Site;Région;Pays;Intitulé fct;Début fct;Fin fct;Num int
+    persons = {}
+    out.append("\n!! PERSONS !!\n")
+    for i, line in enumerate(lines, start=1):
+        try:
+            data = [item.strip(' "') for item in line.split(';')]
+            id = data[0]
+            ido = data[1]  # NOT YET HANDLED
+            idf = data[2]  # NOT YET HANDLED
+            name = data[3]
+            fname = data[4]
+            gender = assert_value_in_list(data[5], ['', 'F', 'M'])
+            birthday = assert_date(data[7])
+            fct = data[20]  # NOT YET HANDLED
+            inum = data[23]
+#            last = data[23]  # just to check the number of columns
+        except AssertionError, ex:
+            return "Problem line %d: %s" % (i, safe_encode(ex.message))
+        except Exception, ex:
+            return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+        if not id or id in persons:
+            return "Problem line %d, invalid id: %s" % (i, id)
+        persons[id] = {}
+        if inum and api.content.find(portal_type='person', internal_number=inum):
+            out.append("%04d pers: person '%s %s' already exists with internal number '%s'" % (i, safe_encode(name),
+                       safe_encode(fname), inum))
+            continue
+        if doit:
+            real_id = new_id = idnormalizer.normalize(safe_encode('%s-%s' % (fname, name)))
+            count = 0
+            while real_id in contacts:
+                count += 1
+                real_id = '%s-%d' % (new_id, count)
+
+            obj = api.content.create(container=contacts, type='person', id=real_id, lastname=safe_unicode(name),
+                                     firstname=safe_unicode(fname), gender=gender,
+                                     person_title=safe_unicode(data[6]), birthday=birthday,
+                                     street=safe_unicode(data[8]), number=safe_unicode(data[9]),
+                                     additional_address_details=safe_unicode(data[10]),
+                                     zip_code=safe_unicode(data[11]), city=safe_unicode(data[12]),
+                                     phone=safe_unicode(data[13]), cell_phone=safe_unicode(data[14]),
+                                     fax=safe_unicode(data[15]), email=safe_unicode(data[16]),
+                                     website=safe_unicode(data[17]), region=safe_unicode(data[18]),
+                                     country=safe_unicode(data[19]), use_parent_address=False)
+            if inum and IInternalNumberBehavior.providedBy(obj):
+                obj.internal_number = inum
+                obj.reindexObject(idxs=['internal_number'])
+            out.append("%04d org: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
+        else:
+            out.append("%04d pers: new person '%s %s' will be created" % (i, safe_encode(name), safe_encode(fname)))
     return '\n'.join(out)
