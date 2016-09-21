@@ -291,7 +291,7 @@ def import_contacts(self, dochange=''):
             if inum and IInternalNumberBehavior.providedBy(obj):
                 obj.internal_number = inum
                 obj.reindexObject(idxs=['internal_number'])
-            out.append("%04d org: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
+            out.append("%04d pers: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
         else:
             out.append("%04d pers: new person '%s %s' will be created" % (i, safe_encode(name), safe_encode(fname)))
     return '\n'.join(out)
