@@ -290,7 +290,7 @@ def import_contacts(self, dochange=''):
                                      country=safe_unicode(data[19]), use_parent_address=False)
             if inum and IInternalNumberBehavior.providedBy(obj):
                 obj.internal_number = inum
-                obj.reindexObject(idxs=['internal_number'])
+                obj.reindexObject(idxs=['internal_number', 'SearchableText'])
             out.append("%04d pers: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
         else:
             out.append("%04d pers: new person '%s %s' will be created" % (i, safe_encode(name), safe_encode(fname)))
