@@ -16,7 +16,7 @@ We install the necessary libraries
 > apt-get install libpq-dev
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
-> apt-get install graphviz graphviz-dev
+> apt-get install graphviz graphviz-dev (if buildout error, also pkg-config)
 
 Documentviewer dependencies
 > apt-get install rubygems
