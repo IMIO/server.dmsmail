@@ -147,9 +147,11 @@ def import_contacts(self, dochange=''):
         Import contacts from several files in 'Extensions'
         * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
                                 Courriel;Site;Région;Pays
-        * functions.csv
-        * persons.csv:  ID;ID org;ID fct;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
-                        Fax;Courriel;Site;Région;Pays;Intitulé fct;Début fct;Fin fct;Num int
+        * persons.csv:  ID;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
+                        Fax;Courriel;Site;Région;Pays;Num int
+        * positions.csv:    ID;ID org;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
+                            Courriel;Site;Région;Pays
+        * heldpositions.csv:    ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -174,7 +176,7 @@ def import_contacts(self, dochange=''):
     out = ["!! ORGANIZATIONS !!\n"]
     for i, line in enumerate(lines):
         try:
-            data = [item.strip(' "') for item in line.split(';')]
+            data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
             id = data[0]
             idp = data[1]
             last = data[16]  # just to check the number of columns
@@ -249,16 +251,13 @@ def import_contacts(self, dochange=''):
     out.append("\n!! PERSONS !!\n")
     for i, line in enumerate(lines, start=1):
         try:
-            data = [item.strip(' "') for item in line.split(';')]
+            data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
             id = data[0]
-            ido = data[1]  # NOT YET HANDLED
-            idf = data[2]  # NOT YET HANDLED
-            name = data[3]
-            fname = data[4]
-            gender = assert_value_in_list(data[5], ['', 'F', 'M'])
-            birthday = assert_date(data[7])
-            fct = data[20]  # NOT YET HANDLED
-            inum = data[23]
+            name = data[1]
+            fname = data[2]
+            gender = assert_value_in_list(data[3], ['', 'F', 'M'])
+            birthday = assert_date(data[5])
+            inum = data[18]
 #            last = data[23]  # just to check the number of columns
         except AssertionError, ex:
             return "Problem line %d: %s" % (i, safe_encode(ex.message))
@@ -280,14 +279,14 @@ def import_contacts(self, dochange=''):
 
             obj = api.content.create(container=contacts, type='person', id=real_id, lastname=safe_unicode(name),
                                      firstname=safe_unicode(fname), gender=gender,
-                                     person_title=safe_unicode(data[6]), birthday=birthday,
-                                     street=safe_unicode(data[8]), number=safe_unicode(data[9]),
-                                     additional_address_details=safe_unicode(data[10]),
-                                     zip_code=safe_unicode(data[11]), city=safe_unicode(data[12]),
-                                     phone=safe_unicode(data[13]), cell_phone=safe_unicode(data[14]),
-                                     fax=safe_unicode(data[15]), email=safe_unicode(data[16]),
-                                     website=safe_unicode(data[17]), region=safe_unicode(data[18]),
-                                     country=safe_unicode(data[19]), use_parent_address=False)
+                                     person_title=safe_unicode(data[4]), birthday=birthday,
+                                     street=safe_unicode(data[6]), number=safe_unicode(data[7]),
+                                     additional_address_details=safe_unicode(data[8]),
+                                     zip_code=safe_unicode(data[9]), city=safe_unicode(data[10]),
+                                     phone=safe_unicode(data[11]), cell_phone=safe_unicode(data[12]),
+                                     fax=safe_unicode(data[13]), email=safe_unicode(data[14]),
+                                     website=safe_unicode(data[15]), region=safe_unicode(data[16]),
+                                     country=safe_unicode(data[17]), use_parent_address=False)
             if inum and IInternalNumberBehavior.providedBy(obj):
                 obj.internal_number = inum
                 obj.reindexObject(idxs=['internal_number', 'SearchableText'])
