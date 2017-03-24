@@ -195,9 +195,10 @@ def import_contacts(self, dochange=''):
                 childs[idp] = []
             childs[idp].append(id)
         if data[4]:
-            if data[4] not in org_infos[typ]:
-                org_infos[typ][safe_unicode(data[4])] = idnormalizer.normalize(safe_encode(data[4]))
-            orgs[id]['typ'] = org_infos[typ][safe_unicode(data[4])]
+            utyp = safe_unicode(data[4])
+            if utyp not in org_infos[typ]:
+                org_infos[typ][utyp] = idnormalizer.normalize(utyp)
+            orgs[id]['typ'] = org_infos[typ][utyp]
         else:  # we take the first value
             orgs[id]['typ'] = org_infos[typ].values()[0]
 
