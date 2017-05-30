@@ -43,13 +43,11 @@ def check_sender(self):
 
 def list_relations(self):
     from zope.component import queryUtility
-    from zope.app.intid.interfaces import IIntIds
     from zc.relation.interfaces import ICatalog
     catalog = queryUtility(ICatalog)
-    intids = queryUtility(IIntIds)
+    out = []
     rels = list(catalog.findRelations())
     for rel in rels:
+        out.append(rel.__dict__)
         print rel.__dict__
-    return printed
-
-
+    return '\n<br />'.join(out)
