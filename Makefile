@@ -4,7 +4,7 @@
 plone=$(shell grep plone-path port.cfg|cut -c 14-)
 hostname=$(shell hostname)
 instance1_port=$(shell grep instance1-http port.cfg|cut -c 18-)
-disable=1
+disable=0
 
 all: run
 
