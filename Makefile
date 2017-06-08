@@ -6,6 +6,7 @@ hostname=$(shell hostname)
 instance1_port=$(shell grep instance1-http port.cfg|cut -c 18-)
 disable=1
 copydata=1
+instance=instance-debug
 
 all: run
 
@@ -40,6 +41,12 @@ standard-config:
 run:
 	if ! test -f bin/instance1;then make buildout;fi
 	bin/instance1 fg
+
+.PHONY: test-message-script
+test-message-script:
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run run-scripts.py 1
+
 
 .PHONY: robot-server
 robot-server:
