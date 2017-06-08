@@ -22,8 +22,16 @@ def script1():
     else:
         error("No test site message found")
 
+
+def script2():
+    verbose('Setting documentgenerator config on %s' % obj.absolute_url_path())
+    from collective.documentgenerator.config import set_oo_port, set_uno_path
+    set_oo_port()
+    set_uno_path()
+    transaction.commit()
+
 info = ["You can pass following parameters (with the first one always script number):", "1 : activate test message"]
-scripts = {'1': script1}
+scripts = {'1': script1, '2': script2}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
     error("Bad script parameter")
