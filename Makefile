@@ -47,6 +47,10 @@ test-message-script:
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 1
 
+.PHONY: dg-config-script
+dg-config-script:
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run run-scripts.py 2
 
 .PHONY: robot-server
 robot-server:
