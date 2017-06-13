@@ -26,6 +26,19 @@ Dépendances de documentviewer:
 > apt-get install poppler-utils
 > apt-get install wv
 
+Dépendance d'imio.helpers pour la génération de code-barre
+> apt-get install libpng12-dev
+> apt-get install cmake
+> apt-get install libqt4-dev
+> apt-get install libqt5widgets5
+> apt-get install qttools5-dev
+> wget https://10gbps-io.dl.sourceforge.net/project/zint/zint/2.6.0/zint-2.6.0.src.tar.gz
+> tar xvzf zint-2.6.0.src.tar.gz
+> cd zint-2.6.0/build
+> cmake ..
+> make
+> make install
+
 On va travailler dans le dossier /srv
 > cd /srv
 
