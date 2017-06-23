@@ -7,6 +7,7 @@ instance1_port=$(shell grep instance1-http port.cfg|cut -c 18-)
 disable=1
 copydata=1
 instance=instance-debug
+profile=imio.dms.mail:singles
 
 all: run
 
@@ -51,6 +52,16 @@ test-message-script:
 dg-config-script:
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 2
+
+.PHONY: step-script
+step-script:
+# create templates: step=imiodmsmail-create-templates
+# update templates: step=imiodmsmail-update-templates
+# override templates: step=imiodmsmail-override-templates
+	@echo "plone: $(plone)"
+	@echo "profile: $(profile)"
+	@echo "step: $(step)"
+	bin/$(instance) -O$(plone) run run-scripts.py 3 $(profile) $(step)
 
 .PHONY: robot-server
 robot-server:

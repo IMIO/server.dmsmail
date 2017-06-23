@@ -30,8 +30,28 @@ def script2():
     set_uno_path()
     transaction.commit()
 
+
+def script3():
+    if len(sys.argv) < 6:
+        error("Missing profile and step names in args")
+        sys.exit(0)
+    profile = sys.argv[4]
+    step = sys.argv[5]
+    if not profile.startswith('profile-'):
+        profile = 'profile-%s' % profile
+    verbose('Running "%s#%s" step on %s' % (profile, step, obj.absolute_url_path()))
+    ret = obj.portal_setup.runImportStepFromProfile(profile, step)
+    {'messages': {'imiodmsmail-update-templates': 'templates/d-im-listing: unchanged\ntemplates/d-print: unchanged\ntemplates/om/header: unchanged\ntemplates/om/footer: unchanged\ntemplates/om/intro: unchanged\ntemplates/om/ending: unchanged\ntemplates/om/base: unchanged\ntemplates/om/receipt: unchanged'}, 'steps': ['imiodmsmail-update-templates']}
+    if 'messages' in ret:
+        for step in ret['messages']:
+            verbose("%s:\n%s" % (step, ret['messages'][step]))
+    else:
+        verbose("No output")
+    transaction.commit()
+
+
 info = ["You can pass following parameters (with the first one always script number):", "1 : activate test message"]
-scripts = {'1': script1, '2': script2}
+scripts = {'1': script1, '2': script2, '3': script3}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
     error("Bad script parameter")
