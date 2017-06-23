@@ -41,7 +41,6 @@ def script3():
         profile = 'profile-%s' % profile
     verbose('Running "%s#%s" step on %s' % (profile, step, obj.absolute_url_path()))
     ret = obj.portal_setup.runImportStepFromProfile(profile, step)
-    {'messages': {'imiodmsmail-update-templates': 'templates/d-im-listing: unchanged\ntemplates/d-print: unchanged\ntemplates/om/header: unchanged\ntemplates/om/footer: unchanged\ntemplates/om/intro: unchanged\ntemplates/om/ending: unchanged\ntemplates/om/base: unchanged\ntemplates/om/receipt: unchanged'}, 'steps': ['imiodmsmail-update-templates']}
     if 'messages' in ret:
         for step in ret['messages']:
             verbose("%s:\n%s" % (step, ret['messages'][step]))
