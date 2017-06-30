@@ -45,11 +45,13 @@ run:
 
 .PHONY: test-message-script
 test-message-script:
+# Activate test site message
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 1
 
 .PHONY: dg-config-script
 dg-config-script:
+# Set oo port and uno python
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 2
 
