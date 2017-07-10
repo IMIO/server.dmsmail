@@ -4,8 +4,8 @@
 plone=$(shell grep plone-path port.cfg|cut -c 14-)
 hostname=$(shell hostname)
 instance1_port=$(shell grep instance1-http port.cfg|cut -c 18-)
-disable=0
-copydata=0
+disable=1
+copydata=1
 instance=instance-debug
 profile=imio.dms.mail:singles
 
