@@ -49,8 +49,22 @@ def script3():
     transaction.commit()
 
 
+def script4():
+    if len(sys.argv) < 6:
+        error("Missing profile and step names in args")
+        sys.exit(0)
+    profile = sys.argv[4]
+    step = sys.argv[5]
+    from imio.migrator.migrator import Migrator
+    # obj is plone site
+    mig = Migrator(obj)
+    mig.upgradeProfile('%s:%s' % (profile, step))
+    verbose('Running "%s:%s" upgrade on %s' % (profile, step, obj.absolute_url_path()))
+    transaction.commit()
+
+
 info = ["You can pass following parameters (with the first one always script number):", "1 : activate test message"]
-scripts = {'1': script1, '2': script2, '3': script3}
+scripts = {'1': script1, '2': script2, '3': script3, '4': script4}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
     error("Bad script parameter")

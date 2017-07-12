@@ -65,6 +65,14 @@ step-script:
 	@echo "step: $(step)"
 	bin/$(instance) -O$(plone) run run-scripts.py 3 $(profile) $(step)
 
+.PHONY: migrate-script
+migrate-script:
+# profile=collective.documentgenerator step=default
+	@echo "plone: $(plone)"
+	@echo "profile: $(profile)"
+	@echo "step: $(step)"
+	bin/$(instance) -O$(plone) run run-scripts.py 4 $(profile) $(step)
+
 .PHONY: robot-server
 robot-server:
 	bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
