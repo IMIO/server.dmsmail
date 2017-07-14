@@ -24,10 +24,9 @@ def script1():
 
 
 def script2():
-    verbose('Setting documentgenerator config on %s' % obj.absolute_url_path())
-    from collective.documentgenerator.config import set_oo_port, set_uno_path
-    set_oo_port()
-    set_uno_path()
+    verbose('Change searched types on %s' % obj.absolute_url_path())
+    from imio.dms.mail.setuphandlers import changeSearchedTypes
+    changeSearchedTypes(obj)
     transaction.commit()
 
 
@@ -73,3 +72,12 @@ if len(sys.argv) < 4 or sys.argv[3] not in scripts:
 
 with api.env.adopt_user(username='admin'):
     scripts[sys.argv[3]]()
+
+### OLD scripts ###
+
+def script2():
+    verbose('Setting documentgenerator config on %s' % obj.absolute_url_path())
+    from collective.documentgenerator.config import set_oo_port, set_uno_path
+    set_oo_port()
+    set_uno_path()
+    transaction.commit()
