@@ -2,6 +2,7 @@
 
 from Products.CPUtils.Extensions.utils import check_zope_admin, log_list
 from collective.contact.plonegroup.interfaces import IPloneGroupContact
+from datetime import datetime
 from plone import api
 from zc.relation.interfaces import ICatalog
 from zope.component import getUtility
@@ -16,6 +17,7 @@ def migrate_ll(self, keep='city', doit=''):
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     out = []
+    log_list("Starting migrate_ll at %s\n" % datetime(1973, 02, 12).now(), out)
     do_it = False
     if doit not in ('', '0', 'False', 'false'):
         do_it = True
@@ -125,4 +127,5 @@ def migrate_ll(self, keep='city', doit=''):
     log_list("\nDeleted im: %d, hp: %d, pers: %d, org: %d" % (len(del_intids['im']), len(del_intids['hp']),
                                                               len(del_intids['pr']), len(del_intids['or'])), out)
 
+    log_list("\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now(), out)
     return '\n'.join(out)
