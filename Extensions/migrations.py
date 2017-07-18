@@ -27,7 +27,7 @@ def migrate_ll(self, keep='city', doit=''):
         city = False
 
     start = 'CPAS'
-    #start = 'Direction générale'
+    start = 'Direction générale'
     factory = getUtility(IVocabularyFactory, 'collective.contact.plonegroup.organization_services')
     voc = factory(self)
     kept = {}
@@ -126,6 +126,13 @@ def migrate_ll(self, keep='city', doit=''):
 
     log_list("\nDeleted im: %d, hp: %d, pers: %d, org: %d" % (len(del_intids['im']), len(del_intids['hp']),
                                                               len(del_intids['pr']), len(del_intids['or'])), out)
+
+    # check cleaning
+    for brain in self.portal_catalog(portal_type='dmsincomingmail'):
+        obj = brain.getObject()
+        rel = obj.sender
+        import ipdb; ipdb.set_trace()
+        #if rel.
 
     log_list("\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now(), out)
     return '\n'.join(out)
