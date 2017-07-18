@@ -27,7 +27,7 @@ def migrate_ll(self, keep='city', doit=''):
         city = False
 
     start = 'CPAS'
-    start = 'Direction générale'
+    #start = 'Direction générale'
     factory = getUtility(IVocabularyFactory, 'collective.contact.plonegroup.organization_services')
     voc = factory(self)
     kept = {}
