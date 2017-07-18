@@ -17,7 +17,7 @@ def migrate_ll(self, keep='city', doit=''):
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     out = []
-    log_list("Starting migrate_ll at %s\n" % datetime(1973, 02, 12).now(), out)
+    log_list(out, "Starting migrate_ll at %s\n" % datetime(1973, 02, 12).now())
     do_it = False
     if doit not in ('', '0', 'False', 'false'):
         do_it = True
@@ -31,7 +31,7 @@ def migrate_ll(self, keep='city', doit=''):
     factory = getUtility(IVocabularyFactory, 'collective.contact.plonegroup.organization_services')
     voc = factory(self)
     kept = {}
-    log_list("Parameters: city=%s, doit=%s\n" % (city, do_it), out)
+    log_list(out, "Parameters: city=%s, doit=%s\n" % (city, do_it))
     for term in voc:
         tit = term.title.encode('utf8')
         if not city:
@@ -39,7 +39,7 @@ def migrate_ll(self, keep='city', doit=''):
                 kept[term.value] = tit
         elif not tit.startswith(start):
             kept[term.value] = tit
-    log_list("Kept list %s\n" % '\n'.join(kept.values()), out)
+    log_list(out, "Kept list %s\n" % '\n'.join(kept.values()))
 
     plen = len(self.absolute_url())
 
@@ -48,7 +48,7 @@ def migrate_ll(self, keep='city', doit=''):
         prt = "intid:%d, path:%s" % (intid, path)
         if more:
             prt += ', %s' % more.encode('utf8')
-        log_list("Deleting %s" % (prt), out)
+        log_list(out, "Deleting %s" % (prt))
         del_intids[typ].append(intid)
         if do_it:
             api.content.delete(obj=obj)
@@ -62,13 +62,13 @@ def migrate_ll(self, keep='city', doit=''):
         try:
             return intids.getId(obj)
         except KeyError:
-            log_list("!! Missing intid for %s" % obj.absolute_url(), out)
-            if create:
+            log_list(out, "Missing intid for %s" % obj.absolute_url(), prefix='!! ')
+            if create and do_it:
                 return intids.register(obj)
-        return None
+        return 1
 
     # searching incoming mails
-    log_list("\nIncoming mails:", out)
+    log_list(out, "\nIncoming mails:")
     for brain in self.portal_catalog(portal_type='dmsincomingmail'):
         obj = brain.getObject()
         if not obj.treating_groups in kept:
@@ -89,32 +89,32 @@ def migrate_ll(self, keep='city', doit=''):
         return ret
 
     # check held_position
-    log_list("\nHeld positions:", out)
+    log_list(out, "\nHeld positions:")
     for brain in self.portal_catalog(portal_type=['held_position']):
         obj = brain.getObject()
         if IPloneGroupContact.providedBy(obj):
             continue
         # check relations with incoming mails
         ret = find_relations(obj)
-        #log_list('Current held_position %s' % obj.absolute_url(), out)
+        #log_list(out, 'Current held_position %s' % obj.absolute_url())
         if not ret:
             delete(obj, get_intid(obj), typ='hp')
 
     # check person
-    log_list("\nPersons:", out)
+    log_list(out, "\nPersons:")
     for brain in self.portal_catalog(portal_type=['person']):
         obj = brain.getObject()
         if IPloneGroupContact.providedBy(obj):
             continue
         # check relations with incoming mails
         ret = find_relations(obj)
-        #log_list('Current person %s' % obj.absolute_url(), out)
+        #log_list(out, 'Current person %s' % obj.absolute_url())
         if not ret:
             if not [hp for hp in obj.objectValues() if do_it or get_intid(hp) not in del_intids['hp']]:
                 delete(obj, get_intid(obj), typ='pr')
 
     # check organizations
-    log_list("\nOrganizations:", out)
+    log_list(out, "\nOrganizations:")
     orgs = {}
     for brain in self.portal_catalog(portal_type=['organization'], sort_on='path', sort_order='reverse'):
         obj = brain.getObject()
@@ -122,7 +122,7 @@ def migrate_ll(self, keep='city', doit=''):
             continue
         # check relations with incoming mails or held_positions
         ret = find_relations(obj)
-        #log_list('Current org %s' % obj.absolute_url(), out)
+        #log_list(out, 'Current org %s' % obj.absolute_url())
         if not ret:
             if '/'.join(obj.getPhysicalPath()) not in orgs:
                 delete(obj, get_intid(obj), typ='or')
@@ -134,8 +134,8 @@ def migrate_ll(self, keep='city', doit=''):
                 if path not in orgs:
                     orgs[path] = ''
 
-    log_list("\nDeleted im: %d, hp: %d, pers: %d, org: %d" % (len(del_intids['im']), len(del_intids['hp']),
-                                                              len(del_intids['pr']), len(del_intids['or'])), out)
+    log_list(out, "\nDeleted im: %d, hp: %d, pers: %d, org: %d\n" % (len(del_intids['im']), len(del_intids['hp']),
+                                                                     len(del_intids['pr']), len(del_intids['or'])))
 
     # check cleaning
     if do_it:
@@ -143,7 +143,7 @@ def migrate_ll(self, keep='city', doit=''):
             obj = brain.getObject()
             rel = obj.sender
             if rel.isBroken() or rel.to_path is None:
-                log_list("!! Sender relation broken on %s" % brain.getPath(), out)
+                log_list(out, "Sender relation broken on %s" % brain.getPath(), prefix='!! ')
 
-    log_list("\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now(), out)
+    log_list(out, "\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now())
     return '\n'.join(out)
