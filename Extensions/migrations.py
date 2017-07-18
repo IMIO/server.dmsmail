@@ -62,7 +62,7 @@ def migrate_ll(self, keep='city', doit=''):
         try:
             return intids.getId(obj)
         except KeyError:
-            log_list("!! Missing intid for %s" % obj.absolute_url())
+            log_list("!! Missing intid for %s" % obj.absolute_url(), out)
             if create:
                 return intids.register(obj)
         return None
@@ -142,8 +142,8 @@ def migrate_ll(self, keep='city', doit=''):
         for brain in self.portal_catalog(portal_type='dmsincomingmail'):
             obj = brain.getObject()
             rel = obj.sender
-            if rel.isBroken():
-                log_list("Sender relation broken on %s" % brain.getPath())
+            if rel.isBroken() or rel.to_path is None:
+                log_list("!! Sender relation broken on %s" % brain.getPath(), out)
 
     log_list("\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now(), out)
     return '\n'.join(out)
