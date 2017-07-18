@@ -57,12 +57,22 @@ def migrate_ll(self, keep='city', doit=''):
     intids = getUtility(IIntIds)
     del_intids = {'im': [], 'hp': [], 'pr': [], 'or': []}
 
+    def get_intid(obj, create=True):
+        # check that the object has an intid, otherwise there's nothing to be done
+        try:
+            return intids.getId(obj)
+        except KeyError:
+            log_list("!! Missing intid for %s" % obj.absolute_url())
+            if create:
+                return intids.register(obj)
+        return None
+
     # searching incoming mails
     log_list("\nIncoming mails:", out)
     for brain in self.portal_catalog(portal_type='dmsincomingmail'):
         obj = brain.getObject()
         if not obj.treating_groups in kept:
-            delete(obj, intids.getId(obj), typ='im', more='tg:%d' % obj.sender.to_id)
+            delete(obj, get_intid(obj), typ='im', more='tg:%d' % obj.sender.to_id)
 
     def find_relations(contact):
         """
@@ -71,7 +81,7 @@ def migrate_ll(self, keep='city', doit=''):
             - from_interfaces_flattened: Interface class (only one)
         """
         ret = []
-        query = {'to_id': intids.getId(contact)}
+        query = {'to_id': get_intid(contact)}
         for relation in catalog.findRelations(query):
             if relation.from_id in del_intids['im'] or relation.from_id in del_intids['hp']:
                 continue
@@ -88,7 +98,7 @@ def migrate_ll(self, keep='city', doit=''):
         ret = find_relations(obj)
         #log_list('Current held_position %s' % obj.absolute_url(), out)
         if not ret:
-            delete(obj, intids.getId(obj), typ='hp')
+            delete(obj, get_intid(obj), typ='hp')
 
     # check person
     log_list("\nPersons:", out)
@@ -100,8 +110,8 @@ def migrate_ll(self, keep='city', doit=''):
         ret = find_relations(obj)
         #log_list('Current person %s' % obj.absolute_url(), out)
         if not ret:
-            if not [hp for hp in obj.objectValues() if do_it or intids.getId(hp) not in del_intids['hp']]:
-                delete(obj, intids.getId(obj), typ='pr')
+            if not [hp for hp in obj.objectValues() if do_it or get_intid(hp) not in del_intids['hp']]:
+                delete(obj, get_intid(obj), typ='pr')
 
     # check organizations
     log_list("\nOrganizations:", out)
@@ -115,7 +125,7 @@ def migrate_ll(self, keep='city', doit=''):
         #log_list('Current org %s' % obj.absolute_url(), out)
         if not ret:
             if '/'.join(obj.getPhysicalPath()) not in orgs:
-                delete(obj, intids.getId(obj), typ='or')
+                delete(obj, get_intid(obj), typ='or')
         else:
             parts = brain.getPath().split('/')
             while(parts):
@@ -128,11 +138,12 @@ def migrate_ll(self, keep='city', doit=''):
                                                               len(del_intids['pr']), len(del_intids['or'])), out)
 
     # check cleaning
-    for brain in self.portal_catalog(portal_type='dmsincomingmail'):
-        obj = brain.getObject()
-        rel = obj.sender
-        import ipdb; ipdb.set_trace()
-        #if rel.
+    if do_it:
+        for brain in self.portal_catalog(portal_type='dmsincomingmail'):
+            obj = brain.getObject()
+            rel = obj.sender
+            if rel.isBroken():
+                log_list("Sender relation broken on %s" % brain.getPath())
 
     log_list("\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now(), out)
     return '\n'.join(out)
