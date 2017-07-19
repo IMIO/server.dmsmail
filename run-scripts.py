@@ -75,7 +75,8 @@ with api.env.adopt_user(username='admin'):
 
 ### OLD scripts ###
 
-def script2():
+
+def script2_1():
     verbose('Setting documentgenerator config on %s' % obj.absolute_url_path())
     from collective.documentgenerator.config import set_oo_port, set_uno_path
     set_oo_port()
