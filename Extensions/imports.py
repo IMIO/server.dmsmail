@@ -3,6 +3,7 @@ import copy
 import os
 from collections import OrderedDict
 from zope.component import getUtility
+from zope.lifecycleevent import modified
 from plone import api
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.app.uuid.utils import uuidToObject
@@ -146,7 +147,7 @@ def import_contacts(self, dochange=''):
     """
         Import contacts from several files in 'Extensions'
         * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
-                                Courriel;Site;Région;Pays
+                                Courriel;Site;Région;Pays;UID
         * persons.csv:  ID;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
                         Fax;Courriel;Site;Région;Pays;Num int
         * positions.csv:    ID;ID org;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
@@ -169,8 +170,14 @@ def import_contacts(self, dochange=''):
     org_infos_o = copy.deepcopy(org_infos)
     # read the organization file
     path = os.path.dirname(exm.filepath())
-    lines = system.read_file(os.path.join(path, 'organizations.csv'), strip_chars=' "', skip_empty=True, skip_lines=1)
+    lines = system.read_file(os.path.join(path, 'organizations.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
+    data = lines.pop(0).split(';')
+    lendata = len(data)
+    if lendata < 19 or data[18].strip(' "') != 'UID':
+        return "Problem decoding first line: bad columns ?"
+    last_id = lendata - 1
     orgs = OrderedDict()
+    uids = {}
     childs = {}
     idnormalizer = getUtility(IIDNormalizer)
     out = ["!! ORGANIZATIONS !!\n"]
@@ -179,15 +186,22 @@ def import_contacts(self, dochange=''):
             data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
             id = data[0]
             idp = data[1]
-            last = data[16]  # just to check the number of columns
+            uid = data[18]
+            data[last_id]  # just to check the number of columns on this line
         except Exception, ex:
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         if not id or id in orgs:
             return "Problem line %d, invalid id: %s" % (i, id)
-        # ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays
-        orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'st': data[5], 'nb': data[6],
-                    'box': data[7], 'zip': data[8], 'loc': data[9], 'tel': data[10], 'mob': data[11], 'fax': data[12],
-                    'eml': data[13], 'www': data[14], 'dep': data[15], 'cty': last}
+        if uid in uids:
+            return "Problem line %d, duplicated uid: %s, already found line %d" % (i, uid, uids[uid])
+        elif uid:
+            uids[uid] = i
+        # ID;ID Par;Intitulé;Description;Type;Use par adr,Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;
+        # Région;Pays;UID
+        orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'upa': data[5] and int(data[5]) or '',
+                    'st': data[6], 'nb': data[7], 'box': data[8], 'zip': data[9], 'loc': data[10], 'tel': data[11],
+                    'mob': data[12], 'fax': data[13], 'eml': data[14], 'www': data[15], 'dep': data[16],
+                    'cty': data[17], 'uid': uid}
         typ = 'types'
         if idp:
             typ = 'levels'
@@ -228,21 +242,60 @@ def import_contacts(self, dochange=''):
         else:
             # get the container organization, already created
             cont = orgs[det['prt']].get('obj', orgs[det['prt']]['tit'])
-        if doit:
-            obj = api.content.create(container=cont, type='organization', title=safe_unicode(det['tit']),
-                                     description=safe_unicode(det['desc']), organization_type=det['typ'],
-                                     street=safe_unicode(det['st']), number=safe_unicode(det['nb']),
-                                     additional_address_details=safe_unicode(det['box']),
-                                     zip_code=safe_unicode(det['zip']), city=safe_unicode(det['loc']),
-                                     phone=safe_unicode(det['tel']), cell_phone=safe_unicode(det['mob']),
-                                     fax=safe_unicode(det['fax']), email=safe_unicode(det['eml']),
-                                     website=safe_unicode(det['www']), region=safe_unicode(det['dep']),
-                                     country=safe_unicode(det['cty']), use_parent_address=False)
+        action = 'create'
+        if det['uid']:
+            obj = uuidToObject(det['uid'])
+            if not obj:
+                out.append("!! %04d org: cannot find obj from uuid %s" % det['uid'])
+            else:
+                action = 'update'
+        if action == 'create':
+            if doit:
+                obj = api.content.create(container=cont, type='organization', title=safe_unicode(det['tit']),
+                                         description=safe_unicode(det['desc']), organization_type=det['typ'],
+                                         street=safe_unicode(det['st']), number=safe_unicode(det['nb']),
+                                         additional_address_details=safe_unicode(det['box']),
+                                         zip_code=safe_unicode(det['zip']), city=safe_unicode(det['loc']),
+                                         phone=safe_unicode(det['tel']), cell_phone=safe_unicode(det['mob']),
+                                         fax=safe_unicode(det['fax']), email=safe_unicode(det['eml']),
+                                         website=safe_unicode(det['www']), region=safe_unicode(det['dep']),
+                                         country=safe_unicode(det['cty']), use_parent_address=bool(det['upa']))
+                det['obj'] = obj
+                out.append("%04d org: new orga '%s' created in %s" % (i, safe_encode(det['tit']), safe_encode(cont)))
+            else:
+                out.append("%04d org: new orga '%s' will be created in %s" % (i, safe_encode(det['tit']),
+                                                                              safe_encode(cont)))
+        elif action == 'update':
+            attrs = {'title': 'tit', 'description': 'desc', 'street': 'st', 'number': 'nb',
+                     'additional_address_details': 'box', 'zip_code': 'zip', 'city': 'loc', 'phone': 'tel',
+                     'cell_phone': 'mob', 'fax': 'fax', 'email': 'eml', 'website': 'www', 'region': 'dep',
+                     'country': 'cty', 'organization_type': det['typ'], 'use_parent_address': bool(det['upa'])}
+            change = False
+            changed = []
+            for attr, new_val in attrs.items():
+                if attr not in ('organization_type', 'use_parent_address'):
+                    new_val = safe_unicode(det[new_val])
+                act_val = getattr(obj, attr)
+                if act_val != new_val and not (act_val is None and new_val == u''):
+                    if doit:
+                        if new_val == '':
+                            new_val = None
+                        setattr(obj, 'attr', new_val)
+                    change = True
+                    changed.append(attr)
+            if change and doit:
+                obj.reindexObject()
+                modified(obj)
             det['obj'] = obj
-            out.append("%04d org: new orga '%s' created in %s" % (i, safe_encode(det['tit']), safe_encode(cont)))
-        else:
-            out.append("%04d org: new orga '%s' will be created in %s" % (i, safe_encode(det['tit']),
-                                                                          safe_encode(cont)))
+            status = ''
+            if not doit:
+                status = 'will be '
+            if change:
+                status += 'REALLY '
+            else:
+                status += 'not '
+            out.append("%04d org: orga '%s' %supdated in %s, %s" % (i, safe_encode(det['tit']), status,
+                                                                    safe_encode(cont), changed))
 
     # read the persons file
     lines = system.read_file(os.path.join(path, 'persons.csv'), strip_chars=' "', skip_empty=True, skip_lines=1)
