@@ -146,13 +146,14 @@ def import_principals(self, create='', dochange=''):
 def import_contacts(self, dochange=''):
     """
         Import contacts from several files in 'Extensions'
-        * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
-                                Courriel;Site;Région;Pays;UID
-        * persons.csv:  ID;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
-                        Fax;Courriel;Site;Région;Pays;Num int
-        * positions.csv:    ID;ID org;Intitulé;Description;Type;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
-                            Courriel;Site;Région;Pays
-        * heldpositions.csv:    ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;
+        * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
+                                Fax;Courriel;Site;Région;Pays;UID
+        * persons.csv:  ID;Nom;Prénom;Genre;Civilité;Naissance;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
+                        Fax;Courriel;Site;Région;Pays;Num int;UID
+        * positions.csv:    ID;ID org;Intitulé;Description;Type;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
+                            Courriel;Site;Région;Pays;UID
+        * heldpositions.csv:    ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;Adr par;Rue;Numéro;Comp adr;
+                                CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays;UID
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -174,7 +175,7 @@ def import_contacts(self, dochange=''):
     data = lines.pop(0).split(';')
     lendata = len(data)
     if lendata < 19 or data[18].strip(' "') != 'UID':
-        return "Problem decoding first line: bad columns ?"
+        return "Problem decoding first line: bad columns in organizations.csv ?"
     last_id = lendata - 1
     orgs = OrderedDict()
     uids = {}
@@ -189,13 +190,13 @@ def import_contacts(self, dochange=''):
             uid = data[18]
             data[last_id]  # just to check the number of columns on this line
         except Exception, ex:
-            return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+            return "ORGS: problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         if not id or id in orgs:
-            return "Problem line %d, invalid id: %s" % (i, id)
+            return "ORGS: problem line %d, invalid id: %s" % (i, id)
         if uid in uids:
-            return "Problem line %d, duplicated uid: %s, already found line %d" % (i, uid, uids[uid])
+            return "ORGS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
         elif uid:
-            uids[uid] = i
+            uids[uid] = 'orgs:%d' % i
         # ID;ID Par;Intitulé;Description;Type;Use par adr,Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;
         # Région;Pays;UID
         orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'upa': data[5] and int(data[5]) or '',
@@ -246,7 +247,8 @@ def import_contacts(self, dochange=''):
         if det['uid']:
             obj = uuidToObject(det['uid'])
             if not obj:
-                out.append("!! %04d org: cannot find obj from uuid %s" % det['uid'])
+                out.append("!! %04d org: cannot find obj from uuid %s: SKIPPED" % det['uid'])
+                continue
             else:
                 action = 'update'
         if action == 'create':
@@ -280,7 +282,7 @@ def import_contacts(self, dochange=''):
                     if doit:
                         if new_val == '':
                             new_val = None
-                        setattr(obj, 'attr', new_val)
+                        setattr(obj, attr, new_val)
                     change = True
                     changed.append(attr)
             if change and doit:
@@ -294,13 +296,17 @@ def import_contacts(self, dochange=''):
                 status += 'REALLY '
             else:
                 status += 'not '
-            out.append("%04d org: orga '%s' %supdated in %s, %s" % (i, safe_encode(det['tit']), status,
-                                                                    safe_encode(cont), changed))
+            out.append("%04d org: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
     # read the persons file
-    lines = system.read_file(os.path.join(path, 'persons.csv'), strip_chars=' "', skip_empty=True, skip_lines=1)
-    # ID;ID org;ID fct;Nom;Prénom;Genre;Civilité;Naissance;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
-    # Fax;Courriel;Site;Région;Pays;Intitulé fct;Début fct;Fin fct;Num int
+    lines = system.read_file(os.path.join(path, 'persons.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
+    # ID;Nom;Prénom;Genre;Civilité;Naissance;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
+    # Fax;Courriel;Site;Région;Pays;Num int;UID
+    data = lines.pop(0).split(';')
+    lendata = len(data)
+    if lendata < 21 or data[20].strip(' "') != 'UID':
+        return "Problem decoding first line: bad columns in persons.csv ?"
+    last_id = lendata - 1
     persons = {}
     out.append("\n!! PERSONS !!\n")
     for i, line in enumerate(lines, start=1):
@@ -311,40 +317,91 @@ def import_contacts(self, dochange=''):
             fname = data[2]
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
             birthday = assert_date(data[5])
-            inum = data[18]
-#            last = data[23]  # just to check the number of columns
+            upa = data[6] and int(data[6]) or ''
+            inum = data[19]
+            uid = data[20]
+            data[last_id]  # just to check the number of columns on this line
         except AssertionError, ex:
-            return "Problem line %d: %s" % (i, safe_encode(ex.message))
+            return "PERS: problem line %d: %s" % (i, safe_encode(ex.message))
         except Exception, ex:
-            return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+            return "PERS: problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         if not id or id in persons:
-            return "Problem line %d, invalid id: %s" % (i, id)
+            return "PERS: problem line %d, invalid id: %s" % (i, id)
+        if uid in uids:
+            return "PERS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
+        elif uid:
+            uids[uid] = 'pers:%d' % i
         persons[id] = {}
-        if inum and api.content.find(portal_type='person', internal_number=inum):
-            out.append("%04d pers: person '%s %s' already exists with internal number '%s'" % (i, safe_encode(name),
-                       safe_encode(fname), inum))
-            continue
-        if doit:
-            real_id = new_id = idnormalizer.normalize(safe_encode('%s-%s' % (fname, name)))
-            count = 0
-            while real_id in contacts:
-                count += 1
-                real_id = '%s-%d' % (new_id, count)
+        action = 'create'
+        if uid:
+            obj = uuidToObject(uid)
+            if not obj:
+                out.append("!! %04d pers: cannot find obj from uuid %s: SKIPPED" % uid)
+                continue
+            else:
+                action = 'update'
+        elif inum:
+            brains = api.content.find(portal_type='person', internal_number=inum)
+            if len(brains) == 1:
+                obj = brains[0].getObject()
+                action = 'update'
+            elif len(brains) > 1:
+                out.append("!! %04d pers: multiple persons found with int number '%s': SKIPPED (%s)" % (i, inum,
+                           ','.join([b.getPath() for b in brains])))
+                continue
+        if action == 'create':
+            if doit:
+                real_id = new_id = idnormalizer.normalize(safe_encode('%s-%s' % (fname, name)))
+                count = 0
+                while real_id in contacts:
+                    count += 1
+                    real_id = '%s-%d' % (new_id, count)
 
-            obj = api.content.create(container=contacts, type='person', id=real_id, lastname=safe_unicode(name),
-                                     firstname=safe_unicode(fname), gender=gender,
-                                     person_title=safe_unicode(data[4]), birthday=birthday,
-                                     street=safe_unicode(data[6]), number=safe_unicode(data[7]),
-                                     additional_address_details=safe_unicode(data[8]),
-                                     zip_code=safe_unicode(data[9]), city=safe_unicode(data[10]),
-                                     phone=safe_unicode(data[11]), cell_phone=safe_unicode(data[12]),
-                                     fax=safe_unicode(data[13]), email=safe_unicode(data[14]),
-                                     website=safe_unicode(data[15]), region=safe_unicode(data[16]),
-                                     country=safe_unicode(data[17]), use_parent_address=False)
-            if inum and IInternalNumberBehavior.providedBy(obj):
-                obj.internal_number = inum
-                obj.reindexObject(idxs=['internal_number', 'SearchableText'])
-            out.append("%04d pers: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
-        else:
-            out.append("%04d pers: new person '%s %s' will be created" % (i, safe_encode(name), safe_encode(fname)))
+                obj = api.content.create(container=contacts, type='person', id=real_id, lastname=safe_unicode(name),
+                                         firstname=safe_unicode(fname), gender=gender,
+                                         person_title=safe_unicode(data[4]), birthday=birthday,
+                                         street=safe_unicode(data[7]), number=safe_unicode(data[8]),
+                                         additional_address_details=safe_unicode(data[9]),
+                                         zip_code=safe_unicode(data[10]), city=safe_unicode(data[11]),
+                                         phone=safe_unicode(data[12]), cell_phone=safe_unicode(data[13]),
+                                         fax=safe_unicode(data[14]), email=safe_unicode(data[15]),
+                                         website=safe_unicode(data[16]), region=safe_unicode(data[17]),
+                                         country=safe_unicode(data[18]), use_parent_address=bool(upa))
+                if inum and IInternalNumberBehavior.providedBy(obj):
+                    obj.internal_number = inum
+                    obj.reindexObject(idxs=['internal_number', 'SearchableText'])
+                out.append("%04d pers: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
+                persons[id]['obj'] = obj
+            else:
+                out.append("%04d pers: new person '%s %s' will be created" % (i, safe_encode(name), safe_encode(fname)))
+        elif action == 'update':
+            attrs = {'lastname': 1, 'firstname': 2, 'gender': gender, 'person_title': 4, 'birthday': birthday,
+                     'street': 7, 'number': 8, 'additional_address_details': 9, 'zip_code': 10, 'city': 11,
+                     'phone': 12, 'cell_phone': 13, 'fax': 14, 'email': 15, 'website': 16, 'region': 17,
+                     'country': 18, 'use_parent_address': bool(upa)}
+            change = False
+            changed = []
+            for attr, new_val in attrs.items():
+                if attr not in ('gender', 'birthday', 'use_parent_address'):
+                    new_val = safe_unicode(data[new_val])
+                act_val = getattr(obj, attr)
+                if act_val != new_val and not (act_val is None and new_val == u''):
+                    if doit:
+                        if new_val == '':
+                            new_val = None
+                        setattr(obj, attr, new_val)
+                    change = True
+                    changed.append(attr)
+            if change and doit:
+                obj.reindexObject()
+                modified(obj)
+            persons[id]['obj'] = obj
+            status = ''
+            if not doit:
+                status = 'will be '
+            if change:
+                status += 'REALLY '
+            else:
+                status += 'not '
+            out.append("%04d pers: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
     return '\n'.join(out)
