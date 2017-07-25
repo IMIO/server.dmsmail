@@ -165,6 +165,10 @@ def import_contacts(self, dochange=''):
     exm = self.REQUEST['PUBLISHED']
     portal = api.portal.get()
     contacts = portal['contacts']
+
+    def digit(phone):
+        return filter(type(phone).isdigit, phone)
+
     org_infos = {}
     for typ in ['types', 'levels']:
         org_infos[typ] = OrderedDict([(t['name'], t['token']) for t in getattr(contacts, 'organization_%s' % typ)])
@@ -203,9 +207,9 @@ def import_contacts(self, dochange=''):
         # ID;ID Par;Intitulé;Description;Type;Use par adr,Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;
         # Région;Pays;UID
         orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'upa': data[5] and int(data[5]) or '',
-                    'st': data[6], 'nb': data[7], 'box': data[8], 'zip': data[9], 'loc': data[10], 'tel': data[11],
-                    'mob': data[12], 'fax': data[13], 'eml': data[14], 'www': data[15], 'dep': data[16],
-                    'cty': data[17], 'uid': uid}
+                    'st': data[6], 'nb': data[7], 'box': data[8], 'zip': data[9], 'loc': data[10],
+                    'tel': digit(data[11]), 'mob': digit(data[12]), 'fax': digit(data[13]), 'eml': data[14],
+                    'www': data[15], 'dep': data[16], 'cty': data[17], 'uid': uid}
         typ = 'types'
         if idp:
             typ = 'levels'
@@ -322,6 +326,9 @@ def import_contacts(self, dochange=''):
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
             birthday = assert_date(data[5])
             upa = data[6] and int(data[6]) or ''
+            phone = safe_unicode(digit(data[12]))
+            cell_phone = safe_unicode(digit(data[13]))
+            fax = safe_unicode(digit(data[14]))
             inum = data[19]
             uid = data[20]
             data[last_id]  # just to check the number of columns on this line
@@ -367,8 +374,7 @@ def import_contacts(self, dochange=''):
                                          street=safe_unicode(data[7]), number=safe_unicode(data[8]),
                                          additional_address_details=safe_unicode(data[9]),
                                          zip_code=safe_unicode(data[10]), city=safe_unicode(data[11]),
-                                         phone=safe_unicode(data[12]), cell_phone=safe_unicode(data[13]),
-                                         fax=safe_unicode(data[14]), email=safe_unicode(data[15]),
+                                         phone=phone, cell_phone=cell_phone, fax=fax, email=safe_unicode(data[15]),
                                          website=safe_unicode(data[16]), region=safe_unicode(data[17]),
                                          country=safe_unicode(data[18]), use_parent_address=bool(upa))
                 if inum and IInternalNumberBehavior.providedBy(obj):
@@ -381,12 +387,12 @@ def import_contacts(self, dochange=''):
         elif action == 'update':
             attrs = {'lastname': 1, 'firstname': 2, 'gender': gender, 'person_title': 4, 'birthday': birthday,
                      'street': 7, 'number': 8, 'additional_address_details': 9, 'zip_code': 10, 'city': 11,
-                     'phone': 12, 'cell_phone': 13, 'fax': 14, 'email': 15, 'website': 16, 'region': 17,
+                     'phone': phone, 'cell_phone': cell_phone, 'fax': fax, 'email': 15, 'website': 16, 'region': 17,
                      'country': 18, 'use_parent_address': bool(upa)}
             change = False
             changed = []
             for attr, new_val in attrs.items():
-                if attr not in ('gender', 'birthday', 'use_parent_address'):
+                if attr not in ('gender', 'birthday', 'use_parent_address', 'phone', 'cell_phone', 'fax'):
                     new_val = safe_unicode(data[new_val])
                 act_val = getattr(obj, attr)
                 if act_val != new_val and not (act_val is None and new_val == u''):
@@ -431,6 +437,9 @@ def import_contacts(self, dochange=''):
             title = data[4]
             start = assert_date(data[5])
             end = assert_date(data[6])
+            phone = safe_unicode(digit(data[13]))
+            cell_phone = safe_unicode(digit(data[14]))
+            fax = safe_unicode(digit(data[15]))
             upa = data[7] and int(data[7]) or ''
             uid = data[20]
             data[last_id]  # just to check the number of columns on this line
@@ -491,8 +500,7 @@ def import_contacts(self, dochange=''):
                                          street=safe_unicode(data[8]), number=safe_unicode(data[9]),
                                          additional_address_details=safe_unicode(data[10]),
                                          zip_code=safe_unicode(data[11]), city=safe_unicode(data[12]),
-                                         phone=safe_unicode(data[13]), cell_phone=safe_unicode(data[14]),
-                                         fax=safe_unicode(data[15]), email=safe_unicode(data[16]),
+                                         phone=phone, cell_phone=cell_phone, fax=fax, email=safe_unicode(data[16]),
                                          website=safe_unicode(data[17]), region=safe_unicode(data[18]),
                                          country=safe_unicode(data[19]), use_parent_address=bool(upa))
                 out.append("%04d hp: new hp '%s' for '%s' created" % (i, safe_encode(title), pers.Title()))
@@ -506,12 +514,13 @@ def import_contacts(self, dochange=''):
                 new_pos = RelationValue(intid)
             attrs = {'position': new_pos, 'label': 4, 'start_date': start, 'end_date': end,
                      'street': 8, 'number': 9, 'additional_address_details': 10, 'zip_code': 11, 'city': 12,
-                     'phone': 13, 'cell_phone': 14, 'fax': 15, 'email': 16, 'website': 17, 'region': 18,
+                     'phone': phone, 'cell_phone': cell_phone, 'fax': fax, 'email': 16, 'website': 17, 'region': 18,
                      'country': 19, 'use_parent_address': bool(upa)}
             change = False
             changed = []
             for attr, new_val in attrs.items():
-                if attr not in ('position', 'start_date', 'end_date', 'use_parent_address'):
+                if attr not in ('position', 'start_date', 'end_date', 'phone', 'cell_phone', 'fax',
+                                'use_parent_address'):
                     new_val = safe_unicode(data[new_val])
                 act_val = getattr(obj, attr)
                 if act_val != new_val and not (act_val is None and new_val == u''):
