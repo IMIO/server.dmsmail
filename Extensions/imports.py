@@ -3,7 +3,9 @@ import copy
 import os
 from collections import OrderedDict
 from zope.component import getUtility
+from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import modified
+from z3c.relationfield.relation import RelationValue
 from plone import api
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.app.uuid.utils import uuidToObject
@@ -172,11 +174,12 @@ def import_contacts(self, dochange=''):
     # read the organization file
     path = os.path.dirname(exm.filepath())
     lines = system.read_file(os.path.join(path, 'organizations.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
-    data = lines.pop(0).split(';')
-    lendata = len(data)
-    if lendata < 19 or data[18].strip(' "') != 'UID':
-        return "Problem decoding first line: bad columns in organizations.csv ?"
-    last_id = lendata - 1
+    if lines:
+        data = lines.pop(0).split(';')
+        lendata = len(data)
+        if lendata < 19 or data[18].strip(' "') != 'UID':
+            return "Problem decoding first line: bad columns in organizations.csv ?"
+        last_id = lendata - 1
     orgs = OrderedDict()
     uids = {}
     childs = {}
@@ -196,7 +199,7 @@ def import_contacts(self, dochange=''):
         if uid in uids:
             return "ORGS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
         elif uid:
-            uids[uid] = 'orgs:%d' % i
+            uids[uid] = 'orgs: %d' % i
         # ID;ID Par;Intitulé;Description;Type;Use par adr,Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;
         # Région;Pays;UID
         orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'upa': data[5] and int(data[5]) or '',
@@ -302,11 +305,12 @@ def import_contacts(self, dochange=''):
     lines = system.read_file(os.path.join(path, 'persons.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
     # ID;Nom;Prénom;Genre;Civilité;Naissance;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
     # Fax;Courriel;Site;Région;Pays;Num int;UID
-    data = lines.pop(0).split(';')
-    lendata = len(data)
-    if lendata < 21 or data[20].strip(' "') != 'UID':
-        return "Problem decoding first line: bad columns in persons.csv ?"
-    last_id = lendata - 1
+    if lines:
+        data = lines.pop(0).split(';')
+        lendata = len(data)
+        if lendata < 21 or data[20].strip(' "') != 'UID':
+            return "Problem decoding first line: bad columns in persons.csv ?"
+        last_id = lendata - 1
     persons = {}
     out.append("\n!! PERSONS !!\n")
     for i, line in enumerate(lines, start=1):
@@ -330,7 +334,7 @@ def import_contacts(self, dochange=''):
         if uid in uids:
             return "PERS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
         elif uid:
-            uids[uid] = 'pers:%d' % i
+            uids[uid] = 'pers: %d' % i
         persons[id] = {}
         action = 'create'
         if uid:
@@ -404,4 +408,130 @@ def import_contacts(self, dochange=''):
             else:
                 status += 'not '
             out.append("%04d pers: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
+
+    # read the heldpositions file
+    lines = system.read_file(os.path.join(path, 'heldpositions.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
+    # ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;Adr par;Rue;Numéro;Comp adr;
+    # CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays;UID
+    if lines:
+        data = lines.pop(0).split(';')
+        lendata = len(data)
+        if lendata < 21 or data[20].strip(' "') != 'UID':
+            return "Problem decoding first line: bad columns in heldpositions.csv ?"
+        last_id = lendata - 1
+        intids = getUtility(IIntIds)
+    hps = {}
+    out.append("\n!! HELD POSITIONS !!\n")
+    for i, line in enumerate(lines, start=1):
+        try:
+            data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
+            id = data[0]
+            pid = data[1]
+            oid = data[2]
+            title = data[4]
+            start = assert_date(data[5])
+            end = assert_date(data[6])
+            upa = data[7] and int(data[7]) or ''
+            uid = data[20]
+            data[last_id]  # just to check the number of columns on this line
+        except AssertionError, ex:
+            return "HP: problem line %d: %s" % (i, safe_encode(ex.message))
+        except Exception, ex:
+            return "HP: problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+        if not id or id in hps:
+            return "HP: problem line %d, invalid id: %s" % (i, id)
+        if not pid:
+            return "HP: problem line %d, invalid person id: %s" % (i, pid)
+        if not oid:
+            return "HP: problem line %d, invalid org id: %s" % (i, oid)
+        if uid in uids:
+            return "HP: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
+        elif uid:
+            uids[uid] = 'hp: %d' % i
+        hps[id] = {}
+        action = 'create'
+        if uid:
+            obj = uuidToObject(uid)
+            if not obj:
+                out.append("!! %04d hp: cannot find obj from uuid %s: SKIPPED" % uid)
+                continue
+            else:
+                action = 'update'
+        if pid in persons:
+            if 'obj' in persons[pid]:
+                pers = persons[pid]['obj']
+            elif not doit:
+                pers = portal  # without doit in creation mode, obj not there => take portal
+            else:
+                pers = None
+        else:
+            out.append("!! %04d hp: person not found for id '%s': SKIPPED" % (i, pid))
+            continue
+        if oid in orgs:
+            if 'obj' in orgs[oid]:
+                org = orgs[oid]['obj']
+            elif not doit:
+                org = portal  # without doit in creation mode, obj not there => take portal
+            else:
+                org = None
+        else:
+            out.append("!! %04d hp: org not found for id '%s': SKIPPED" % (i, oid))
+            continue
+        if action == 'create':
+            if doit:
+                real_id = new_id = idnormalizer.normalize(safe_encode('%s-%s' % (safe_unicode(title), org.title)))
+                count = 0
+                while real_id in pers:
+                    count += 1
+                    real_id = '%s-%d' % (new_id, count)
+
+                obj = api.content.create(container=pers, type='held_position', id=real_id,
+                                         position=RelationValue(intids.getId(org)),
+                                         label=safe_unicode(title), start_date=start, end_date=end,
+                                         street=safe_unicode(data[8]), number=safe_unicode(data[9]),
+                                         additional_address_details=safe_unicode(data[10]),
+                                         zip_code=safe_unicode(data[11]), city=safe_unicode(data[12]),
+                                         phone=safe_unicode(data[13]), cell_phone=safe_unicode(data[14]),
+                                         fax=safe_unicode(data[15]), email=safe_unicode(data[16]),
+                                         website=safe_unicode(data[17]), region=safe_unicode(data[18]),
+                                         country=safe_unicode(data[19]), use_parent_address=bool(upa))
+                out.append("%04d hp: new hp '%s' for '%s' created" % (i, safe_encode(title), pers.Title()))
+                hps[id]['obj'] = obj
+            else:
+                out.append("%04d hp: new hp '%s %s' will be created" % (i, safe_encode(title), pers.Title()))
+        elif action == 'update':
+            intid = intids.getId(org)
+            new_pos = obj.position
+            if new_pos and new_pos.to_id != intid:
+                new_pos = RelationValue(intid)
+            attrs = {'position': new_pos, 'label': 4, 'start_date': start, 'end_date': end,
+                     'street': 8, 'number': 9, 'additional_address_details': 10, 'zip_code': 11, 'city': 12,
+                     'phone': 13, 'cell_phone': 14, 'fax': 15, 'email': 16, 'website': 17, 'region': 18,
+                     'country': 19, 'use_parent_address': bool(upa)}
+            change = False
+            changed = []
+            for attr, new_val in attrs.items():
+                if attr not in ('position', 'start_date', 'end_date', 'use_parent_address'):
+                    new_val = safe_unicode(data[new_val])
+                act_val = getattr(obj, attr)
+                if act_val != new_val and not (act_val is None and new_val == u''):
+                    if doit:
+                        if new_val == '':
+                            new_val = None
+                        setattr(obj, attr, new_val)
+                    change = True
+                    changed.append(attr)
+            if change and doit:
+                obj.reindexObject()
+                modified(obj)
+            hps[id]['obj'] = obj
+            status = ''
+            if not doit:
+                status = 'will be '
+            if change:
+                status += 'REALLY '
+            else:
+                status += 'not '
+            out.append("%04d hp: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
+
     return '\n'.join(out)
