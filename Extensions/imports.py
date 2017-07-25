@@ -458,12 +458,22 @@ def import_contacts(self, dochange=''):
             else:
                 action = 'update'
         if pid in persons:
-            pers = persons[pid]['obj']
+            if 'obj' in persons[pid]:
+                pers = persons[pid]['obj']
+            elif not doit:
+                pers = portal  # without doit in creation mode, obj not there => take portal
+            else:
+                pers = None
         else:
             out.append("!! %04d hp: person not found for id '%s': SKIPPED" % (i, pid))
             continue
         if oid in orgs:
-            org = orgs[oid]['obj']
+            if 'obj' in orgs[oid]:
+                org = orgs[oid]['obj']
+            elif not doit:
+                org = portal  # without doit in creation mode, obj not there => take portal
+            else:
+                org = None
         else:
             out.append("!! %04d hp: org not found for id '%s': SKIPPED" % (i, oid))
             continue
@@ -475,8 +485,6 @@ def import_contacts(self, dochange=''):
                     count += 1
                     real_id = '%s-%d' % (new_id, count)
 
-    # ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;Adr par;Rue;Numéro;Comp adr;
-    # CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays;UID
                 obj = api.content.create(container=pers, type='held_position', id=real_id,
                                          position=RelationValue(intids.getId(org)),
                                          label=safe_unicode(title), start_date=start, end_date=end,
@@ -491,5 +499,39 @@ def import_contacts(self, dochange=''):
                 hps[id]['obj'] = obj
             else:
                 out.append("%04d hp: new hp '%s %s' will be created" % (i, safe_encode(title), pers.Title()))
+        elif action == 'update':
+            intid = intids.getId(org)
+            new_pos = obj.position
+            if new_pos and new_pos.to_id != intid:
+                new_pos = RelationValue(intid)
+            attrs = {'position': new_pos, 'label': 4, 'start_date': start, 'end_date': end,
+                     'street': 8, 'number': 9, 'additional_address_details': 10, 'zip_code': 11, 'city': 12,
+                     'phone': 13, 'cell_phone': 14, 'fax': 15, 'email': 16, 'website': 17, 'region': 18,
+                     'country': 19, 'use_parent_address': bool(upa)}
+            change = False
+            changed = []
+            for attr, new_val in attrs.items():
+                if attr not in ('position', 'start_date', 'end_date', 'use_parent_address'):
+                    new_val = safe_unicode(data[new_val])
+                act_val = getattr(obj, attr)
+                if act_val != new_val and not (act_val is None and new_val == u''):
+                    if doit:
+                        if new_val == '':
+                            new_val = None
+                        setattr(obj, attr, new_val)
+                    change = True
+                    changed.append(attr)
+            if change and doit:
+                obj.reindexObject()
+                modified(obj)
+            hps[id]['obj'] = obj
+            status = ''
+            if not doit:
+                status = 'will be '
+            if change:
+                status += 'REALLY '
+            else:
+                status += 'not '
+            out.append("%04d hp: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
     return '\n'.join(out)
