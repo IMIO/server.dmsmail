@@ -177,27 +177,22 @@ def import_contacts(self, dochange=''):
     org_infos_o = copy.deepcopy(org_infos)
     # read the organization file
     path = os.path.dirname(exm.filepath())
-    lines = system.read_file(os.path.join(path, 'organizations.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
+    lines = system.read_csv(os.path.join(path, 'organizations.csv'), strip_chars=' ', strict=True)
     if lines:
-        data = lines.pop(0).split(';')
+        data = lines.pop(0)
         lendata = len(data)
-        if lendata < 19 or data[18].strip(' "') != 'UID':
+        if lendata < 19 or data[18] != 'UID':
             return "Problem decoding first line: bad columns in organizations.csv ?"
-        last_id = lendata - 1
     orgs = OrderedDict()
     uids = {}
     childs = {}
     idnormalizer = getUtility(IIDNormalizer)
     out = ["!! ORGANIZATIONS !!\n"]
-    for i, line in enumerate(lines):
-        try:
-            data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
-            id = data[0]
-            idp = data[1]
-            uid = data[18]
-            data[last_id]  # just to check the number of columns on this line
-        except Exception, ex:
-            return "ORGS: problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+    for i, data in enumerate(lines, start=2):
+        if len(data) != lendata:
+            return "ORGS: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
+                                                                                  ['%s' % cell for cell in data])
+        id, idp, uid = data[0], data[1], data[18]
         if not id or id in orgs:
             return "ORGS: problem line %d, invalid id: %s" % (i, id)
         if uid in uids:
@@ -243,7 +238,7 @@ def import_contacts(self, dochange=''):
                                                        'token': i[1]} for i in org_infos[typ].items()])
 
     # creating organization
-    for i, id in enumerate(orgs, start=1):
+    for i, id in enumerate(orgs, start=2):
         det = orgs[id]
         if det['lev'] == 1:
             cont = contacts
@@ -306,36 +301,32 @@ def import_contacts(self, dochange=''):
             out.append("%04d org: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
     # read the persons file
-    lines = system.read_file(os.path.join(path, 'persons.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
+    lines = system.read_csv(os.path.join(path, 'persons.csv'), strip_chars=' ', strict=True)
     # ID;Nom;Prénom;Genre;Civilité;Naissance;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
     # Fax;Courriel;Site;Région;Pays;Num int;UID
     if lines:
-        data = lines.pop(0).split(';')
+        data = lines.pop(0)
         lendata = len(data)
-        if lendata < 21 or data[20].strip(' "') != 'UID':
+        if lendata < 21 or data[20] != 'UID':
             return "Problem decoding first line: bad columns in persons.csv ?"
-        last_id = lendata - 1
     persons = {}
     out.append("\n!! PERSONS !!\n")
-    for i, line in enumerate(lines, start=1):
+    for i, data in enumerate(lines, start=2):
+        if len(data) != lendata:
+            return "PERS: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
+                                                                                  ['%s' % cell for cell in data])
+        id, name, fname, inum, uid = data[0], data[1], data[2], data[19], data[20]
         try:
-            data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
-            id = data[0]
-            name = data[1]
-            fname = data[2]
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
             birthday = assert_date(data[5])
             upa = data[6] and int(data[6]) or ''
             phone = safe_unicode(digit(data[12]))
             cell_phone = safe_unicode(digit(data[13]))
             fax = safe_unicode(digit(data[14]))
-            inum = data[19]
-            uid = data[20]
-            data[last_id]  # just to check the number of columns on this line
         except AssertionError, ex:
             return "PERS: problem line %d: %s" % (i, safe_encode(ex.message))
         except Exception, ex:
-            return "PERS: problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+            return "PERS: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message))
         if not id or id in persons:
             return "PERS: problem line %d, invalid id: %s" % (i, id)
         if uid in uids:
@@ -416,37 +407,33 @@ def import_contacts(self, dochange=''):
             out.append("%04d pers: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
     # read the heldpositions file
-    lines = system.read_file(os.path.join(path, 'heldpositions.csv'), strip_chars=' "', skip_empty=True, skip_lines=0)
+    lines = system.read_csv(os.path.join(path, 'heldpositions.csv'), strip_chars=' ', strict=True)
     # ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;Adr par;Rue;Numéro;Comp adr;
     # CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays;UID
     if lines:
-        data = lines.pop(0).split(';')
+        data = lines.pop(0)
         lendata = len(data)
-        if lendata < 21 or data[20].strip(' "') != 'UID':
+        if lendata < 21 or data[20] != 'UID':
             return "Problem decoding first line: bad columns in heldpositions.csv ?"
-        last_id = lendata - 1
         intids = getUtility(IIntIds)
     hps = {}
     out.append("\n!! HELD POSITIONS !!\n")
-    for i, line in enumerate(lines, start=1):
+    for i, data in enumerate(lines, start=2):
+        if len(data) != lendata:
+            return "HP: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
+                                                                                ['%s' % cell for cell in data])
+        id, pid, oid, title, uid = data[0], data[1], data[2], data[4], data[20]
         try:
-            data = [item.strip(' "').replace('""', '"') for item in line.split(';')]
-            id = data[0]
-            pid = data[1]
-            oid = data[2]
-            title = data[4]
             start = assert_date(data[5])
             end = assert_date(data[6])
             phone = safe_unicode(digit(data[13]))
             cell_phone = safe_unicode(digit(data[14]))
             fax = safe_unicode(digit(data[15]))
             upa = data[7] and int(data[7]) or ''
-            uid = data[20]
-            data[last_id]  # just to check the number of columns on this line
         except AssertionError, ex:
             return "HP: problem line %d: %s" % (i, safe_encode(ex.message))
         except Exception, ex:
-            return "HP: problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+            return "HP: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message))
         if not id or id in hps:
             return "HP: problem line %d, invalid id: %s" % (i, id)
         if not pid:
