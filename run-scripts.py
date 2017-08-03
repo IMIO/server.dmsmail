@@ -27,6 +27,8 @@ def script2():
     verbose('Add transforms on %s' % obj.absolute_url_path())
     from imio.dms.mail.setuphandlers import add_transforms
     add_transforms(obj)
+    for brain in obj.portal_catalog(portal_type='dmsommainfile'):
+        brain.getObject().reindexObject(idxs=['SearchableText'])
     transaction.commit()
 
 
