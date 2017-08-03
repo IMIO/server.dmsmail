@@ -18,6 +18,7 @@ On installe des librairies nécessaires
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
 > apt-get install graphviz graphviz-dev (si pb au buildout, pkg-config en plus)
+> apt-get install odt2txt
 
 Dépendances de documentviewer:
 > apt-get install rubygems

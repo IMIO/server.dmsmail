@@ -17,6 +17,7 @@ We install the necessary libraries
 > apt-get install libxml2-dev
 > apt-get install libxslt1-dev
 > apt-get install graphviz graphviz-dev (if buildout error, also pkg-config)
+> apt-get install odt2txt
 
 Documentviewer dependencies
 > apt-get install rubygems
