@@ -24,9 +24,9 @@ def script1():
 
 
 def script2():
-    verbose('Change searched types on %s' % obj.absolute_url_path())
-    from imio.dms.mail.setuphandlers import changeSearchedTypes
-    changeSearchedTypes(obj)
+    verbose('Add transforms on %s' % obj.absolute_url_path())
+    from imio.dms.mail.setuphandlers import add_transforms
+    add_transforms(obj)
     transaction.commit()
 
 
@@ -81,4 +81,11 @@ def script2_1():
     from collective.documentgenerator.config import set_oo_port, set_uno_path
     set_oo_port()
     set_uno_path()
+    transaction.commit()
+
+
+def script2_2():
+    verbose('Change searched types on %s' % obj.absolute_url_path())
+    from imio.dms.mail.setuphandlers import changeSearchedTypes
+    changeSearchedTypes(obj)
     transaction.commit()
