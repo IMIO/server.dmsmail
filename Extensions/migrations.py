@@ -67,12 +67,21 @@ def migrate_ll(self, keep='city', doit=''):
                 return intids.register(obj)
         return 1
 
+    # searching outgoing mails
+    log_list(out, "\nOutgoing mails:")
+    for brain in self.portal_catalog(portal_type='dmsoutgoingmail'):
+        obj = brain.getObject()
+        if not obj.treating_groups in kept:
+            if len(obj.recipients) > 1:
+                log_list(out, "Multiple recipients on om %s" % obj.absolute_url(), prefix='!! ')
+            delete(obj, get_intid(obj), typ='om', more='recipient:%d' % obj.recipients[0].to_id)
+
     # searching incoming mails
     log_list(out, "\nIncoming mails:")
     for brain in self.portal_catalog(portal_type='dmsincomingmail'):
         obj = brain.getObject()
         if not obj.treating_groups in kept:
-            delete(obj, get_intid(obj), typ='im', more='tg:%d' % obj.sender.to_id)
+            delete(obj, get_intid(obj), typ='im', more='sender:%d' % obj.sender.to_id)
 
     def find_relations(contact):
         """
@@ -83,7 +92,8 @@ def migrate_ll(self, keep='city', doit=''):
         ret = []
         query = {'to_id': get_intid(contact)}
         for relation in catalog.findRelations(query):
-            if relation.from_id in del_intids['im'] or relation.from_id in del_intids['hp']:
+            if (relation.from_id in del_intids['im'] or relation.from_id in del_intids['om'] or
+                    relation.from_id in del_intids['hp']):
                 continue
             ret.append(relation.from_object)
         return ret
@@ -134,8 +144,11 @@ def migrate_ll(self, keep='city', doit=''):
                 if path not in orgs:
                     orgs[path] = ''
 
-    log_list(out, "\nDeleted im: %d, hp: %d, pers: %d, org: %d\n" % (len(del_intids['im']), len(del_intids['hp']),
-                                                                     len(del_intids['pr']), len(del_intids['or'])))
+    log_list(out, "\nDeleted im: %d, om: %d, hp: %d, pers: %d, org: %d\n" % (len(del_intids['im']),
+                                                                             len(del_intids.get('om', [])),
+                                                                             len(del_intids['hp']),
+                                                                             len(del_intids['pr']),
+                                                                             len(del_intids['or'])))
 
     # check cleaning
     if do_it:
