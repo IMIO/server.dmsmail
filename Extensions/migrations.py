@@ -55,7 +55,7 @@ def migrate_ll(self, keep='city', doit=''):
 
     catalog = getUtility(ICatalog)
     intids = getUtility(IIntIds)
-    del_intids = {'im': [], 'hp': [], 'pr': [], 'or': []}
+    del_intids = {'im': [], 'om': [], 'hp': [], 'pr': [], 'or': []}
 
     def get_intid(obj, create=True):
         # check that the object has an intid, otherwise there's nothing to be done
@@ -145,7 +145,7 @@ def migrate_ll(self, keep='city', doit=''):
                     orgs[path] = ''
 
     log_list(out, "\nDeleted im: %d, om: %d, hp: %d, pers: %d, org: %d\n" % (len(del_intids['im']),
-                                                                             len(del_intids.get('om', [])),
+                                                                             len(del_intids['om']),
                                                                              len(del_intids['hp']),
                                                                              len(del_intids['pr']),
                                                                              len(del_intids['or'])))
