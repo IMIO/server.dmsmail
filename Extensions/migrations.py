@@ -152,11 +152,14 @@ def migrate_ll(self, keep='city', doit=''):
 
     # check cleaning
     if do_it:
-        for brain in self.portal_catalog(portal_type='dmsincomingmail'):
-            obj = brain.getObject()
-            rel = obj.sender
-            if rel.isBroken() or rel.to_path is None:
-                log_list(out, "Sender relation broken on %s" % brain.getPath(), prefix='!! ')
+        for typ, attr in [('dmsincomingmail', 'sender'), ('dmsoutgoingmail', 'recipients')]:
+            for brain in self.portal_catalog(portal_type=typ):
+                obj = brain.getObject()
+                rel = getattr(obj, attr)
+                if isinstance(rel, list):
+                    rel = rel[0]
+                if rel.isBroken() or rel.to_path is None:
+                    log_list(out, "%s relation broken on %s" % (attr, brain.getPath()), prefix='!! ')
 
     log_list(out, "\nFinished migrate_ll at %s" % datetime(1973, 02, 12).now())
     return '\n'.join(out)
