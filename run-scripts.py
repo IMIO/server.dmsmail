@@ -24,12 +24,21 @@ def script1():
 
 
 def script2():
-    verbose('Add transforms on %s' % obj.absolute_url_path())
-    from imio.dms.mail.setuphandlers import add_transforms
-    add_transforms(obj)
-    for brain in obj.portal_catalog(portal_type='dmsommainfile'):
-        brain.getObject().reindexObject(idxs=['SearchableText'])
-    transaction.commit()
+    verbose('Correct templates odt_file contentType on %s' % obj.absolute_url_path())
+    from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
+    template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
+    changes = False
+    for brain in obj.portal_catalog(portal_type=template_types):
+        tmp = brain.getObject()
+        if tmp.odt_file.contentType == 'applications/odt':
+            error("%s has bad content type" % brain.getPath())
+            changes = True
+            tmp.odt_file.contentType = 'application/vnd.oasis.opendocument.text'
+            if tmp.wl_isLocked():
+                error("Delocking")
+                tmp.wl_clearLocks()
+    if changes:
+        transaction.commit()
 
 
 def script3():
@@ -89,4 +98,13 @@ def script2_2():
     verbose('Change searched types on %s' % obj.absolute_url_path())
     from imio.dms.mail.setuphandlers import changeSearchedTypes
     changeSearchedTypes(obj)
+    transaction.commit()
+
+
+def script2_3():
+    verbose('Add transforms on %s' % obj.absolute_url_path())
+    from imio.dms.mail.setuphandlers import add_transforms
+    add_transforms(obj)
+    for brain in obj.portal_catalog(portal_type='dmsommainfile'):
+        brain.getObject().reindexObject(idxs=['SearchableText'])
     transaction.commit()
