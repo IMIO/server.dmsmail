@@ -35,18 +35,19 @@ def script2():
     template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
     changes = False
     for brain in obj.portal_catalog(portal_type=template_types):
-        tmp = brain.getObject()
-        if tmp.odt_file.contentType == 'applications/odt':
+        tmpl = brain.getObject()
+        if tmpl.odt_file.contentType == 'applications/odt':
             error("%s has bad content type" % brain.getPath())
             changes = True
-            tmp.odt_file.contentType = 'application/vnd.oasis.opendocument.text'
-            view = tmp.unrestrictedTraverse('@@convert-to-documentviewer')
+            tmpl.odt_file.contentType = 'application/vnd.oasis.opendocument.text'
+            tmpl.setLayout('documentviewer')
+            view = tmpl.unrestrictedTraverse('@@convert-to-documentviewer')
             view.request.form['form.action.queue'] = 1
             view.request.form['_authenticator'] = hmac.new(ring[0], 'admin', sha).hexdigest()
             view()
-            if tmp.wl_isLocked():
+            if tmpl.wl_isLocked():
                 error("Delocking")
-                tmp.wl_clearLocks()
+                tmpl.wl_clearLocks()
     if changes:
         transaction.commit()
 
