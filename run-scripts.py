@@ -26,6 +26,12 @@ def script1():
 def script2():
     verbose('Correct templates odt_file contentType on %s' % obj.absolute_url_path())
     from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
+    import hmac
+    from hashlib import sha1 as sha
+    from zope.component import getUtility
+    from plone.keyring.interfaces import IKeyManager
+    manager = getUtility(IKeyManager)
+    ring = manager[u"_system"]
     template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
     changes = False
     for brain in obj.portal_catalog(portal_type=template_types):
@@ -34,6 +40,10 @@ def script2():
             error("%s has bad content type" % brain.getPath())
             changes = True
             tmp.odt_file.contentType = 'application/vnd.oasis.opendocument.text'
+            view = tmp.unrestrictedTraverse('@@convert-to-documentviewer')
+            view.request.form['form.action.queue'] = 1
+            view.request.form['_authenticator'] = hmac.new(ring[0], 'admin', sha).hexdigest()
+            view()
             if tmp.wl_isLocked():
                 error("Delocking")
                 tmp.wl_clearLocks()
