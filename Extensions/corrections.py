@@ -51,3 +51,21 @@ def list_relations(self):
         out.append(rel.__dict__)
         print rel.__dict__
     return '\n<br />'.join(out)
+
+
+def add_md5(self, change=''):
+    from plone import api
+    from imio.dms.mail.setuphandlers import list_templates
+    templates_list = [(tup[1], tup[2]) for tup in list_templates()]
+    portal = api.portal.getSite()
+    ret = []
+    for (ppath, ospath) in templates_list:
+        ppath = ppath.strip('/ ')
+        obj = portal.unrestrictedTraverse(ppath, default=None)
+        if obj.style_modification_md5 is None:
+            ret.append('%s with empty md5' % ppath)
+            if change == '1':
+                obj.style_modification_md5 = obj.current_md5
+    if not ret:
+        return 'Nothing changed'
+    return '\n'.join(ret)
