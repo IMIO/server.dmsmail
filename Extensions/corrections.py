@@ -56,12 +56,15 @@ def list_relations(self):
 def add_md5(self, change=''):
     from plone import api
     from imio.dms.mail.setuphandlers import list_templates
+    from Products.CMFPlone.utils import base_hasattr
     templates_list = [(tup[1], tup[2]) for tup in list_templates()]
     portal = api.portal.getSite()
     ret = []
     for (ppath, ospath) in templates_list:
         ppath = ppath.strip('/ ')
         obj = portal.unrestrictedTraverse(ppath, default=None)
+        if not base_hasattr(obj, 'style_modification_md5'):
+            continue
         if obj.style_modification_md5 is None:
             ret.append('%s with empty md5' % ppath)
             if change == '1':
