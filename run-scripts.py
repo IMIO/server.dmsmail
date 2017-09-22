@@ -24,32 +24,10 @@ def script1():
 
 
 def script2():
-    verbose('Correct templates odt_file contentType on %s' % obj.absolute_url_path())
-    from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
-    import hmac
-    from hashlib import sha1 as sha
-    from zope.component import getUtility
-    from plone.keyring.interfaces import IKeyManager
-    manager = getUtility(IKeyManager)
-    ring = manager[u"_system"]
-    template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
-    changes = False
-    for brain in obj.portal_catalog(portal_type=template_types):
-        tmpl = brain.getObject()
-        if tmpl.odt_file.contentType == 'applications/odt':
-            error("%s has bad content type" % brain.getPath())
-            changes = True
-            tmpl.odt_file.contentType = 'application/vnd.oasis.opendocument.text'
-            tmpl.setLayout('documentviewer')
-            view = tmpl.unrestrictedTraverse('@@convert-to-documentviewer')
-            view.request.form['form.action.queue'] = 1
-            view.request.form['_authenticator'] = hmac.new(ring[0], 'admin', sha).hexdigest()
-            view()
-            if tmpl.wl_isLocked():
-                error("Delocking")
-                tmpl.wl_clearLocks()
-    if changes:
-        transaction.commit()
+    verbose('Correct collective.contact.core parameter on %s' % obj.absolute_url_path())
+    from collective.contact.core.interfaces import IContactCoreParameters
+    api.portal.set_registry_record(name='person_contact_details_private', value=True,
+                                   interface=IContactCoreParameters)
 
 
 def script3():
@@ -120,3 +98,31 @@ def script2_3():
     for brain in obj.portal_catalog(portal_type='dmsommainfile'):
         brain.getObject().reindexObject(idxs=['SearchableText'])
     transaction.commit()
+
+def script2_4():
+    verbose('Correct templates odt_file contentType on %s' % obj.absolute_url_path())
+    from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
+    import hmac
+    from hashlib import sha1 as sha
+    from zope.component import getUtility
+    from plone.keyring.interfaces import IKeyManager
+    manager = getUtility(IKeyManager)
+    ring = manager[u"_system"]
+    template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
+    changes = False
+    for brain in obj.portal_catalog(portal_type=template_types):
+        tmpl = brain.getObject()
+        if tmpl.odt_file.contentType == 'applications/odt':
+            error("%s has bad content type" % brain.getPath())
+            changes = True
+            tmpl.odt_file.contentType = 'application/vnd.oasis.opendocument.text'
+            tmpl.setLayout('documentviewer')
+            view = tmpl.unrestrictedTraverse('@@convert-to-documentviewer')
+            view.request.form['form.action.queue'] = 1
+            view.request.form['_authenticator'] = hmac.new(ring[0], 'admin', sha).hexdigest()
+            view()
+            if tmpl.wl_isLocked():
+                error("Delocking")
+                tmpl.wl_clearLocks()
+    if changes:
+        transaction.commit()
