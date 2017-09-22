@@ -28,6 +28,7 @@ def script2():
     from collective.contact.core.interfaces import IContactCoreParameters
     api.portal.set_registry_record(name='person_contact_details_private', value=True,
                                    interface=IContactCoreParameters)
+    transaction.commit()
 
 
 def script3():
