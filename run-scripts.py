@@ -10,6 +10,42 @@ if len(sys.argv) < 3 or sys.argv[2] != 'run-scripts.py':
 
 
 def script1():
+    if len(sys.argv) < 6:
+        error("Missing profile and step names in args")
+        sys.exit(0)
+    profile = sys.argv[4]
+    step = sys.argv[5]
+    if not profile.startswith('profile-'):
+        profile = 'profile-%s' % profile
+    if step == '_all_':
+        verbose('Running all "%s" steps on %s' % (profile, obj.absolute_url_path()))
+        ret = obj.portal_setup.runAllImportStepsFromProfile(profile)
+    else:
+        verbose('Running "%s#%s" step on %s' % (profile, step, obj.absolute_url_path()))
+        ret = obj.portal_setup.runImportStepFromProfile(profile, step)
+
+    if 'messages' in ret:
+        for step in ret['messages']:
+            verbose("%s:\n%s" % (step, ret['messages'][step]))
+    else:
+        verbose("No output")
+    transaction.commit()
+
+
+def script2():
+    if len(sys.argv) < 5:
+        error("Missing profile name in args")
+        sys.exit(0)
+    profile = sys.argv[4]
+    from imio.migrator.migrator import Migrator
+    # obj is plone site
+    mig = Migrator(obj)
+    mig.upgradeProfile(profile)
+    verbose('Running "%s" upgrade on %s' % (profile, obj.absolute_url_path()))
+    transaction.commit()
+
+
+def script3():
     verbose('Activating test site message on %s' % obj.absolute_url_path())
     testmsg = obj.unrestrictedTraverse('messages-config/test-site', default=None)
     if testmsg:
@@ -23,46 +59,15 @@ def script1():
         error("No test site message found")
 
 
-def script2():
+def script4():
     verbose('Correct collective.contact.core parameter on %s' % obj.absolute_url_path())
     from collective.contact.core.interfaces import IContactCoreParameters
     api.portal.set_registry_record(name='person_contact_details_private', value=True,
                                    interface=IContactCoreParameters)
 
 
-def script3():
-    if len(sys.argv) < 6:
-        error("Missing profile and step names in args")
-        sys.exit(0)
-    profile = sys.argv[4]
-    step = sys.argv[5]
-    if not profile.startswith('profile-'):
-        profile = 'profile-%s' % profile
-    verbose('Running "%s#%s" step on %s' % (profile, step, obj.absolute_url_path()))
-    ret = obj.portal_setup.runImportStepFromProfile(profile, step)
-    if 'messages' in ret:
-        for step in ret['messages']:
-            verbose("%s:\n%s" % (step, ret['messages'][step]))
-    else:
-        verbose("No output")
-    transaction.commit()
-
-
-def script4():
-    if len(sys.argv) < 6:
-        error("Missing profile and step names in args")
-        sys.exit(0)
-    profile = sys.argv[4]
-    step = sys.argv[5]
-    from imio.migrator.migrator import Migrator
-    # obj is plone site
-    mig = Migrator(obj)
-    mig.upgradeProfile('%s:%s' % (profile, step))
-    verbose('Running "%s:%s" upgrade on %s' % (profile, step, obj.absolute_url_path()))
-    transaction.commit()
-
-
-info = ["You can pass following parameters (with the first one always script number):", "1 : activate test message"]
+info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
+        "2: run profile upgrade", "3: activate test message", "4: various"]
 scripts = {'1': script1, '2': script2, '3': script3, '4': script4}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
@@ -76,7 +81,7 @@ with api.env.adopt_user(username='admin'):
 ### OLD scripts ###
 
 
-def script2_1():
+def script4_1():
     verbose('Setting documentgenerator config on %s' % obj.absolute_url_path())
     from collective.documentgenerator.config import set_oo_port, set_uno_path
     set_oo_port()
@@ -84,14 +89,14 @@ def script2_1():
     transaction.commit()
 
 
-def script2_2():
+def script4_2():
     verbose('Change searched types on %s' % obj.absolute_url_path())
     from imio.dms.mail.setuphandlers import changeSearchedTypes
     changeSearchedTypes(obj)
     transaction.commit()
 
 
-def script2_3():
+def script4_3():
     verbose('Add transforms on %s' % obj.absolute_url_path())
     from imio.dms.mail.setuphandlers import add_transforms
     add_transforms(obj)
@@ -99,7 +104,7 @@ def script2_3():
         brain.getObject().reindexObject(idxs=['SearchableText'])
     transaction.commit()
 
-def script2_4():
+def script4_4():
     verbose('Correct templates odt_file contentType on %s' % obj.absolute_url_path())
     from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
     import hmac
