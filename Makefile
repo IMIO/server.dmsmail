@@ -43,35 +43,35 @@ run:
 	if ! test -f bin/instance1;then make buildout;fi
 	bin/instance1 fg
 
-.PHONY: test-message-script
-test-message-script:
-# Activate test site message
-	@echo "plone: $(plone)"
-	bin/$(instance) -O$(plone) run run-scripts.py 1
-
-.PHONY: various-script
-various-script:
-# Run various script
-	@echo "plone: $(plone)"
-	bin/$(instance) -O$(plone) run run-scripts.py 2
-
 .PHONY: step-script
 step-script:
 # create templates: step=imiodmsmail-create-templates
 # update templates: step=imiodmsmail-update-templates
 # override templates: step=imiodmsmail-override-templates
+# all steps: profile=collective.iconifieddocumentactions:default step=_all_
 	@echo "plone: $(plone)"
 	@echo "profile: $(profile)"
 	@echo "step: $(step)"
-	bin/$(instance) -O$(plone) run run-scripts.py 3 $(profile) $(step)
+	bin/$(instance) -O$(plone) run run-scripts.py 1 $(profile) $(step)
 
 .PHONY: migrate-script
 migrate-script:
-# profile=collective.documentgenerator step=default
+# profile=collective.documentgenerator:default
 	@echo "plone: $(plone)"
 	@echo "profile: $(profile)"
-	@echo "step: $(step)"
-	bin/$(instance) -O$(plone) run run-scripts.py 4 $(profile) $(step)
+	bin/$(instance) -O$(plone) run run-scripts.py 2 $(profile)
+
+.PHONY: test-message-script
+test-message-script:
+# Activate test site message
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run run-scripts.py 3
+
+.PHONY: various-script
+various-script:
+# Run various script
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run run-scripts.py 4
 
 .PHONY: robot-server
 robot-server:
