@@ -145,7 +145,7 @@ def import_principals(self, create='', dochange=''):
     return '\n'.join(out)
 
 
-def import_contacts(self, dochange=''):
+def import_contacts(self, dochange='', ownorg=''):
     """
         Import contacts from several files in 'Extensions'
         * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
@@ -253,6 +253,10 @@ def import_contacts(self, dochange=''):
                 continue
             else:
                 action = 'update'
+        elif ownorg and ownorg == det['tit']:
+            obj = contacts['plonegroup-organization']
+            action = 'update'
+            det['upa'] = False
         if action == 'create':
             if doit:
                 obj = api.content.create(container=cont, type='organization', title=safe_unicode(det['tit']),
