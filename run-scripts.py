@@ -60,10 +60,16 @@ def script3():
 
 
 def script4():
-    verbose('Correct collective.contact.core parameter on %s' % obj.absolute_url_path())
-    from collective.contact.core.interfaces import IContactCoreParameters
-    api.portal.set_registry_record(name='person_contact_details_private', value=True,
-                                   interface=IContactCoreParameters)
+    verbose('Set imio.dms.mail parameter on %s' % obj.absolute_url_path())
+    from imio.migrator.migrator import Migrator
+    mig = Migrator(obj)
+    mig.runProfileSteps('imio.dms.mail', steps=['plone.app.registry'])
+    mig.upgradeProfile('collective.iconifieddocumentactions:default')
+    from imio.dms.mail.browser.settings import IImioDmsMailConfig
+    from imio.dms.mail.setuphandlers import _
+    api.portal.set_registry_record(name='omail_response_prefix', value=_(u'Response: '),
+                                   interface=IImioDmsMailConfig)
+    transaction.commit()
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
