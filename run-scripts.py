@@ -72,6 +72,7 @@ def script4():
         if not dprint.style_template:
             verbose("Changing style template")
             dprint.style_template = obj.templates.om.style.UID()
+            dprint._p_changed = True
             modified(dprint)
         transaction.commit()
 
