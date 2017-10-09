@@ -60,16 +60,20 @@ def script3():
 
 
 def script4():
-    verbose('Set imio.dms.mail parameter on %s' % obj.absolute_url_path())
-    from imio.migrator.migrator import Migrator
-    mig = Migrator(obj)
-    mig.runProfileSteps('imio.dms.mail', steps=['plone.app.registry'])
-    mig.upgradeProfile('collective.iconifieddocumentactions:default')
-    from imio.dms.mail.browser.settings import IImioDmsMailConfig
-    from imio.dms.mail.setuphandlers import _
-    api.portal.set_registry_record(name='omail_response_prefix', value=_(u'Response: '),
-                                   interface=IImioDmsMailConfig)
-    transaction.commit()
+    verbose('Set imio.dms.mail models on %s' % obj.absolute_url_path())
+    from plone import api
+    from zope.lifecycleevent import modified
+    dprint = obj.templates.get('d-print', None)
+    if dprint:
+        verbose("Moving d-print")
+        api.content.move(source=dprint, target=obj.templates.om)
+        dprint = obj.templates.om['d-print']
+        obj.templates.om.moveObjectToPosition('d-print', 1)
+        if not dprint.style_template:
+            verbose("Changing style template")
+            dprint.style_template = obj.templates.om.style.UID()
+            modified(dprint)
+        transaction.commit()
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -137,3 +141,15 @@ def script4_4():
                 tmpl.wl_clearLocks()
     if changes:
         transaction.commit()
+
+def script4_5():
+    verbose('Set imio.dms.mail parameter on %s' % obj.absolute_url_path())
+    from imio.migrator.migrator import Migrator
+    mig = Migrator(obj)
+    mig.runProfileSteps('imio.dms.mail', steps=['plone.app.registry'])
+    mig.upgradeProfile('collective.iconifieddocumentactions:default')
+    from imio.dms.mail.browser.settings import IImioDmsMailConfig
+    from imio.dms.mail.setuphandlers import _
+    api.portal.set_registry_record(name='omail_response_prefix', value=_(u'Response: '),
+                                   interface=IImioDmsMailConfig)
+    transaction.commit()
