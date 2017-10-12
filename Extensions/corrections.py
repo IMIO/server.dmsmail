@@ -72,3 +72,47 @@ def add_md5(self, change=''):
     if not ret:
         return 'Nothing changed'
     return '\n'.join(ret)
+
+
+def do_transition(self, typ='dmsincomingmail', transition='close_manager', criteria="{}", limit=10000, change=''):
+    from Products.CMFCore.WorkflowCore import WorkflowException
+    from DateTime import DateTime
+    pc = self.portal_catalog
+    pw = self.portal_workflow
+    ret = []
+    ret.append('Parameters:')
+    ret.append("typ= '%s'" % typ)
+    ret.append("transition: '%s'" % transition)
+    ret.append("criteria: '%s'" % criteria)
+    ret.append("limit: '%s'" % limit)
+    ret.append("change: '%s'\n" % change)
+    try:
+        crit_dic = eval(criteria)
+    except Exception, msg:
+        ret.append("Problem evaluating criteria: %s" % (msg))
+        return '\n'.join(ret)
+    if not isinstance(crit_dic, dict):
+        ret.append("Cannot eval criteria as dict")
+        return '\n'.join(ret)
+    criterias = {'review_state': {'not': ['closed']}}
+    start = DateTime('2017-09-22 00:00:01')
+    end = DateTime('2017-10-08 23:59:59')
+    #criterias.update({'created': {'query': (start, end,), 'range': 'min:max'}})
+    criterias.update(crit_dic)
+    ret.append("criterias=%s\n" % criterias)
+    brains = pc(portal_type=typ, **criterias)
+    tot = len(brains)
+    changed = 0
+    for i, brain in enumerate(brains):
+        if i > limit:
+            break
+        obj = brain.getObject()
+        try:
+            if change == '1':
+                pw.doActionFor(obj, transition)
+                changed += 1
+        except WorkflowException:
+            ret.append("Cannot do transition on '%s'" % brain.getPath())
+    ret.append("Tot=%d" % tot)
+    ret.append("Changed=%d" % changed)
+    return '\n'.join(ret)
