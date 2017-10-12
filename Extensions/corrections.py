@@ -104,7 +104,7 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     tot = len(brains)
     changed = 0
     for i, brain in enumerate(brains):
-        if i > limit:
+        if i >= int(limit):
             break
         obj = brain.getObject()
         try:
