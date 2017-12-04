@@ -20,6 +20,7 @@ bootstrap:
 buildout:
 	if ! test -f bin/buildout;then make bootstrap;fi
 	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
+	if ! test -f bin/soffice.sh;then cd bin; ln -s ../src/collective.documentgenerator/bin/soffice.sh soffice.sh;fi
 
 .PHONY: upgrade
 upgrade:
