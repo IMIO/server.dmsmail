@@ -60,13 +60,22 @@ def script3():
 
 
 def script4():
-    verbose('Change imio.dms.mail settings on %s' % obj.absolute_url_path())
-    from plone import api
-    api.portal.set_registry_record('collective.documentgenerator.browser.controlpanel.'
-                                   'IDocumentGeneratorControlPanelSchema.raiseOnError_for_non_managers', True)
-    template = obj.restrictedTraverse('templates/om/d-print')
-    template.enabled = False
+    verbose('Update templates on %s' % obj.absolute_url_path())
+    # changing layout
+    obj.templates.om.layout = 'dg-templates-listing'
+    # defining style_template
+    from collective.documentgenerator.content.pod_template import IPODTemplate
+    om_folder = obj.templates.om
+    style_uid = om_folder.style.UID()
+    brains = obj.portal_catalog.unrestrictedSearchResults(object_provides=IPODTemplate.__identifier__)
+    for brain in brains:
+        tmp = brain.getObject()
+        if tmp.style_template is None:
+            verbose("Putting style on %s" % tmp)
+            tmp.style_template = [style_uid]
     transaction.commit()
+    # defining rename_page_styles
+    om_folder['d-print'].rename_page_styles = True
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -165,3 +174,13 @@ def script4_6():
             dprint.style_template = obj.templates.om.style.UID()
             modified(dprint)
         transaction.commit()
+
+
+def script4_7():
+    verbose('Change imio.dms.mail settings on %s' % obj.absolute_url_path())
+    from plone import api
+    api.portal.set_registry_record('collective.documentgenerator.browser.controlpanel.'
+                                   'IDocumentGeneratorControlPanelSchema.raiseOnError_for_non_managers', True)
+    template = obj.restrictedTraverse('templates/om/d-print')
+    template.enabled = False
+    transaction.commit()
