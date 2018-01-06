@@ -40,8 +40,12 @@ def script2():
     from imio.migrator.migrator import Migrator
     # obj is plone site
     mig = Migrator(obj)
-    mig.upgradeProfile(profile)
-    verbose('Running "%s" upgrade on %s' % (profile, obj.absolute_url_path()))
+    if profile == '_all_':
+        verbose('Running all upgrades on %s' % (obj.absolute_url_path()))
+        mig.upgradeAll(omit=['imio.dms.mail:default'])
+    else:
+        verbose('Running "%s" upgrade on %s' % (profile, obj.absolute_url_path()))
+        mig.upgradeProfile(profile)
     transaction.commit()
 
 

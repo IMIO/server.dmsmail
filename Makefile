@@ -58,6 +58,7 @@ step-script:
 .PHONY: migrate-script
 migrate-script:
 # profile=collective.documentgenerator:default
+# all profiles: profile=_all_
 	@echo "plone: $(plone)"
 	@echo "profile: $(profile)"
 	bin/$(instance) -O$(plone) run run-scripts.py 2 $(profile)
