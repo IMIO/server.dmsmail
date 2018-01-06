@@ -65,7 +65,10 @@ def script4():
     obj.templates.om.layout = 'dg-templates-listing'
     # defining style_template
     from collective.documentgenerator.content.pod_template import IPODTemplate
+    from imio.dms.mail.interfaces import IOMTemplatesFolder
+    from zope.interface import alsoProvides
     om_folder = obj.templates.om
+    alsoProvides(om_folder, IOMTemplatesFolder)
     style_uid = om_folder.style.UID()
     brains = obj.portal_catalog.unrestrictedSearchResults(object_provides=IPODTemplate.__identifier__)
     for brain in brains:
