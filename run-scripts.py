@@ -1,3 +1,4 @@
+import os
 import sys
 from imio.pyutils.system import verbose, error
 import transaction
@@ -64,26 +65,21 @@ def script3():
 
 
 def script4():
-    verbose('Update templates on %s' % obj.absolute_url_path())
-    # changing layout
-    obj.templates.om.layout = 'dg-templates-listing'
-    # defining style_template
-    from collective.documentgenerator.content.pod_template import IPODTemplate
-    from imio.dms.mail.interfaces import IOMTemplatesFolder
-    from zope.interface import alsoProvides
-    om_folder = obj.templates.om
-    alsoProvides(om_folder, IOMTemplatesFolder)
-    style_uid = om_folder.style.UID()
-    brains = obj.portal_catalog.unrestrictedSearchResults(object_provides=IPODTemplate.__identifier__)
-    for brain in brains:
-        tmp = brain.getObject()
-        if tmp.style_template is None:
-            verbose("Putting style on %s" % tmp)
-            tmp.style_template = [style_uid]
+    verbose('Modify d-print on %s' % obj.absolute_url_path())
+    import pkg_resources
+    from imio.helpers.content import create_NamedBlob
+    from zope.lifecycleevent import modified
+    dprint = obj.templates.om.get('d-print', None)
+    if dprint.has_been_modified():
+        error('Beware: d-print has been modified !')
+    if not dprint.enabled:
+        verbose("Enabling d-print")
+        dprint.enabled = True
+    dpath = pkg_resources.resource_filename('imio.dms.mail', 'profiles/default/templates')
+    dprint.odt_file = create_NamedBlob(os.path.join(dpath, 'd-print.odt'))
+    dprint.style_modification_md5 = dprint.current_md5
+    modified(dprint)
     transaction.commit()
-    # defining rename_page_styles
-    om_folder['d-print'].rename_page_styles = True
-
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
         "2: run profile upgrade", "3: activate test message", "4: various"]
@@ -191,3 +187,25 @@ def script4_7():
     template = obj.restrictedTraverse('templates/om/d-print')
     template.enabled = False
     transaction.commit()
+
+
+def script4_8():
+    verbose('Update templates on %s' % obj.absolute_url_path())
+    # changing layout
+    obj.templates.om.layout = 'dg-templates-listing'
+    # defining style_template
+    from collective.documentgenerator.content.pod_template import IPODTemplate
+    from imio.dms.mail.interfaces import IOMTemplatesFolder
+    from zope.interface import alsoProvides
+    om_folder = obj.templates.om
+    alsoProvides(om_folder, IOMTemplatesFolder)
+    style_uid = om_folder.style.UID()
+    brains = obj.portal_catalog.unrestrictedSearchResults(object_provides=IPODTemplate.__identifier__)
+    for brain in brains:
+        tmp = brain.getObject()
+        if tmp.style_template is None:
+            verbose("Putting style on %s" % tmp)
+            tmp.style_template = [style_uid]
+    transaction.commit()
+    # defining rename_page_styles
+    om_folder['d-print'].rename_page_styles = True
