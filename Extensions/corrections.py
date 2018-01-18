@@ -150,11 +150,11 @@ def various(self):
             continue
         # check current with previous object
         if brain.scan_id == previous.scan_id and parent != previous.__parent__:
-            ret.append("Same scan_id '%s' in '%s' and '%s'" % (brain.scan_id, object_link(parent),
-                                                               object_link(previous.__parent__)))
+            ret.append(u"Same scan_id '%s' in '%s' and '%s'" % (brain.scan_id, object_link(parent),
+                                                                object_link(previous.__parent__)))
         previous = obj
     # find different barcodes in same outgoing mail
     for mail in mails:
         if len(mails[mail]) > 1:
-            ret.append("Multiple scan_ids in '%s': %s" % (object_link(mail), mails[mail]))
+            ret.append(u"Multiple scan_ids in '%s': %s" % (object_link(mail), mails[mail]))
     return "</br>\n".join(ret)
