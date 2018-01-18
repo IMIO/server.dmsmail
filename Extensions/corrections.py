@@ -1,8 +1,12 @@
+from Products.CPUtils.Extensions.utils import check_zope_admin, object_link
+
 
 def correct_ref(self, change=''):
     """
         Correct empty ref number in dmsmail 0.1
     """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
     pc = self.portal_catalog
     brains = pc(portal_type='dmsincomingmail', sort_on='created')
     prev_ref = ''
@@ -31,6 +35,8 @@ def check_sender(self):
     """
         Check the sender
     """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
     pc = self.portal_catalog
     brains = pc(portal_type='dmsincomingmail', sort_on='created')
     out = []
@@ -42,6 +48,8 @@ def check_sender(self):
 
 
 def list_relations(self):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
     from zope.component import queryUtility
     from zc.relation.interfaces import ICatalog
     catalog = queryUtility(ICatalog)
@@ -54,6 +62,8 @@ def list_relations(self):
 
 
 def add_md5(self, change=''):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
     from plone import api
     from imio.dms.mail.setuphandlers import list_templates
     from Products.CMFPlone.utils import base_hasattr
@@ -75,6 +85,8 @@ def add_md5(self, change=''):
 
 
 def do_transition(self, typ='dmsincomingmail', transition='close_manager', criteria="{}", limit=10000, change=''):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
     from Products.CMFCore.WorkflowCore import WorkflowException
     from DateTime import DateTime
     pc = self.portal_catalog
@@ -116,3 +128,33 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     ret.append("Tot=%d" % tot)
     ret.append("Changed=%d" % changed)
     return '\n'.join(ret)
+
+
+def various(self):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    pc = self.portal_catalog
+    previous = None
+    ret = []
+    mails = {}
+    # find same barcode in multiple outgoing mails
+    for brain in pc(portal_type='dmsommainfile', sort_on='scan_id', sort_order='ascending'):
+        obj = brain.getObject()
+        parent = obj.__parent__
+        if parent not in mails:
+            mails[parent] = []
+        if brain.scan_id not in mails[parent]:
+            mails[parent].append(brain.scan_id)
+        if not previous:
+            previous = obj
+            continue
+        # check current with previous object
+        if brain.scan_id == previous.scan_id and parent != previous.__parent__:
+            ret.append("Same scan_id '%s' in '%s' and '%s'" % (brain.scan_id, object_link(parent),
+                                                               object_link(previous.__parent__)))
+        previous = obj
+    # find different barcodes in same outgoing mail
+    for mail in mails:
+        if len(mails[mail]) > 1:
+            ret.append("Multiple scan_ids in '%s': %s" % (object_link(mail), mails[mail]))
+    return "</br>\n".join(ret)
