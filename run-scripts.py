@@ -77,7 +77,11 @@ def script4():
         dom.reindexObject()
     for brain in obj.portal_catalog(portal_type='dmsincomingmail'):
         brain.getObject().reindexObject(idxs=['organization_type'])
-    for path in ['incoming-mail/mail-searches/searchfor_created', 'outgoing-mail/mail-searches/searchfor_scanned']:
+    from imio.dms.mail.utils import list_wf_states
+    collections = ['outgoing-mail/mail-searches/searchfor_scanned']
+    for stateo in list_wf_states('', 'dmsincomingmail'):
+        collections.append("incoming-mail/mail-searches/searchfor_%s" % stateo.id)
+    for path in collections:
         col = obj.restrictedTraverse(path)
         col.sort_on = 'organization_type'
     transaction.commit()
