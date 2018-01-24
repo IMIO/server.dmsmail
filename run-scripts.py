@@ -23,7 +23,7 @@ def script1():
         ret = obj.portal_setup.runAllImportStepsFromProfile(profile)
     else:
         verbose('Running "%s#%s" step on %s' % (profile, step, obj.absolute_url_path()))
-        ret = obj.portal_setup.runImportStepFromProfile(profile, step)
+        ret = obj.portal_setup.runImportStepFromProfile(profile, step, run_dependencies=False)
 
     if 'messages' in ret:
         for step in ret['messages']:
@@ -65,20 +65,21 @@ def script3():
 
 
 def script4():
-    verbose('Modify d-print on %s' % obj.absolute_url_path())
-    import pkg_resources
-    from imio.helpers.content import create_NamedBlob
-    from zope.lifecycleevent import modified
-    dprint = obj.templates.om.get('d-print', None)
-    if dprint.has_been_modified():
-        error('Beware: d-print has been modified !')
-    if not dprint.enabled:
-        verbose("Enabling d-print")
-        dprint.enabled = True
-    dpath = pkg_resources.resource_filename('imio.dms.mail', 'profiles/default/templates')
-    dprint.odt_file = create_NamedBlob(os.path.join(dpath, 'd-print.odt'))
-    dprint.style_modification_md5 = dprint.current_md5
-    modified(dprint)
+    from datetime import date, datetime, time
+    verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % obj.absolute_url_path())
+    default_time = time(10, 0)
+    for brain in obj.portal_catalog(portal_type='dmsoutgoingmail'):
+        dom = brain.getObject()
+        if dom.outgoing_date:
+            dt = dom.outgoing_date
+            if isinstance(dt, date):
+                dom.outgoing_date = datetime.combine(dt, default_time)
+        dom.reindexObject()
+    for brain in obj.portal_catalog(portal_type='dmsincomingmail'):
+        brain.getObject().reindexObject(idxs=['organization_type'])
+    for path in ['incoming-mail/mail-searches/searchfor_created', 'outgoing-mail/mail-searches/searchfor_scanned']:
+        col = obj.restrictedTraverse(path)
+        col.sort_on = 'organization_type'
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -209,3 +210,21 @@ def script4_8():
     transaction.commit()
     # defining rename_page_styles
     om_folder['d-print'].rename_page_styles = True
+
+
+def script4_9():
+    verbose('Modify d-print on %s' % obj.absolute_url_path())
+    import pkg_resources
+    from imio.helpers.content import create_NamedBlob
+    from zope.lifecycleevent import modified
+    dprint = obj.templates.om.get('d-print', None)
+    if dprint.has_been_modified():
+        error('Beware: d-print has been modified !')
+    if not dprint.enabled:
+        verbose("Enabling d-print")
+        dprint.enabled = True
+    dpath = pkg_resources.resource_filename('imio.dms.mail', 'profiles/default/templates')
+    dprint.odt_file = create_NamedBlob(os.path.join(dpath, 'd-print.odt'))
+    dprint.style_modification_md5 = dprint.current_md5
+    modified(dprint)
+    transaction.commit()
