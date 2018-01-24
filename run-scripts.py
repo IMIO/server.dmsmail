@@ -65,25 +65,13 @@ def script3():
 
 
 def script4():
-    from datetime import date, datetime, time
-    verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % obj.absolute_url_path())
-    default_time = time(10, 0)
-    for brain in obj.portal_catalog(portal_type='dmsoutgoingmail'):
-        dom = brain.getObject()
-        if dom.outgoing_date:
-            dt = dom.outgoing_date
-            if isinstance(dt, date):
-                dom.outgoing_date = datetime.combine(dt, default_time)
-        dom.reindexObject()
-    for brain in obj.portal_catalog(portal_type='dmsincomingmail'):
-        brain.getObject().reindexObject(idxs=['organization_type'])
-    from imio.dms.mail.utils import list_wf_states
-    collections = ['outgoing-mail/mail-searches/searchfor_scanned']
-    for stateo in list_wf_states('', 'dmsincomingmail'):
-        collections.append("incoming-mail/mail-searches/searchfor_%s" % stateo.id)
-    for path in collections:
-        col = obj.restrictedTraverse(path)
-        col.sort_on = 'organization_type'
+    verbose('Changing order on all incoming mail collections on %s' % obj.absolute_url_path())
+    folder = obj['incoming-mail']['mail-searches']
+    crit = {'portal_type': 'DashboardCollection',
+            'path': {'query': '/'.join(folder.getPhysicalPath()), 'depth': 1}}
+    brains = obj.portal_catalog.searchResults(crit)
+    for brain in brains:
+        brain.getObject().sort_on = 'organization_type'
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -231,4 +219,27 @@ def script4_9():
     dprint.odt_file = create_NamedBlob(os.path.join(dpath, 'd-print.odt'))
     dprint.style_modification_md5 = dprint.current_md5
     modified(dprint)
+    transaction.commit()
+
+
+def script4_10():
+    from datetime import date, datetime, time
+    verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % obj.absolute_url_path())
+    default_time = time(10, 0)
+    for brain in obj.portal_catalog(portal_type='dmsoutgoingmail'):
+        dom = brain.getObject()
+        if dom.outgoing_date:
+            dt = dom.outgoing_date
+            if isinstance(dt, date):
+                dom.outgoing_date = datetime.combine(dt, default_time)
+        dom.reindexObject()
+    for brain in obj.portal_catalog(portal_type='dmsincomingmail'):
+        brain.getObject().reindexObject(idxs=['organization_type'])
+    from imio.dms.mail.utils import list_wf_states
+    collections = ['outgoing-mail/mail-searches/searchfor_scanned']
+    for stateo in list_wf_states('', 'dmsincomingmail'):
+        collections.append("incoming-mail/mail-searches/searchfor_%s" % stateo.id)
+    for path in collections:
+        col = obj.restrictedTraverse(path)
+        col.sort_on = 'organization_type'
     transaction.commit()
