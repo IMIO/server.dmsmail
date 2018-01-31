@@ -65,13 +65,10 @@ def script3():
 
 
 def script4():
-    verbose('Changing order on all incoming mail collections on %s' % obj.absolute_url_path())
-    folder = obj['incoming-mail']['mail-searches']
-    crit = {'portal_type': 'DashboardCollection',
-            'path': {'query': '/'.join(folder.getPhysicalPath()), 'depth': 1}}
-    brains = obj.portal_catalog.searchResults(crit)
-    for brain in brains:
-        brain.getObject().sort_on = 'organization_type'
+    verbose('Activate versioning on %s' % obj.absolute_url_path())
+    pdiff = obj.portal_diff
+    pdiff.setDiffForPortalType('dmsoutgoingmail', {'any': "Compound Diff for Dexterity types"})
+    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -242,4 +239,15 @@ def script4_10():
     for path in collections:
         col = obj.restrictedTraverse(path)
         col.sort_on = 'organization_type'
+    transaction.commit()
+
+
+def script4_11():
+    verbose('Changing order on all incoming mail collections on %s' % obj.absolute_url_path())
+    folder = obj['incoming-mail']['mail-searches']
+    crit = {'portal_type': 'DashboardCollection',
+            'path': {'query': '/'.join(folder.getPhysicalPath()), 'depth': 1}}
+    brains = obj.portal_catalog.searchResults(crit)
+    for brain in brains:
+        brain.getObject().sort_on = 'organization_type'
     transaction.commit()
