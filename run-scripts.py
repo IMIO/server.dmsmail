@@ -65,10 +65,16 @@ def script3():
 
 
 def script4():
-    verbose('Activate versioning on %s' % obj.absolute_url_path())
+    verbose('Activate versioning, change CMFEditions permissions on %s' % obj.absolute_url_path())
+    # versioning
     pdiff = obj.portal_diff
     pdiff.setDiffForPortalType('dmsoutgoingmail', {'any': "Compound Diff for Dexterity types"})
     obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
+    # cmfeditions permissions
+    obj.manage_permission('CMFEditions: Access previous versions', ('Manager', 'Site Administrator', 'Contributor',
+                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
+    obj.manage_permission('CMFEditions: Save new version', ('Manager', 'Site Administrator', 'Contributor',
+                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
