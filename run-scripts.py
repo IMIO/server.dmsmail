@@ -65,16 +65,33 @@ def script3():
 
 
 def script4():
-    verbose('Activate versioning, change CMFEditions permissions on %s' % obj.absolute_url_path())
-    # versioning
-    pdiff = obj.portal_diff
-    pdiff.setDiffForPortalType('dmsoutgoingmail', {'any': "Compound Diff for Dexterity types"})
-    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
-    # cmfeditions permissions
-    obj.manage_permission('CMFEditions: Access previous versions', ('Manager', 'Site Administrator', 'Contributor',
-                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
-    obj.manage_permission('CMFEditions: Save new version', ('Manager', 'Site Administrator', 'Contributor',
-                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
+    verbose('Correcting datetime values on %s' % obj.absolute_url_path())
+    from plone import api
+    from datetime import timedelta
+    pc = obj.portal_catalog
+    # incoming mails
+    for typ, attr in (('dmsincomingmail', 'reception_date'), ('dmsoutgoingmail', 'outgoing_date')):
+        total = corrected = 0
+        for brain in pc(portal_type=typ):
+            total += 1
+            mail = brain.getObject()
+            dt = getattr(mail, attr)
+            if dt is not None and not dt.second:
+                # verbose("Mail %s: %s" % (mail.absolute_url_path(), dt))
+                fbrains = api.content.find(context=mail, portal_type=['dmsmainfile', 'dmsommainfile'],
+                                           sort_on='created', sort_order='descending')
+                scanned = None
+                for fb in fbrains:
+                    mfile = fb.getObject()
+                    if mfile.scan_date:
+                        scanned = mfile.scan_date
+                        break
+                if scanned and scanned.second:
+                    corrected += 1
+                    # verbose("NEW date %s" % (dt + timedelta(seconds=scanned.second)))
+                    setattr(mail, attr, dt + timedelta(seconds=scanned.second))
+                    mail.reindexObject(idxs=['organization_type'])
+        verbose("Correcting '%s' type: total=%d, corrected=%d" % (typ, total, corrected))
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -256,4 +273,18 @@ def script4_11():
     brains = obj.portal_catalog.searchResults(crit)
     for brain in brains:
         brain.getObject().sort_on = 'organization_type'
+    transaction.commit()
+
+
+def script4_12():
+    verbose('Activate versioning, change CMFEditions permissions on %s' % obj.absolute_url_path())
+    # versioning
+    pdiff = obj.portal_diff
+    pdiff.setDiffForPortalType('dmsoutgoingmail', {'any': "Compound Diff for Dexterity types"})
+    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
+    # cmfeditions permissions
+    obj.manage_permission('CMFEditions: Access previous versions', ('Manager', 'Site Administrator', 'Contributor',
+                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
+    obj.manage_permission('CMFEditions: Save new version', ('Manager', 'Site Administrator', 'Contributor',
+                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
     transaction.commit()
