@@ -9,8 +9,9 @@ First we become root
 
 We install the necessary libraries
 > apt install build-essential
-> apt install libreadline5-dev
+> apt install libreadline6-dev
 > apt install zlib1g-dev (support zlib)
+> apt install libbz2-dev
 > apt install libjpeg62-dev
 > apt install subversion
 > apt install git
