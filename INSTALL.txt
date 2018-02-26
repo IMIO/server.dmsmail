@@ -1,4 +1,4 @@
-We assume the installation in the folder /srv/zinstances/site421
+We assume the installation in the folder /srv/instances/dmsmail
  (that can be changed) and on an ubuntu distribution.
 Your real username must replace in our commands the string "username".
 Each command, specified by the symbol ">", can be executed
@@ -8,26 +8,27 @@ First we become root
 > sudo -s
 
 We install the necessary libraries
-> apt-get install build-essential
-> apt-get install libreadline5-dev
-> apt-get install zlib1g-dev (support zlib)
-> apt-get install libjpeg62-dev
-> apt-get install subversion
-> apt-get install libpq-dev
-> apt-get install libxml2-dev
-> apt-get install libxslt1-dev
-> apt-get install graphviz graphviz-dev (if buildout error, also pkg-config)
-> apt-get install odt2txt
+> apt install build-essential
+> apt install libreadline5-dev
+> apt install zlib1g-dev (support zlib)
+> apt install libjpeg62-dev
+> apt install subversion
+> apt install git
+> apt install libpq-dev
+> apt install libxml2-dev
+> apt install libxslt1-dev
+> apt install graphviz graphviz-dev (if buildout error, also pkg-config)
+> apt install odt2txt
 
 Documentviewer dependencies
-> apt-get install rubygems
+> apt install rubygems
 > gem install docsplit
-> apt-get install graphicsmagick
-> apt-get install poppler-utils
-> apt-get install wv
+> apt install graphicsmagick
+> apt install poppler-utils
+> apt install wv
 
 imio.helpers barcode generation
-> apt-get install libpng12-dev
+> apt install libpng12-dev
 > wget https://10gbps-io.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
 > dpkg -i zint_2.6.0_amd64.deb
 
@@ -41,41 +42,31 @@ We leave the user root.
 > exit
 
 We create some directories
-> mkdir install
-> mkdir zinstances
-> cd install
+> mkdir jinstall
+> mkdir instances
+> cd jinstall
 
 We install python2.7 that will be used to run the buildout and zope instance
-> wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
-> tar xvzf Python-2.7.3.tgz
-> cd Python-2.7.3
-> ./configure --prefix=/srv/python273
+> wget https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tar.xz
+> tar xvJf Python-2.7.14.tar.xz
+> cd Python-2.7.14
+> ./configure --prefix=/srv/python2714
 > make
 > make install
 
-We install the python utility easy_install
-> cd /srv/install
-> wget http://peak.telecommunity.com/dist/ez_setup.py
-> /srv/python273/bin/python ez_setup.py
-
 We install the python utility virtualenv
-> /srv/python273/bin/easy_install virtualenv
+> cd /srv/python2714
+> bin/python -m ensurepip
+> bin/pip install virtualenv
+> sudo ln -s /srv/python2.7.14/bin/virtualenv /usr/local/bin/virtualenv-2.7
 
 We can define a cache for buildout
 See http://www.imio.be/support/documentation/tutoriels/utilisation-dun-buildout/definition-dun-cache-pour-buildout/
 
 We download the buildout files in our folder
-> cd /srv/zinstances
-> svn co http://svn.communesplone.org/svn/communesplone/buildout/server.sites/tags/make421/ site421
-> cd site421
-
-We modify the Makefile file to indicate the real path of the virtualenv utility.
-To do that, you can edit the file in a simple text editor.
-It's necessary to replace the line "virtualenv-2.7 --no-site-packages ." by
-    "/srv/python273/bin/virtualenv --no-site-packages ."
-OR
-You can create a link to our virtualenv without modifying Makefile
-    "ln -s /srv/python273/bin/virtualenv /usr/local/bin/virtualenv-2.7"
+> cd /srv/instances
+> svn co http://svn.communesplone.org/svn/communesplone/buildout/server.dmsmail/trunk dmsmail
+> cd dmsmail
 
 we initialize the buildout
 > make bootstrap
@@ -92,7 +83,7 @@ We start the zope server.
 OR
 > bin/instance1 start
 
-We can connect the zope server in a browser on the following address http://localhost:8080/manage_main
+We can connect the zope server in a browser on the following address http://localhost:8081/manage_main
 
 We can add a mount point (separate database file, defined in the file zope_add.conf)
 => choose in the list (up right in the browser page) "ZODB Mount Point"
@@ -118,7 +109,7 @@ We start each zope server (following instance name section).
 OR
 > bin/instance1 start
 
-We can connect the zope server in a browser on the following address http://localhost:8080/manage_main
+We can connect the zope server in a browser on the following address http://localhost:8081/manage_main
 
 We can add a mount point (separate database file, defined in the file zeo_add.conf and zope_add_zeo.conf)
 => choose in the list (up right in the browser page) "ZODB Mount Point"

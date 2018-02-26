@@ -14,6 +14,7 @@ On installe des librairies nécessaires
 > apt install zlib1g-dev (support zlib)
 > apt install libjpeg62-dev
 > apt install subversion
+> apt install git
 > apt install libpq-dev
 > apt install libxml2-dev
 > apt install libxslt1-dev
