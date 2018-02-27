@@ -153,7 +153,8 @@ def add_encodeur_users(self, change=''):
                 continue
             for user in api.user.get_users(group=group):
                 if user not in enc_users:
-                    ret.append("User '%s' will be added to '%s'" % (user.id, group.getProperty('title')))
+                    ret.append("User '%s' will be added to '%s'" % (user.id, enc_group.getProperty('title')))
+                    enc_users.append(user)
                     if change == '1':
                         api.group.add_user(group=enc_group, user=user)
     return "</br>\n".join(ret)
