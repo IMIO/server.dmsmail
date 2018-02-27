@@ -130,6 +130,35 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     return '\n'.join(ret)
 
 
+def add_encodeur_users(self, change=''):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    ret = ['<h2>Add users to encodeur groups</h2>']
+    from plone import api
+    from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
+    orgs = api.portal.get_registry_record(ORGANIZATIONS_REGISTRY)
+    for org in orgs:
+        try:
+            enc_group = api.group.get('%s_encodeur' % org)
+        except Exception, msg:
+            ret.append("!! Group '%s_encodeur' doesn't exist: %s" % (org, msg))
+            continue
+        enc_users = api.user.get_users(group=enc_group)
+        for func in ('editeur', 'validateur'):
+            gname = '%s_%s' % (org, func)
+            try:
+                group = api.group.get(gname)
+            except Exception, msg:
+                ret.append("!! Group '%s' doesn't exist: %s" % (gname, msg))
+                continue
+            for user in api.user.get_users(group=group):
+                if user not in enc_users:
+                    ret.append("User '%s' will be added to '%s'" % (user.id, group.getProperty('title')))
+                    if change == '1':
+                        api.group.add_user(group=enc_group, user=user)
+    return "</br>\n".join(ret)
+
+
 def various(self):
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
