@@ -65,33 +65,23 @@ def script3():
 
 
 def script4():
-    verbose('Correcting datetime values on %s' % obj.absolute_url_path())
+    verbose('Changing personnel-folder interfaces on %s' % obj.absolute_url_path())
     from plone import api
-    from datetime import timedelta
+    from imio.dms.mail.interfaces import IPersonnelContact
+    from collective.contact.plonegroup.interfaces import IPloneGroupContact
+    from zope.interface import alsoProvides, noLongerProvides
+    from imio.helpers.cache import invalidate_cachekey_volatile_for
     pc = obj.portal_catalog
-    # incoming mails
-    for typ, attr in (('dmsincomingmail', 'reception_date'), ('dmsoutgoingmail', 'outgoing_date')):
-        total = corrected = 0
-        for brain in pc(portal_type=typ):
-            total += 1
-            mail = brain.getObject()
-            dt = getattr(mail, attr)
-            if dt is not None and not dt.second:
-                # verbose("Mail %s: %s" % (mail.absolute_url_path(), dt))
-                fbrains = api.content.find(context=mail, portal_type=['dmsmainfile', 'dmsommainfile'],
-                                           sort_on='created', sort_order='descending')
-                scanned = None
-                for fb in fbrains:
-                    mfile = fb.getObject()
-                    if mfile.scan_date:
-                        scanned = mfile.scan_date
-                        break
-                if scanned and scanned.second:
-                    corrected += 1
-                    # verbose("NEW date %s" % (dt + timedelta(seconds=scanned.second)))
-                    setattr(mail, attr, dt + timedelta(seconds=scanned.second))
-                    mail.reindexObject(idxs=['organization_type'])
-        verbose("Correcting '%s' type: total=%d, corrected=%d" % (typ, total, corrected))
+    pf = obj['contacts']['personnel-folder']
+    # personnel contacts
+    for brain in pc(path={'query': '/'.join(pf.getPhysicalPath()), 'depth': 2}):
+        contact = brain.getObject()
+        if not IPersonnelContact.providedBy(contact):
+            alsoProvides(contact, IPersonnelContact)
+        if IPloneGroupContact.providedBy(contact):
+            noLongerProvides(contact, IPloneGroupContact)
+        contact.reindexObject(idxs=['object_provides'])
+    invalidate_cachekey_volatile_for('imio.dms.mail.vocabularies.OMSenderVocabulary')
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -287,4 +277,35 @@ def script4_12():
                           'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
     obj.manage_permission('CMFEditions: Save new version', ('Manager', 'Site Administrator', 'Contributor',
                           'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
+    transaction.commit()
+
+
+def script4_13():
+    verbose('Correcting datetime values on %s' % obj.absolute_url_path())
+    from plone import api
+    from datetime import timedelta
+    pc = obj.portal_catalog
+    # incoming mails
+    for typ, attr in (('dmsincomingmail', 'reception_date'), ('dmsoutgoingmail', 'outgoing_date')):
+        total = corrected = 0
+        for brain in pc(portal_type=typ):
+            total += 1
+            mail = brain.getObject()
+            dt = getattr(mail, attr)
+            if dt is not None and not dt.second:
+                # verbose("Mail %s: %s" % (mail.absolute_url_path(), dt))
+                fbrains = api.content.find(context=mail, portal_type=['dmsmainfile', 'dmsommainfile'],
+                                           sort_on='created', sort_order='descending')
+                scanned = None
+                for fb in fbrains:
+                    mfile = fb.getObject()
+                    if mfile.scan_date:
+                        scanned = mfile.scan_date
+                        break
+                if scanned and scanned.second:
+                    corrected += 1
+                    # verbose("NEW date %s" % (dt + timedelta(seconds=scanned.second)))
+                    setattr(mail, attr, dt + timedelta(seconds=scanned.second))
+                    mail.reindexObject(idxs=['organization_type'])
+        verbose("Correcting '%s' type: total=%d, corrected=%d" % (typ, total, corrected))
     transaction.commit()
