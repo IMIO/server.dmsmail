@@ -65,23 +65,23 @@ def script3():
 
 
 def script4():
-    verbose('Changing personnel-folder interfaces on %s' % obj.absolute_url_path())
-    from plone import api
-    from imio.dms.mail.interfaces import IPersonnelContact
-    from collective.contact.plonegroup.interfaces import IPloneGroupContact
-    from zope.interface import alsoProvides, noLongerProvides
-    from imio.helpers.cache import invalidate_cachekey_volatile_for
-    pc = obj.portal_catalog
-    pf = obj['contacts']['personnel-folder']
-    # personnel contacts
-    for brain in pc(path={'query': '/'.join(pf.getPhysicalPath()), 'depth': 2}):
-        contact = brain.getObject()
-        if not IPersonnelContact.providedBy(contact):
-            alsoProvides(contact, IPersonnelContact)
-        if IPloneGroupContact.providedBy(contact):
-            noLongerProvides(contact, IPloneGroupContact)
-        contact.reindexObject(idxs=['object_provides'])
-    invalidate_cachekey_volatile_for('imio.dms.mail.vocabularies.OMSenderVocabulary')
+    verbose('Updating workflow on %s' % obj.absolute_url_path())
+    wf = obj.portal_workflow['outgoingmail_workflow']
+    for tr_name in ['set_scanned', 'back_to_agent']:
+        tr = wf.transitions.get(tr_name)
+        guard = tr.getGuard()
+        guard.permissions = ()
+        guard.roles = ('Batch importer',)
+    transaction.commit()
+
+
+def script4_ng():
+    # for docgen > 3.0.12
+    verbose('Adding marker on %s' % obj.absolute_url_path())
+    from zope.interface import alsoProvides
+    from collective.documentgenerator.interfaces import IBelowContentBodyBatchActionsMarker
+    om = obj.templates.om
+    alsoProvides(om, IBelowContentBodyBatchActionsMarker)
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -308,4 +308,25 @@ def script4_13():
                     setattr(mail, attr, dt + timedelta(seconds=scanned.second))
                     mail.reindexObject(idxs=['organization_type'])
         verbose("Correcting '%s' type: total=%d, corrected=%d" % (typ, total, corrected))
+    transaction.commit()
+
+
+def script4_14():
+    verbose('Changing personnel-folder interfaces on %s' % obj.absolute_url_path())
+    from plone import api
+    from imio.dms.mail.interfaces import IPersonnelContact
+    from collective.contact.plonegroup.interfaces import IPloneGroupContact
+    from zope.interface import alsoProvides, noLongerProvides
+    from imio.helpers.cache import invalidate_cachekey_volatile_for
+    pc = obj.portal_catalog
+    pf = obj['contacts']['personnel-folder']
+    # personnel contacts
+    for brain in pc(path={'query': '/'.join(pf.getPhysicalPath()), 'depth': 2}):
+        contact = brain.getObject()
+        if not IPersonnelContact.providedBy(contact):
+            alsoProvides(contact, IPersonnelContact)
+        if IPloneGroupContact.providedBy(contact):
+            noLongerProvides(contact, IPloneGroupContact)
+        contact.reindexObject(idxs=['object_provides'])
+    invalidate_cachekey_volatile_for('imio.dms.mail.vocabularies.OMSenderVocabulary')
     transaction.commit()
