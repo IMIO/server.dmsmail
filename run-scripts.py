@@ -66,12 +66,15 @@ def script3():
 
 def script4():
     verbose('Updating workflow on %s' % obj.absolute_url_path())
+    # Updating workflow
     wf = obj.portal_workflow['outgoingmail_workflow']
     for tr_name in ['set_scanned', 'back_to_agent']:
         tr = wf.transitions.get(tr_name)
         guard = tr.getGuard()
         guard.permissions = ()
         guard.roles = ('Batch importer',)
+    # Updating registry
+    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
     transaction.commit()
 
 
