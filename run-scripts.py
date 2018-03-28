@@ -75,6 +75,7 @@ def script4():
         guard.roles = ('Batch importer',)
     # Updating registry
     obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
+    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'actions', run_dependencies=False)
     transaction.commit()
 
 
