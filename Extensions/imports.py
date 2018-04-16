@@ -6,6 +6,7 @@ from zope.component import getUtility
 from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import modified
 from z3c.relationfield.relation import RelationValue
+import phonenumbers
 from plone import api
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.app.uuid.utils import uuidToObject
@@ -145,7 +146,7 @@ def import_principals(self, create='', dochange=''):
     return '\n'.join(out)
 
 
-def import_contacts(self, dochange='', ownorg=''):
+def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
     """
         Import contacts from several files in 'Extensions'
         * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
@@ -167,7 +168,41 @@ def import_contacts(self, dochange='', ownorg=''):
     contacts = portal['contacts']
 
     def digit(phone):
+        # filter with str.isdigit or unicode.isdigit
         return filter(type(phone).isdigit, phone)
+
+    def is_zip(zipc, line, typ, country):
+        ozipc = zipc
+        zipc = digit(zipc)
+        if ozipc != zipc:
+            out.append("!! %s: line %d, zip code contains non digit chars: %s" % (typ, line, zipc))
+        if zipc and len(zipc) != 4 and not country:
+            out.append("!! %s: line %d, zip code length not 4: %s" % (typ, line, zipc))
+        if zipc in ['0']:
+            return ''
+        return zipc
+
+    def check_phone(phone, line, typ, country):
+        if not phone:
+            return phone
+        country = country.lower()
+        countries = {'belgique': 'BE', 'france': 'FR'}
+        if not country:
+            ctry = 'BE'
+        elif country in countries:
+            ctry = countries[country]
+        else:
+            out.append("!! %s: line %d, country not detected '%s', phone number: '%s'" % (typ, line, country, phone))
+            return phone
+        try:
+            number = phonenumbers.parse(phone, ctry)
+        except phonenumbers.NumberParseException:
+            out.append("!! %s: line %d, bad phone number: %s" % (typ, line, phone))
+            return ''
+        if not phonenumbers.is_valid_number(number):
+            out.append("!! %s: line %d, invalid phone number: %s" % (typ, line, phone))
+            return ''
+        return phone
 
     org_infos = {}
     for typ in ['types', 'levels']:
@@ -177,33 +212,37 @@ def import_contacts(self, dochange='', ownorg=''):
     org_infos_o = copy.deepcopy(org_infos)
     # read the organization file
     path = os.path.dirname(exm.filepath())
-    lines = system.read_csv(os.path.join(path, 'organizations.csv'), strip_chars=' ', strict=True)
+    lines = []
+    if 'ORGS' in only:
+        lines = system.read_csv(os.path.join(path, 'organizations.csv'), strip_chars=' ', strict=True)
     if lines:
         data = lines.pop(0)
         lendata = len(data)
         if lendata < 19 or data[18] != 'UID':
-            return "Problem decoding first line: bad columns in organizations.csv ?"
+            return "!! Problem decoding first line: bad columns in organizations.csv ?"
     orgs = OrderedDict()
     uids = {}
     childs = {}
     idnormalizer = getUtility(IIDNormalizer)
-    out = ["!! ORGANIZATIONS !!\n"]
+    out = ["## ORGANIZATIONS ##\n"]
     for i, data in enumerate(lines, start=2):
         if len(data) != lendata:
-            return "ORGS: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
-                                                                                  ['%s' % cell for cell in data])
+            return "!! ORGS: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
+                                                                                     ['%s' % cell for cell in data])
         id, idp, uid = data[0], data[1], data[18]
         if not id or id in orgs:
-            return "ORGS: problem line %d, invalid id: %s" % (i, id)
+            return "!! ORGS: problem line %d, invalid id: %s" % (i, id)
         if uid in uids:
-            return "ORGS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
+            return "!! ORGS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
         elif uid:
             uids[uid] = 'orgs: %d' % i
         # ID;ID Par;Intitulé;Description;Type;Use par adr,Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;Courriel;Site;
         # Région;Pays;UID
         orgs[id] = {'lev': 1, 'prt': idp, 'tit': data[2], 'desc': data[3], 'upa': data[5] and int(data[5]) or '',
-                    'st': data[6], 'nb': data[7], 'box': data[8], 'zip': data[9], 'loc': data[10],
-                    'tel': digit(data[11]), 'mob': digit(data[12]), 'fax': digit(data[13]), 'eml': data[14],
+                    'st': data[6], 'nb': data[7], 'box': data[8], 'zip': is_zip(data[9], i, 'ORGS', data[17]),
+                    'loc': data[10], 'tel': check_phone(digit(data[11]), i, 'ORGS', data[17]),
+                    'mob': check_phone(digit(data[12]), i, 'ORGS', data[17]),
+                    'fax': check_phone(digit(data[13]), i, 'ORGS', data[17]), 'eml': data[14],
                     'www': data[15], 'dep': data[16], 'cty': data[17], 'uid': uid}
         typ = 'types'
         if idp:
@@ -305,7 +344,9 @@ def import_contacts(self, dochange='', ownorg=''):
             out.append("%04d org: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
     # read the persons file
-    lines = system.read_csv(os.path.join(path, 'persons.csv'), strip_chars=' ', strict=True)
+    lines = []
+    if 'PERS' in only:
+        lines = system.read_csv(os.path.join(path, 'persons.csv'), strip_chars=' ', strict=True)
     # ID;Nom;Prénom;Genre;Civilité;Naissance;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
     # Fax;Courriel;Site;Région;Pays;Num int;UID
     if lines:
@@ -314,35 +355,43 @@ def import_contacts(self, dochange='', ownorg=''):
         if lendata < 21 or data[20] != 'UID':
             return "Problem decoding first line: bad columns in persons.csv ?"
     persons = {}
-    out.append("\n!! PERSONS !!\n")
+    out.append("\n## PERSONS ##\n")
+
     for i, data in enumerate(lines, start=2):
         if len(data) != lendata:
-            return "PERS: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
-                                                                                  ['%s' % cell for cell in data])
+            return "!! PERS: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
+                                                                                     ['%s' % cell for cell in data])
         id, name, fname, inum, uid = data[0], data[1], data[2], data[19], data[20]
+        errors = []
         try:
+            upa = data[6] and int(data[6]) or ''
+            phone = safe_unicode(check_phone(digit(data[12]), i, 'PERS', data[18]))
+            cell_phone = safe_unicode(check_phone(digit(data[13]), i, 'PERS', data[18]))
+            fax = safe_unicode(check_phone(digit(data[14]), i, 'PERS', data[18]))
+            zipc = safe_unicode(is_zip(data[10], i, 'PERS', data[18]))
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
             birthday = assert_date(data[5])
-            upa = data[6] and int(data[6]) or ''
-            phone = safe_unicode(digit(data[12]))
-            cell_phone = safe_unicode(digit(data[13]))
-            fax = safe_unicode(digit(data[14]))
         except AssertionError, ex:
-            return "PERS: problem line %d: %s" % (i, safe_encode(ex.message))
+            errors.append("!! PERS: problem line %d: %s" % (i, safe_encode(ex.message)))
         except Exception, ex:
-            return "PERS: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message))
+            errors.append("!! PERS: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message)))
         if not id or id in persons:
-            return "PERS: problem line %d, invalid id: %s" % (i, id)
+            errors.append("!! PERS: problem line %d, invalid id: %s" % (i, id))
         if uid in uids:
-            return "PERS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
+            errors.append("!! PERS: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid]))
         elif uid:
             uids[uid] = 'pers: %d' % i
+        if errors:
+            if doit:
+                return '\n'.join(errors)
+            out.append('\n'.join(errors))
+
         persons[id] = {}
         action = 'create'
         if uid:
             obj = uuidToObject(uid)
             if not obj:
-                out.append("!! %04d pers: cannot find obj from uuid %s: SKIPPED" % uid)
+                out.append("!! PERS %04d: cannot find obj from uuid %s: SKIPPED" % uid)
                 continue
             else:
                 action = 'update'
@@ -352,7 +401,7 @@ def import_contacts(self, dochange='', ownorg=''):
                 obj = brains[0].getObject()
                 action = 'update'
             elif len(brains) > 1:
-                out.append("!! %04d pers: multiple persons found with int number '%s': SKIPPED (%s)" % (i, inum,
+                out.append("!! PERS %04d: multiple persons found with int number '%s': SKIPPED (%s)" % (i, inum,
                            ','.join([b.getPath() for b in brains])))
                 continue
         if action == 'create':
@@ -368,7 +417,7 @@ def import_contacts(self, dochange='', ownorg=''):
                                          person_title=safe_unicode(data[4]), birthday=birthday,
                                          street=safe_unicode(data[7]), number=safe_unicode(data[8]),
                                          additional_address_details=safe_unicode(data[9]),
-                                         zip_code=safe_unicode(data[10]), city=safe_unicode(data[11]),
+                                         zip_code=zipc, city=safe_unicode(data[11]),
                                          phone=phone, cell_phone=cell_phone, fax=fax, email=safe_unicode(data[15]),
                                          website=safe_unicode(data[16]), region=safe_unicode(data[17]),
                                          country=safe_unicode(data[18]), use_parent_address=bool(upa))
@@ -381,13 +430,13 @@ def import_contacts(self, dochange='', ownorg=''):
                 out.append("%04d pers: new person '%s %s' will be created" % (i, safe_encode(name), safe_encode(fname)))
         elif action == 'update':
             attrs = {'lastname': 1, 'firstname': 2, 'gender': gender, 'person_title': 4, 'birthday': birthday,
-                     'street': 7, 'number': 8, 'additional_address_details': 9, 'zip_code': 10, 'city': 11,
+                     'street': 7, 'number': 8, 'additional_address_details': 9, 'zip_code': zipc, 'city': 11,
                      'phone': phone, 'cell_phone': cell_phone, 'fax': fax, 'email': 15, 'website': 16, 'region': 17,
                      'country': 18, 'use_parent_address': bool(upa)}
             change = False
             changed = []
             for attr, new_val in attrs.items():
-                if attr not in ('gender', 'birthday', 'use_parent_address', 'phone', 'cell_phone', 'fax'):
+                if attr not in ('gender', 'birthday', 'use_parent_address', 'phone', 'cell_phone', 'fax', 'zip_code'):
                     new_val = safe_unicode(data[new_val])
                 act_val = getattr(obj, attr)
                 if act_val != new_val and not (act_val is None and new_val == u''):
@@ -411,7 +460,9 @@ def import_contacts(self, dochange='', ownorg=''):
             out.append("%04d pers: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
     # read the heldpositions file
-    lines = system.read_csv(os.path.join(path, 'heldpositions.csv'), strip_chars=' ', strict=True)
+    lines = []
+    if 'HP' in only:
+        lines = system.read_csv(os.path.join(path, 'heldpositions.csv'), strip_chars=' ', strict=True)
     # ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;Adr par;Rue;Numéro;Comp adr;
     # CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays;UID
     if lines:
@@ -421,39 +472,46 @@ def import_contacts(self, dochange='', ownorg=''):
             return "Problem decoding first line: bad columns in heldpositions.csv ?"
         intids = getUtility(IIntIds)
     hps = {}
-    out.append("\n!! HELD POSITIONS !!\n")
+    out.append("\n## HELD POSITIONS ##\n")
     for i, data in enumerate(lines, start=2):
         if len(data) != lendata:
-            return "HP: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
-                                                                                ['%s' % cell for cell in data])
+            return "!! HP: problem line %d, invalid column number %d <> %d: %s" % (i, lendata, len(data),
+                                                                                   ['%s' % cell for cell in data])
         id, pid, oid, title, uid = data[0], data[1], data[2], data[4], data[20]
+        errors = []
         try:
             start = assert_date(data[5])
             end = assert_date(data[6])
-            phone = safe_unicode(digit(data[13]))
-            cell_phone = safe_unicode(digit(data[14]))
-            fax = safe_unicode(digit(data[15]))
+            phone = safe_unicode(check_phone(digit(data[13]), i, 'PERS', data[19]))
+            cell_phone = safe_unicode(check_phone(digit(data[14]), i, 'PERS', data[19]))
+            fax = safe_unicode(check_phone(digit(data[15]), i, 'PERS', data[19]))
             upa = data[7] and int(data[7]) or ''
+            zipc = safe_unicode(is_zip(data[11], i, 'HP', data[19]))
         except AssertionError, ex:
-            return "HP: problem line %d: %s" % (i, safe_encode(ex.message))
+            errors.append("!! HP: problem line %d: %s" % (i, safe_encode(ex.message)))
         except Exception, ex:
-            return "HP: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message))
+            errors.append("!! HP: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message)))
         if not id or id in hps:
-            return "HP: problem line %d, invalid id: %s" % (i, id)
+            errors.append("!! HP: problem line %d, invalid id: %s" % (i, id))
         if not pid:
-            return "HP: problem line %d, invalid person id: %s" % (i, pid)
+            errors.append("!! HP: problem line %d, invalid person id: %s" % (i, pid))
         if not oid:
-            return "HP: problem line %d, invalid org id: %s" % (i, oid)
+            errors.append("!! HP: problem line %d, invalid org id: %s" % (i, oid))
         if uid in uids:
-            return "HP: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid])
+            errors.append("!! HP: problem line %d, duplicated uid: %s, already found line %s" % (i, uid, uids[uid]))
         elif uid:
             uids[uid] = 'hp: %d' % i
+        if errors:
+            if doit:
+                return '\n'.join(errors)
+            out.append('\n'.join(errors))
+
         hps[id] = {}
         action = 'create'
         if uid:
             obj = uuidToObject(uid)
             if not obj:
-                out.append("!! %04d hp: cannot find obj from uuid %s: SKIPPED" % uid)
+                out.append("!! HP %04d: cannot find obj from uuid %s: SKIPPED" % uid)
                 continue
             else:
                 action = 'update'
@@ -465,7 +523,7 @@ def import_contacts(self, dochange='', ownorg=''):
             else:
                 pers = None
         else:
-            out.append("!! %04d hp: person not found for id '%s': SKIPPED" % (i, pid))
+            out.append("!! HP %04d: person not found for id '%s': SKIPPED" % (i, pid))
             continue
         if oid in orgs:
             if 'obj' in orgs[oid]:
@@ -475,7 +533,7 @@ def import_contacts(self, dochange='', ownorg=''):
             else:
                 org = None
         else:
-            out.append("!! %04d hp: org not found for id '%s': SKIPPED" % (i, oid))
+            out.append("!! HP %04d: org not found for id '%s': SKIPPED" % (i, oid))
             continue
         if action == 'create':
             if doit:
@@ -490,7 +548,7 @@ def import_contacts(self, dochange='', ownorg=''):
                                          label=safe_unicode(title), start_date=start, end_date=end,
                                          street=safe_unicode(data[8]), number=safe_unicode(data[9]),
                                          additional_address_details=safe_unicode(data[10]),
-                                         zip_code=safe_unicode(data[11]), city=safe_unicode(data[12]),
+                                         zip_code=zipc, city=safe_unicode(data[12]),
                                          phone=phone, cell_phone=cell_phone, fax=fax, email=safe_unicode(data[16]),
                                          website=safe_unicode(data[17]), region=safe_unicode(data[18]),
                                          country=safe_unicode(data[19]), use_parent_address=bool(upa))
@@ -504,14 +562,14 @@ def import_contacts(self, dochange='', ownorg=''):
             if new_pos and new_pos.to_id != intid:
                 new_pos = RelationValue(intid)
             attrs = {'position': new_pos, 'label': 4, 'start_date': start, 'end_date': end,
-                     'street': 8, 'number': 9, 'additional_address_details': 10, 'zip_code': 11, 'city': 12,
+                     'street': 8, 'number': 9, 'additional_address_details': 10, 'zip_code': zipc, 'city': 12,
                      'phone': phone, 'cell_phone': cell_phone, 'fax': fax, 'email': 16, 'website': 17, 'region': 18,
                      'country': 19, 'use_parent_address': bool(upa)}
             change = False
             changed = []
             for attr, new_val in attrs.items():
                 if attr not in ('position', 'start_date', 'end_date', 'phone', 'cell_phone', 'fax',
-                                'use_parent_address'):
+                                'use_parent_address', 'zip_code'):
                     new_val = safe_unicode(data[new_val])
                 act_val = getattr(obj, attr)
                 if act_val != new_val and not (act_val is None and new_val == u''):
