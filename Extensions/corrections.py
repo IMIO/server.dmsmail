@@ -62,6 +62,7 @@ def list_relations(self):
 
 
 def add_md5(self, change=''):
+    """ Add md5 value if none """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     from plone import api
@@ -85,6 +86,7 @@ def add_md5(self, change=''):
 
 
 def do_transition(self, typ='dmsincomingmail', transition='close_manager', criteria="{}", limit=10000, change=''):
+    """ Apply a transition to many objects """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     from Products.CMFCore.WorkflowCore import WorkflowException
@@ -131,6 +133,7 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
 
 
 def add_encodeur_users(self, change=''):
+    """ Add editeur and validateur users to encodeur groups """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     ret = ['<h2>Add users to encodeur groups</h2>']
@@ -161,6 +164,7 @@ def add_encodeur_users(self, change=''):
 
 
 def various(self):
+    """ various check script """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     pc = self.portal_catalog
