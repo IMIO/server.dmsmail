@@ -1,4 +1,4 @@
-from Products.CPUtils.Extensions.utils import check_zope_admin, object_link
+from Products.CPUtils.Extensions.utils import check_zope_admin, object_link, log_list
 
 
 def correct_ref(self, change=''):
@@ -47,6 +47,12 @@ def check_sender(self):
     return '\n<br />'.join(out)
 
 
+def relation_infos(rel):
+    return {'br': rel.isBroken(), 'fr_i': rel.from_id, 'fr_o': rel.from_object, 'fr_a': rel.from_attribute,
+            'fr_p': rel.from_path, 'to_i': rel.to_id, 'to_o': rel.to_object, 'to_p': rel.to_path}
+    # rel.from_interfaces, rel.from_interfaces_flattened, rel.to_interfaces, rel.to_interfaces_flattened
+
+
 def list_relations(self):
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -56,9 +62,40 @@ def list_relations(self):
     out = []
     rels = list(catalog.findRelations())
     for rel in rels:
-        out.append(rel.__dict__)
-        print rel.__dict__
+        out.append(str(rel.__dict__))
     return '\n<br />'.join(out)
+
+
+def check_intids(self, change=''):
+    """
+        Check relations for missing intids.
+        TO ADD: check for all objects if they are in the intids catalog
+    """
+    """
+        relations problems
+        see collective.contact.core.upgrades.upgrades.reindex_relations
+        see from z3c.relationfield.event import updateRelations
+    """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    from zc.relation.interfaces import ICatalog
+    from zope.app.intid.interfaces import IIntIds
+    from zope.component import getUtility
+
+    intids = getUtility(IIntIds)
+    rels = getUtility(ICatalog)
+    out = ['check_intids\n']
+    relations = list(rels.findRelations())
+    for rel in relations:
+        if not rel.from_id or not intids.queryObject(rel.from_id, False):
+            log_list(out, "Missing from_id %s" % relation_infos(rel))
+        elif not rel.to_id or not intids.queryObject(rel.to_id, False):
+            log_list(out, "Missing to_id %s" % relation_infos(rel))
+        elif not rel.from_object or not intids.queryId(rel.from_object, False):
+            log_list(out, "Missing from_object %s" % relation_infos(rel))
+        elif not rel.to_object or not intids.queryId(rel.to_object, False):
+            log_list(out, "Missing to_object %s" % relation_infos(rel))
+    return '\n'.join(out)
 
 
 def add_md5(self, change=''):
