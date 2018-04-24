@@ -200,20 +200,28 @@ def add_encodeur_users(self, change=''):
     return "</br>\n".join(ret)
 
 
-def correct_internal_reference(self, toreplace='', by='', types=['dmsincomingmail'], change=''):
+def correct_internal_reference(self, toreplace='', by='', request="{'portal_type': 'dmsincomingmail'}", change=''):
     """ Replace something in internal reference number"""
+    # tubize: {'portal_type': 'dmsincomingmail', 'in_out_date':{'range':'min', 'query':datetime(2018,1,1)}}
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     if not toreplace:
         return "!! toreplace param cannot be empty"
+    if not request:
+        return "!! request param cannot be empty"
     import re
     from Products.CMFPlone.utils import safe_unicode
     try:
         p_o = re.compile(toreplace)
     except Exception, msg:
         return "!! Cannot compile replace expression '%s': '%s'" % (toreplace, msg)
-    out = []
-    for brain in self.portal_catalog(portal_type=types):
+    from datetime import datetime
+    try:
+        dic = eval(request)
+    except Exception, msg:
+        return "!! Cannot eval request '%s': '%s'" % (request, msg)
+    out = ['request= %s' % dic]
+    for brain in self.portal_catalog(**dic):
         m_o = p_o.search(safe_unicode(brain.internal_reference_number))
         if not m_o:
             continue
