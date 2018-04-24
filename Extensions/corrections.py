@@ -200,6 +200,33 @@ def add_encodeur_users(self, change=''):
     return "</br>\n".join(ret)
 
 
+def correct_internal_reference(self, toreplace='', by='', types=['dmsincomingmail'], change=''):
+    """ Replace something in internal reference number"""
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    if not toreplace:
+        return "!! toreplace param cannot be empty"
+    import re
+    from Products.CMFPlone.utils import safe_unicode
+    try:
+        p_o = re.compile(toreplace)
+    except Exception, msg:
+        return "!! Cannot compile replace expression '%s': '%s'" % (toreplace, msg)
+    out = []
+    for brain in self.portal_catalog(portal_type=types):
+        m_o = p_o.search(safe_unicode(brain.internal_reference_number))
+        if not m_o:
+            continue
+        res = p_o.sub(safe_unicode(by), safe_unicode(brain.internal_reference_number))
+        out.append("'%s': '%s' => '%s'" % (brain.getPath(), safe_unicode(brain.internal_reference_number),
+                                           res))
+        if change == '1':
+            obj = brain.getObject()
+            obj.internal_reference_no = res
+            obj.reindexObject(idxs=['internal_reference_number'])
+    return '\n'.join(out)
+
+
 def various(self):
     """ various check script """
     if not check_zope_admin():
