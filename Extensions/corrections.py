@@ -231,7 +231,7 @@ def correct_internal_reference(self, toreplace='', by='', request="{'portal_type
         if change == '1':
             obj = brain.getObject()
             obj.internal_reference_no = res
-            obj.reindexObject(idxs=['internal_reference_number'])
+            obj.reindexObject(idxs=['internal_reference_number', 'sortable_title', 'SearchableText', 'Title'])
     return '\n'.join(out)
 
 
