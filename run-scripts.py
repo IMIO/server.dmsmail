@@ -68,10 +68,11 @@ def script4():
     verbose('Updating base on %s' % obj.absolute_url_path())
     from plone import api
     # base model
-    om = obj.templates.om
-    if 'base' in om:
-        api.content.rename(obj=om['base'], new_id='main')
-        om['main'].odt_file.filename = u'om-main.odt'
+    pc = obj.portal_catalog
+    for brain in pc(id='base', portal_type='ConfigurablePODTemplate'):
+        model = brain.getObject()
+        api.content.rename(obj=model, new_id='main')
+        model.odt_file.filename = u'om-main.odt'
     transaction.commit()
 
 
