@@ -14,7 +14,13 @@ all: run
 .PHONY: bootstrap
 bootstrap:
 	virtualenv-2.7 .
-	./bin/python bootstrap.py -v 2.2.5
+	./bin/python bootstrap.py
+
+.PHONY: setup
+setup:
+	virtualenv-2.7 .
+	./bin/pip install --upgrade pip
+	./bin/pip install -r requirements.txt
 
 .PHONY: buildout
 buildout:
