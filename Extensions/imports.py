@@ -172,14 +172,14 @@ def import_principals(self, add_user='', create_file='', dochange=''):
 def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
     """
         Import contacts from several files in 'Extensions'
-        * organizations.csv:    ID;ID Parent;Intitulé;Description;Type;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
-                                Fax;Courriel;Site;Région;Pays;UID
-        * persons.csv:  ID;Nom;Prénom;Genre;Civilité;Naissance;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;
-                        Fax;Courriel;Site;Région;Pays;Num int;UID
-        * positions.csv:    ID;ID org;Intitulé;Description;Type;Adr par;Rue;Numéro;Comp adr;CP;Localité;Tél;Gsm;Fax;
-                            Courriel;Site;Région;Pays;UID
-        * heldpositions.csv:    ID;ID person;ID org;ID fct;Intitulé fct;Début fct;Fin fct;Adr par;Rue;Numéro;Comp adr;
-                                CP;Localité;Tél;Gsm;Fax;Courriel;Site;Région;Pays;UID
+        * organizations.csv:    ID,ID Parent,Intitulé,Description,Type,Adr par,Rue,Numéro,Comp adr,CP,Localité,Tél,Gsm,
+                                Fax,Courriel,Site,Région,Pays,UID
+        * persons.csv:  ID,Nom,Prénom,Genre,Civilité,Naissance,Adr par,Rue,Numéro,Comp adr,CP,Localité,Tél,Gsm,
+                        Fax,Courriel,Site,Région,Pays,Num int,UID
+        * positions.csv:    ID,ID org,Intitulé,Description,Type,Adr par,Rue,Numéro,Comp adr,CP,Localité,Tél,Gsm,Fax,
+                            Courriel,Site,Région,Pays,UID
+        * heldpositions.csv:    ID,ID person,ID org,ID fct,Intitulé fct,Début fct,Fin fct,Adr par,Rue,Numéro,Comp adr,
+                                CP,Localité,Tél,Gsm,Fax,Courriel,Site,Région,Pays,UID
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
