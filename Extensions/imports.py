@@ -41,28 +41,49 @@ def get_organizations(self, obj=False):
     return '\n'.join(['%s;%s' % (t[0], t[1]) for t in terms])
 
 
-def import_principals(self, create='', dochange=''):
+def import_principals(self, add_user='', create_file='', dochange=''):
     """
         Import principals from the file 'Extensions/principals.csv' containing
-        GroupId;GroupTitle;Userid;Name;email;Validateur;Éditeur;Lecteur
+        GroupId;GroupTitle;Userid;Name;email;Validateur;Éditeur;Lecteur;Encodeur
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     exm = self.REQUEST['PUBLISHED']
     path = os.path.dirname(exm.filepath())
     #path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
+    out = []
+    cf = False
+    if create_file == '1':
+        cf = True
+    doit = False
+    if dochange == '1':
+        doit = True
+
+    orgas = get_organizations(self, obj=True)
+
+    if cf:
+        out.append("Creating file principals_gen.csv")
+        lines = ["GroupId;GroupTitle;Userid;Name;email;Validateur;Éditeur;Lecteur;Encodeur"]
+        for uid, title in orgas:
+            lines.append("%s;%s;;;;;;;" %
+                        (uid, title.encode('utf8')))
+        if doit:
+            fh = open(os.path.join(path, 'principals_gen.csv'), 'w')
+            for line in lines:
+                fh.write("%s\n" % line)
+            fh.close()
+        return '\n'.join(out)
+
     # Open file
     lines = system.read_file(os.path.join(path, 'principals.csv'), skip_empty=True)
     regtool = self.portal_registration
     cu = False
-    if create not in ('', '0', 'False', 'false'):
+    if add_user == '1':
         cu = True
-    doit = False
-    if dochange not in ('', '0', 'False', 'false'):
-        doit = True
-    orgas = get_organizations(self, obj=True)
+    cf = False
+    if create_file == '1':
+        cf = True
     i = 0
-    out = []
     for line in lines:
         i += 1
         if i == 1:
@@ -77,6 +98,7 @@ def import_principals(self, create='', dochange=''):
             validateur = data[5]
             editeur = data[6]
             lecteur = data[7]
+            encodeur = data[8]
         except Exception, ex:
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
         # check userid
@@ -123,7 +145,8 @@ def import_principals(self, create='', dochange=''):
                 out.append("Line %d, cannot find org_uid from org title '%s'" % (i, orgtit))
                 continue
 
-        for (name, value) in [('validateur', validateur), ('editeur', editeur), ('lecteur', lecteur)]:
+        for (name, value) in [('validateur', validateur), ('editeur', editeur), ('lecteur', lecteur),
+                              ('encodeur', encodeur)]:
             value = value.strip()
             if not value:
                 # We don't remove a user from a group
