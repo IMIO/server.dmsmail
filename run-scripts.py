@@ -5,7 +5,7 @@ import transaction
 from plone import api
 
 # Parameters check
-if len(sys.argv) < 3 or sys.argv[2] != 'run-scripts.py':
+if len(sys.argv) < 3 or not sys.argv[2].endswith('run-scripts.py'):
     error("Inconsistent or unexpected args len: %s" % sys.argv)
     sys.exit(0)
 
