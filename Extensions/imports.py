@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
-import copy
-import os
 from collections import OrderedDict
-from zope.component import getUtility
-from zope.intid.interfaces import IIntIds
-from zope.lifecycleevent import modified
-from z3c.relationfield.relation import RelationValue
-import phonenumbers
+from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
+from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
+from imio.dms.mail.Extensions.imports import assert_date
+from imio.dms.mail.Extensions.imports import assert_value_in_list
+from imio.dms.mail.Extensions.imports import change_levels
+from imio.dms.mail.Extensions.imports import sort_by_level
+from imio.pyutils import system
 from plone import api
-from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.app.uuid.utils import uuidToObject
+from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.registry.interfaces import IRegistry
 from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
+from z3c.relationfield.relation import RelationValue
+from zope.component import getUtility
+from zope.intid.interfaces import IIntIds
+from zope.lifecycleevent import modified
 
-from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
-from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
-
-from imio.dms.mail.Extensions.imports import change_levels, sort_by_level, assert_value_in_list, assert_date
-from imio.pyutils import system
+import copy
+import os
+import phonenumbers
 
 
 def safe_encode(value, encoding='utf-8'):
