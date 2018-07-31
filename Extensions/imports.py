@@ -175,13 +175,13 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
     """
         Import contacts from several files in 'Extensions'
         * organizations.csv:    ID,ID Parent,Intitulé,Description,Type,Adr par,Rue,Numéro,Comp adr,CP,Localité,Tél,Gsm,
-                                Fax,Courriel,Site,Région,Pays,UID
+                                Fax,Courriel,Site,Région,Pays,UID,Internal
         * persons.csv:  ID,Nom,Prénom,Genre,Civilité,Naissance,Adr par,Rue,Numéro,Comp adr,CP,Localité,Tél,Gsm,
-                        Fax,Courriel,Site,Région,Pays,Num int,UID
+                        Fax,Courriel,Site,Région,Pays,Num int,UID,Internal
         * positions.csv:    ID,ID org,Intitulé,Description,Type,Adr par,Rue,Numéro,Comp adr,CP,Localité,Tél,Gsm,Fax,
                             Courriel,Site,Région,Pays,UID
         * heldpositions.csv:    ID,ID person,ID org,ID fct,Intitulé fct,Début fct,Fin fct,Adr par,Rue,Numéro,Comp adr,
-                                CP,Localité,Tél,Gsm,Fax,Courriel,Site,Région,Pays,UID
+                                CP,Localité,Tél,Gsm,Fax,Courriel,Site,Région,Pays,UID,Internal
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -243,7 +243,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
     if lines:
         data = lines.pop(0)
         lendata = len(data)
-        if lendata < 19 or data[18] != 'UID':
+        if lendata < 20 or not data[19].startswith('Contact'):
             return "!! Problem decoding first line: bad columns in organizations.csv ?"
     orgs = OrderedDict()
     uids = {}
@@ -313,7 +313,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
         if det['uid']:
             obj = uuidToObject(det['uid'])
             if not obj:
-                out.append("!! %04d org: cannot find obj from uuid %s: SKIPPED" % det['uid'])
+                out.append("!! %04d org: cannot find obj from uuid %s: SKIPPED" % (i, det['uid']))
                 continue
             else:
                 action = 'update'
@@ -377,7 +377,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
     if lines:
         data = lines.pop(0)
         lendata = len(data)
-        if lendata < 21 or data[20] != 'UID':
+        if lendata < 22 or not data[21].startswith('Contact'):
             return "Problem decoding first line: bad columns in persons.csv ?"
     persons = {}
     out.append("\n## PERSONS ##\n")
@@ -388,6 +388,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                                                                                      ['%s' % cell for cell in data])
         id, name, fname, inum, uid = data[0], data[1], data[2], data[19], data[20]
         errors = []
+        pers_folder = contacts
         try:
             upa = data[6] and int(data[6]) or ''
             phone = safe_unicode(check_phone(digit(data[12]), i, 'PERS', data[18]))
@@ -396,6 +397,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
             zipc = safe_unicode(is_zip(data[10], i, 'PERS', data[18]))
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
             birthday = assert_date(data[5])
+            internal = data[21] and bool(int(data[21])) or False
         except AssertionError, ex:
             errors.append("!! PERS: problem line %d: %s" % (i, safe_encode(ex.message)))
         except Exception, ex:
@@ -421,23 +423,35 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
             else:
                 action = 'update'
         elif inum:
-            brains = api.content.find(portal_type='person', internal_number=inum)
-            if len(brains) == 1:
-                obj = brains[0].getObject()
-                action = 'update'
-            elif len(brains) > 1:
-                out.append("!! PERS %04d: multiple persons found with int number '%s': SKIPPED (%s)" % (i, inum,
-                           ','.join([b.getPath() for b in brains])))
-                continue
+            if internal:  # for internal person, inum contains plone username
+                brains = api.content.find(portal_type='person', mail_type=inum)
+                if len(brains) == 1:
+                    obj = brains[0].getObject()
+                    action = 'update'
+                elif len(brains) > 1:
+                    out.append("!! PERS %04d: multiple persons found with userid '%s': SKIPPED (%s)" % (i, inum,
+                               ','.join([b.getPath() for b in brains])))
+                    continue
+                else:
+                    pers_folder = contacts['personnel-folder']
+            else:
+                brains = api.content.find(portal_type='person', internal_number=inum)
+                if len(brains) == 1:
+                    obj = brains[0].getObject()
+                    action = 'update'
+                elif len(brains) > 1:
+                    out.append("!! PERS %04d: multiple persons found with int number '%s': SKIPPED (%s)" % (i, inum,
+                               ','.join([b.getPath() for b in brains])))
+                    continue
         if action == 'create':
             if doit:
                 real_id = new_id = idnormalizer.normalize(safe_encode('%s-%s' % (fname, name)))
                 count = 0
-                while real_id in contacts:
+                while real_id in pers_folder:
                     count += 1
                     real_id = '%s-%d' % (new_id, count)
 
-                obj = api.content.create(container=contacts, type='person', id=real_id, lastname=safe_unicode(name),
+                obj = api.content.create(container=pers_folder, type='person', id=real_id, lastname=safe_unicode(name),
                                          firstname=safe_unicode(fname), gender=gender,
                                          person_title=safe_unicode(data[4]), birthday=birthday,
                                          street=safe_unicode(data[7]), number=safe_unicode(data[8]),
@@ -446,9 +460,6 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                                          phone=phone, cell_phone=cell_phone, fax=fax, email=safe_unicode(data[15]),
                                          website=safe_unicode(data[16]), region=safe_unicode(data[17]),
                                          country=safe_unicode(data[18]), use_parent_address=bool(upa))
-                if inum and IInternalNumberBehavior.providedBy(obj):
-                    obj.internal_number = inum
-                    obj.reindexObject(idxs=['internal_number', 'SearchableText'])
                 out.append("%04d pers: new person '%s %s' created" % (i, safe_encode(name), safe_encode(fname)))
                 persons[id]['obj'] = obj
             else:
@@ -484,6 +495,19 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                 status += 'not '
             out.append("%04d pers: '%s' %supdated, %s" % (i, obj.absolute_url(), status, changed))
 
+        if inum:
+            if internal:  # for internal person, inum contains plone username
+                if not api.user.get(username=inum):
+                    # user doesn't exist !
+                    out.append("!! PERS %04d: username '%s' not found" % (i, inum))
+                    continue
+                if doit:
+                    obj.userid = inum
+                    obj.reindexObject(idxs=['mail_type'])
+            elif IInternalNumberBehavior.providedBy(obj) and doit:
+                obj.internal_number = inum
+                obj.reindexObject(idxs=['internal_number', 'SearchableText'])
+
     # read the heldpositions file
     lines = []
     if 'HP' in only:
@@ -493,7 +517,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
     if lines:
         data = lines.pop(0)
         lendata = len(data)
-        if lendata < 21 or data[20] != 'UID':
+        if lendata < 22 or not data[21].startswith('Contact'):
             return "Problem decoding first line: bad columns in heldpositions.csv ?"
         intids = getUtility(IIntIds)
     hps = {}
