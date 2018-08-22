@@ -1,10 +1,11 @@
 Changelog
 =========
 
-2.0-2 (unreleased)
+2.1-1 (2018-08-22)
 ------------------
 
-- Nothing changed yet.
+- Use imio.dms.mail tag 2.1.
+  [sgeulette]
 
 
 2.0-1 (2017-06-02)
