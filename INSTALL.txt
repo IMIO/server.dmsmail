@@ -22,7 +22,7 @@ We install the necessary libraries
 > apt install odt2txt
 
 Documentviewer dependencies
-> apt install rubygems
+> apt install ruby
 > gem install docsplit
 > apt install graphicsmagick
 > apt install poppler-utils
@@ -30,7 +30,7 @@ Documentviewer dependencies
 
 imio.helpers barcode generation
 > apt install libpng12-dev
-> wget https://10gbps-io.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
+> wget https://datapacket.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
 > dpkg -i zint_2.6.0_amd64.deb
 
 We work in the folder /srv

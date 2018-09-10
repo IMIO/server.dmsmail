@@ -23,7 +23,7 @@ On installe des librairies nécessaires
 > apt install odt2txt
 
 Dépendances de documentviewer:
-> apt install rubygems
+> apt install ruby
 > gem install docsplit
 > apt install graphicsmagick
 > apt install poppler-utils
@@ -31,7 +31,7 @@ Dépendances de documentviewer:
 
 Dépendance d'imio.helpers pour la génération de code-barre
 > apt install libpng12-dev
-> wget https://10gbps-io.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
+> wget https://datapacket.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
 > dpkg -i zint_2.6.0_amd64.deb
 
 On va travailler dans le dossier /srv
