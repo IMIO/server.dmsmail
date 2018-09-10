@@ -65,24 +65,7 @@ def script3():
 
 
 def script4():
-    verbose('Updating base on %s' % obj.absolute_url_path())
-    from plone import api
-    # base model
-    pc = obj.portal_catalog
-    for brain in pc(id='base', portal_type='ConfigurablePODTemplate'):
-        model = brain.getObject()
-        api.content.rename(obj=model, new_id='main')
-        model.odt_file.filename = u'om-main.odt'
-    transaction.commit()
-
-
-def script4_ng():
-    # for docgen > 3.0.12
-    verbose('Adding marker on %s' % obj.absolute_url_path())
-    from zope.interface import alsoProvides
-    from collective.documentgenerator.interfaces import IBelowContentBodyBatchActionsMarker
-    om = obj.templates.om
-    alsoProvides(om, IBelowContentBodyBatchActionsMarker)
+    verbose(' on %s' % obj.absolute_url_path())
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -345,4 +328,16 @@ def script4_15():
     # Updating registry
     obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
     obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'actions', run_dependencies=False)
+    transaction.commit()
+
+
+def script4_16():
+    verbose('Updating base on %s' % obj.absolute_url_path())
+    from plone import api
+    # base model
+    pc = obj.portal_catalog
+    for brain in pc(id='base', portal_type='ConfigurablePODTemplate'):
+        model = brain.getObject()
+        api.content.rename(obj=model, new_id='main')
+        model.odt_file.filename = u'om-main.odt'
     transaction.commit()
