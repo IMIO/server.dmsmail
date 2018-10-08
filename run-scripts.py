@@ -66,6 +66,23 @@ def script3():
 
 def script4():
     verbose(' on %s' % obj.absolute_url_path())
+    from imio.dms.mail.interfaces import IIMDashboard
+    from imio.dms.mail.interfaces import IIMDashboardBatchActions
+    from imio.dms.mail.interfaces import IOMDashboard
+    from imio.dms.mail.interfaces import IOMDashboardBatchActions
+    from imio.dms.mail.interfaces import ITaskDashboard
+    from imio.dms.mail.interfaces import ITaskDashboardBatchActions
+    from zope.interface import alsoProvides
+    from zope.interface import noLongerProvides
+    imf = obj['incoming-mail']['mail-searches']
+    noLongerProvides(imf, IIMDashboard)
+    alsoProvides(imf, IIMDashboardBatchActions)
+    omf = obj['outgoing-mail']['mail-searches']
+    noLongerProvides(omf, IOMDashboard)
+    alsoProvides(omf, IOMDashboardBatchActions)
+    tf = obj['tasks']['task-searches']
+    noLongerProvides(tf, ITaskDashboard)
+    alsoProvides(tf, ITaskDashboardBatchActions)
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
