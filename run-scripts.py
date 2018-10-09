@@ -65,24 +65,15 @@ def script3():
 
 
 def script4():
-    verbose(' on %s' % obj.absolute_url_path())
-    from imio.dms.mail.interfaces import IIMDashboard
-    from imio.dms.mail.interfaces import IIMDashboardBatchActions
-    from imio.dms.mail.interfaces import IOMDashboard
-    from imio.dms.mail.interfaces import IOMDashboardBatchActions
-    from imio.dms.mail.interfaces import ITaskDashboard
-    from imio.dms.mail.interfaces import ITaskDashboardBatchActions
-    from zope.interface import alsoProvides
-    from zope.interface import noLongerProvides
-    imf = obj['incoming-mail']['mail-searches']
-    noLongerProvides(imf, IIMDashboard)
-    alsoProvides(imf, IIMDashboardBatchActions)
-    omf = obj['outgoing-mail']['mail-searches']
-    noLongerProvides(omf, IOMDashboard)
-    alsoProvides(omf, IOMDashboardBatchActions)
-    tf = obj['tasks']['task-searches']
-    noLongerProvides(tf, ITaskDashboard)
-    alsoProvides(tf, ITaskDashboardBatchActions)
+    verbose('Adding mailing on %s' % obj.absolute_url_path())
+    folder = obj['templates']['om']
+    ml_uid = folder['mailing'].UID()
+    brains = api.content.find(context=folder, portal_type=['ConfigurablePODTemplate'])
+    for brain in brains:
+        ob = brain.getObject()
+        if not ob.mailing_loop_template:
+            verbose('Adding mailing on {} ({})'.format(brain.getPath(), brain.Title))
+            ob.mailing_loop_template = ml_uid
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -357,4 +348,26 @@ def script4_16():
         model = brain.getObject()
         api.content.rename(obj=model, new_id='main')
         model.odt_file.filename = u'om-main.odt'
+    transaction.commit()
+
+
+def script4_17():
+    verbose('Updating dashboards interfaces on %s' % obj.absolute_url_path())
+    from imio.dms.mail.interfaces import IIMDashboard
+    from imio.dms.mail.interfaces import IIMDashboardBatchActions
+    from imio.dms.mail.interfaces import IOMDashboard
+    from imio.dms.mail.interfaces import IOMDashboardBatchActions
+    from imio.dms.mail.interfaces import ITaskDashboard
+    from imio.dms.mail.interfaces import ITaskDashboardBatchActions
+    from zope.interface import alsoProvides
+    from zope.interface import noLongerProvides
+    imf = obj['incoming-mail']['mail-searches']
+    noLongerProvides(imf, IIMDashboard)
+    alsoProvides(imf, IIMDashboardBatchActions)
+    omf = obj['outgoing-mail']['mail-searches']
+    noLongerProvides(omf, IOMDashboard)
+    alsoProvides(omf, IOMDashboardBatchActions)
+    tf = obj['tasks']['task-searches']
+    noLongerProvides(tf, ITaskDashboard)
+    alsoProvides(tf, ITaskDashboardBatchActions)
     transaction.commit()
