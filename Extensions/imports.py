@@ -560,7 +560,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
         if uid:
             obj = uuidToObject(uid)
             if not obj:
-                out.append("!! HP %04d: cannot find obj from uuid %s: SKIPPED" % uid)
+                out.append("!! HP %04d: cannot find obj from uuid %s: SKIPPED" % (i, uid))
                 continue
             else:
                 action = 'update'
