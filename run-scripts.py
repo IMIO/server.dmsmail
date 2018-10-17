@@ -65,15 +65,8 @@ def script3():
 
 
 def script4():
-    verbose('Adding mailing on %s' % obj.absolute_url_path())
-    folder = obj['templates']['om']
-    ml_uid = folder['mailing'].UID()
-    brains = api.content.find(context=folder, portal_type=['ConfigurablePODTemplate'])
-    for brain in brains:
-        ob = brain.getObject()
-        if not ob.mailing_loop_template:
-            verbose('Adding mailing on {} ({})'.format(brain.getPath(), brain.Title))
-            ob.mailing_loop_template = ml_uid
+    verbose('Correcting ckeditor skin on %s' % obj.absolute_url_path())
+    obj.portal_properties.ckeditor_properties.skin = 'moono-lisa'
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -370,4 +363,17 @@ def script4_17():
     tf = obj['tasks']['task-searches']
     noLongerProvides(tf, ITaskDashboard)
     alsoProvides(tf, ITaskDashboardBatchActions)
+    transaction.commit()
+
+
+def script4_18():
+    verbose('Adding mailing on %s' % obj.absolute_url_path())
+    folder = obj['templates']['om']
+    ml_uid = folder['mailing'].UID()
+    brains = api.content.find(context=folder, portal_type=['ConfigurablePODTemplate'])
+    for brain in brains:
+        ob = brain.getObject()
+        if not ob.mailing_loop_template:
+            verbose('Adding mailing on {} ({})'.format(brain.getPath(), brain.Title))
+            ob.mailing_loop_template = ml_uid
     transaction.commit()
