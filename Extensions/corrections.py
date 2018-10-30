@@ -1,4 +1,6 @@
+from plone.app.uuid.utils import uuidToObject
 from Products.CPUtils.Extensions.utils import check_zope_admin, object_link, log_list
+from zope.annotation.interfaces import IAnnotations
 
 
 def correct_ref(self, change=''):
@@ -277,3 +279,17 @@ def various(self):
         if len(mails[mail]) > 1:
             ret.append(u"Multiple scan_ids in '%s': %s" % (object_link(mail), mails[mail]))
     return "</br>\n".join(ret)
+
+
+def dg_doc_info(self):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    annot = IAnnotations(self)
+    dic = annot['documentgenerator']
+    ret = []
+    ret.append(str(dic))
+    if 'context_uid' in dic:
+        ret.append("'context_uid': '%s'" % uuidToObject(dic['context_uid']).absolute_url())
+    if 'template_uid' in dic:
+        ret.append("'template_uid': '%s'" % uuidToObject(dic['template_uid']).absolute_url())
+    return '\n'.join(ret)
