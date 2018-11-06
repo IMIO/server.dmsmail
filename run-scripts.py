@@ -65,8 +65,24 @@ def script3():
 
 
 def script4():
-    verbose('Correcting ckeditor skin on %s' % obj.absolute_url_path())
-    obj.portal_properties.ckeditor_properties.skin = 'moono-lisa'
+    verbose('Setting imio.dms.mail configuration annotation on %s' % obj.absolute_url_path())
+    from collections import OrderedDict
+    from imio.dms.mail.utils import set_dms_config
+    set_dms_config(['review_levels', 'dmsincomingmail'],
+                   OrderedDict([('dir_general', {'st': ['proposed_to_manager']}),
+                                ('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
+    set_dms_config(['review_levels', 'task'],
+                   OrderedDict([('_validateur', {'st': ['to_assign', 'realized'], 'org': 'assigned_group'})]))
+    set_dms_config(['review_levels', 'dmsoutgoingmail'],
+                   OrderedDict([('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
+    set_dms_config(['review_states', 'dmsincomingmail'],
+                   OrderedDict([('proposed_to_manager', {'group': 'dir_general'}),
+                                ('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
+    set_dms_config(['review_states', 'task'],
+                   OrderedDict([('to_assign', {'group': '_validateur', 'org': 'assigned_group'}),
+                                ('realized', {'group': '_validateur', 'org': 'assigned_group'})]))
+    set_dms_config(['review_states', 'dmsoutgoingmail'],
+                   OrderedDict([('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -376,4 +392,10 @@ def script4_18():
         if not ob.mailing_loop_template:
             verbose('Adding mailing on {} ({})'.format(brain.getPath(), brain.Title))
             ob.mailing_loop_template = ml_uid
+    transaction.commit()
+
+
+def script4_19():
+    verbose('Correcting ckeditor skin on %s' % obj.absolute_url_path())
+    obj.portal_properties.ckeditor_properties.skin = 'moono-lisa'
     transaction.commit()
