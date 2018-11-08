@@ -67,7 +67,15 @@ def script3():
 def script4():
     verbose('Setting imio.dms.mail configuration annotation on %s' % obj.absolute_url_path())
     from collections import OrderedDict
+    from imio.dms.mail.utils import get_dms_config
     from imio.dms.mail.utils import set_dms_config
+    import ipdb; ipdb.set_trace()
+    try:
+        get_dms_config()
+        error('Already applied !')
+        return
+    except KeyError:
+        pass
     set_dms_config(['review_levels', 'dmsincomingmail'],
                    OrderedDict([('dir_general', {'st': ['proposed_to_manager']}),
                                 ('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
