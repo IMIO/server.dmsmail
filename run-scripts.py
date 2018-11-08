@@ -69,7 +69,6 @@ def script4():
     from collections import OrderedDict
     from imio.dms.mail.utils import get_dms_config
     from imio.dms.mail.utils import set_dms_config
-    import ipdb; ipdb.set_trace()
     try:
         get_dms_config()
         error('Already applied !')
