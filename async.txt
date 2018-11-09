@@ -1,0 +1,15 @@
+plone.app.async is included in prod.cfg
+
+collective.documentviewer uses it.
+instance-async convert asynchronously files.
+An async db has been added to store async information.
+This avoids regular transactions (2 min) in main db.
+
+Some views can be used to follow asynchronous batches.
+* /manage-job-queue (from plone.app.async)
+* /dvasync-monitor (from dv, more basic)
+
+Problem with plone.app.async:
+* a reindex of SearchableText is done. During this process, metadata are updated. getObjSize index method is called.
+  This uses getObjSize script that is not accessible because acquisition and/or request is not available in async.
+  Solution: own dms files index method to avoid plone script.
