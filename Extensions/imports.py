@@ -82,9 +82,6 @@ def import_principals(self, add_user='', create_file='', dochange=''):
     cu = False
     if add_user == '1':
         cu = True
-    cf = False
-    if create_file == '1':
-        cf = True
     i = 0
     for line in lines:
         i += 1

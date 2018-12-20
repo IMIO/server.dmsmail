@@ -51,25 +51,6 @@ run:
 	if ! test -f bin/instance1;then make buildout;fi
 	bin/instance1 fg
 
-.PHONY: step-script
-step-script:
-# create templates: step=imiodmsmail-create-templates
-# update templates: step=imiodmsmail-update-templates
-# override templates: step=imiodmsmail-override-templates
-# all steps: profile=collective.iconifieddocumentactions:default step=_all_
-	@echo "plone: $(plone)"
-	@echo "profile: $(profile)"
-	@echo "step: $(step)"
-	bin/$(instance) -O$(plone) run run-scripts.py 1 $(profile) $(step)
-
-.PHONY: migrate-script
-migrate-script:
-# profile=collective.documentgenerator:default
-# all profiles: profile=_all_
-	@echo "plone: $(plone)"
-	@echo "profile: $(profile)"
-	bin/$(instance) -O$(plone) run run-scripts.py 2 $(profile)
-
 .PHONY: test-message-script
 test-message-script:
 # Activate test site message
