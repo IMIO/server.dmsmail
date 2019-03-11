@@ -1,0 +1,1 @@
+../src/collective.documentgenerator/bin/soffice.sh
