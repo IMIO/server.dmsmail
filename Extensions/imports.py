@@ -190,6 +190,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
         doit = True
     exm = self.REQUEST['PUBLISHED']
     portal = api.portal.get()
+    cbin = portal.portal_quickinstaller.isProductInstalled('collective.behavior.internalnumber')
     contacts = portal['contacts']
 
     def digit(phone):
@@ -434,7 +435,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                     continue
                 else:
                     pers_folder = contacts['personnel-folder']
-            else:
+            elif cbin:
                 brains = api.content.find(portal_type='person', internal_number=inum)
                 if len(brains) == 1:
                     obj = brains[0].getObject()
@@ -504,7 +505,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                 if doit:
                     obj.userid = inum
                     obj.reindexObject(idxs=['mail_type'])
-            elif IInternalNumberBehavior.providedBy(obj) and doit:
+            elif doit and IInternalNumberBehavior.providedBy(obj):
                 obj.internal_number = inum
                 obj.reindexObject(idxs=['internal_number', 'SearchableText'])
 
