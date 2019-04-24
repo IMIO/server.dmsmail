@@ -394,7 +394,12 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
             fax = safe_unicode(check_phone(digit(data[14]), i, 'PERS', data[18]))
             zipc = safe_unicode(is_zip(data[10], i, 'PERS', data[18]))
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
-            birthday = assert_date(data[5])
+            try:
+                birthday = assert_date(data[5])
+            except AssertionError, ex:
+                out.append("!! %s: line %d, birthday date problem '%s': " % ('PERS', i, data[5],
+                                                                             safe_encode(ex.message)))
+                birthday = None
             internal = data[21] and bool(int(data[21])) or False
         except AssertionError, ex:
             errors.append("!! PERS: problem line %d: %s" % (i, safe_encode(ex.message)))
