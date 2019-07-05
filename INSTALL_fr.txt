@@ -73,7 +73,7 @@ On télécharge le buildout dans un dossier
 On initialise le buildout
 > make bootstrap
 
-1) Utilisation en développement (sans ZEO, avec des outils de debug)
+==> 1) Utilisation en développement (sans ZEO, avec des outils de debug)
 
 Le fichier buildout.cfg utilise par défaut dev.cfg.
 
@@ -96,7 +96,7 @@ Sélectionner le nom du mount point désiré ("xxx" et cliquer sur "Create selec
 Tout ce qui va être ajouté dans le dossier "xxx" sera maintenant localisé dans le fichier db "xxx.fs"
  plutôt que dans "Data.fs".
 
-2) Utilisation en production (plusieurs instances Zope pour la même database, ZEO)
+==> 2) Utilisation en production (plusieurs instances Zope pour la même database, ZEO)
 
 Il faut remplacer dans le fichier buildout.cfg l'appel à dev.cfg par prod.cf.
 
@@ -121,3 +121,10 @@ Sélectionner le nom du mount point désiré ("xxx" et cliquer sur "Create selec
 
 Tout ce qui va être ajouté dans le dossier "xxx" sera maintenant localisé dans le fichier db "xxx.fs"
  plutôt que dans "Data.fs".
+
+==> 3) Utilisation de solr
+
+Décomment solr.cfg dans buildout.cfg.
+Relancer le buildout.
+Installer le module collective.solr dans le site Plone.
+Indexer dans solr : appeler /@@solr-maintenance/reindex dans le site Plone.

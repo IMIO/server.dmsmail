@@ -72,7 +72,7 @@ We download the buildout files in our folder
 we initialize the buildout
 > make bootstrap
 
-1) Use in development (without ZEO, with debug products)
+==> 1) Use in development (without ZEO, with debug products)
 
 We execute the buildout after each modification in the buildout.cfg file
 > make buildout
@@ -93,7 +93,7 @@ Select a mount point name ("xxx" and click on "Create selected mount points").
 All objects added in the zope folder "xxx" will be stored in the db file "xxx.fs"
  in place of in "Data.fs".
 
-2) Usage in production (multiple Zope instances for the same database, ZEO mode)
+==> 2) Usage in production (multiple Zope instances for the same database, ZEO mode)
 
 We can replace in the file buildout.cfg the name dev.cfg by prod.cfg.
 
@@ -118,3 +118,10 @@ Select a mount point name ("xxx" and click on "Create selected mount points").
 
 All objects added in the zope folder "xxx" will be stored in the db file "xxx.fs"
  in place of in "Data.fs".
+
+==> 3) Use of solr
+
+Uncomment solr.cfg in buildout.cfg.
+Run buildout.
+Install collective.solr product in plone site.
+Index in solr : call /@@solr-maintenance/reindex in plone site.
