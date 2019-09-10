@@ -62,6 +62,11 @@ various-script:
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 4
 
+.PHONY: pipeline
+pipeline:
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run src/collective.contact.importexport/src/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg
+
 .PHONY: robot-server
 robot-server:
 	bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
