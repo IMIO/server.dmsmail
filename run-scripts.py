@@ -65,31 +65,11 @@ def script3():
 
 
 def script4():
-    verbose('Setting imio.dms.mail configuration annotation on %s' % obj.absolute_url_path())
-    from collections import OrderedDict
-    from imio.dms.mail.utils import get_dms_config
-    from imio.dms.mail.utils import set_dms_config
-    try:
-        get_dms_config()
-        error('Already applied !')
-        return
-    except KeyError:
-        pass
-    set_dms_config(['review_levels', 'dmsincomingmail'],
-                   OrderedDict([('dir_general', {'st': ['proposed_to_manager']}),
-                                ('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
-    set_dms_config(['review_levels', 'task'],
-                   OrderedDict([('_validateur', {'st': ['to_assign', 'realized'], 'org': 'assigned_group'})]))
-    set_dms_config(['review_levels', 'dmsoutgoingmail'],
-                   OrderedDict([('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
-    set_dms_config(['review_states', 'dmsincomingmail'],
-                   OrderedDict([('proposed_to_manager', {'group': 'dir_general'}),
-                                ('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
-    set_dms_config(['review_states', 'task'],
-                   OrderedDict([('to_assign', {'group': '_validateur', 'org': 'assigned_group'}),
-                                ('realized', {'group': '_validateur', 'org': 'assigned_group'})]))
-    set_dms_config(['review_states', 'dmsoutgoingmail'],
-                   OrderedDict([('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
+    verbose('Replacing imio.dms.mail front-page title on %s' % obj.absolute_url_path())
+    frontpage = obj['front-page']
+    if frontpage.Title() == 'Gestion du courrier 3.0':
+        frontpage.setTitle('Gestion du courrier 2.1')
+
     transaction.commit()
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
@@ -405,4 +385,33 @@ def script4_18():
 def script4_19():
     verbose('Correcting ckeditor skin on %s' % obj.absolute_url_path())
     obj.portal_properties.ckeditor_properties.skin = 'moono-lisa'
+    transaction.commit()
+
+
+def script4_20():
+    verbose('Setting imio.dms.mail configuration annotation on %s' % obj.absolute_url_path())
+    from collections import OrderedDict
+    from imio.dms.mail.utils import get_dms_config
+    from imio.dms.mail.utils import set_dms_config
+    try:
+        get_dms_config()
+        error('Already applied !')
+        return
+    except KeyError:
+        pass
+    set_dms_config(['review_levels', 'dmsincomingmail'],
+                   OrderedDict([('dir_general', {'st': ['proposed_to_manager']}),
+                                ('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
+    set_dms_config(['review_levels', 'task'],
+                   OrderedDict([('_validateur', {'st': ['to_assign', 'realized'], 'org': 'assigned_group'})]))
+    set_dms_config(['review_levels', 'dmsoutgoingmail'],
+                   OrderedDict([('_validateur', {'st': ['proposed_to_service_chief'], 'org': 'treating_groups'})]))
+    set_dms_config(['review_states', 'dmsincomingmail'],
+                   OrderedDict([('proposed_to_manager', {'group': 'dir_general'}),
+                                ('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
+    set_dms_config(['review_states', 'task'],
+                   OrderedDict([('to_assign', {'group': '_validateur', 'org': 'assigned_group'}),
+                                ('realized', {'group': '_validateur', 'org': 'assigned_group'})]))
+    set_dms_config(['review_states', 'dmsoutgoingmail'],
+                   OrderedDict([('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
     transaction.commit()
