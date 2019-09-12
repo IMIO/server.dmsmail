@@ -1,11 +1,16 @@
 Changelog
 =========
 
-2.1-2 (unreleased)
+3.0-1 (unreleased)
 ------------------
 
 - Nothing changed yet.
 
+2.2-1 (2019-09-12)
+------------------
+
+- Use imio.dms.mail tag 2.2.
+  [sgeulette]
 
 2.1-1 (2018-08-22)
 ------------------
@@ -28,7 +33,6 @@ Changelog
 - Added contacts import script
   [sgeulette]
 
-
 1.0-1 (2015-11-25)
 ------------------
 
@@ -38,7 +42,6 @@ Changelog
   [sgeulette]
 - Added import principals script
   [sgeulette]
-
 
 0.3.1-1 (2015-06-03)
 --------------------
@@ -52,7 +55,6 @@ Changelog
 - Corrected buildout to use imio.dms.amqp only on specific instance with one thread
   [sgeulette]
 
-
 0.3-5 (2015-02-10)
 ------------------
 
@@ -63,13 +65,11 @@ Changelog
 - Use develop versions of Products.PasswordStrength, Products.PasswordResetTool, plone.app.locales
   [sgeulette]
 
-
 0.3-4 (2015-01-22)
 ------------------
 
 - Use Products.PasswordStrength egg, last version of collective.dms.mailcontent, imio.migrator
   [sgeulette]
-
 
 0.3-3 (2014-12-22)
 ------------------
@@ -78,7 +78,6 @@ Changelog
   [sgeulette]
 - Added iw.debug in instance-debug
   [sgeulette]
-
 
 0.3-2 (2014-12-11)
 ------------------
@@ -89,7 +88,6 @@ Changelog
   [sgeulette]
 - Upgraded collective.contact.core (widget backrefs)
   [sgeulette]
-
 
 0.3-1 (2014-12-01)
 ------------------
@@ -103,12 +101,10 @@ Changelog
 - Upgraded various eggs
   [sgeulette]
 
-
 0.2-3 (2014-04-04)
 ----------------
 
 - upgraded plone.api, collective.dms.mailcontent, collective.dms.batchcontent [sgeulette]
-
 
 0.2-2 (2014-03-18)
 ----------------
@@ -116,13 +112,11 @@ Changelog
 - added ws.cfg to configure webservice if necessary.
   [stephan]
 
-
 0.2-1 (2014-02-13)
 ----------------
 
 - pinned for imio.dms.mail 0.2.
   [stephan]
-
 
 0.1-4 (2014-01-30)
 ----------------
@@ -141,13 +135,10 @@ Changelog
 
 - remove unused parts
   [cedric, jfroche]
-
 - use policy (imio.dms.policy)
   [cedric, jfroche]
-
 - create port.cfg (to be used by puppet)
   [cedric, jfroche]
-
 
 0.1-1 (2014-01-30)
 ----------------
