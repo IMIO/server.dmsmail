@@ -6,6 +6,8 @@ Changelog
 
 - Use imio.dms.mail tag 2.2.
   [sgeulette]
+- Use Plone 4.3.18
+  [sgeulette]
 
 2.1-1 (2018-08-22)
 ------------------
