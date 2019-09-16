@@ -301,16 +301,18 @@ def clean_catalog(self):
     out = []
     pc = self.portal_catalog
     catalog = pc._catalog
-    uids = catalog.uids
-    paths = catalog.paths
+    uids = catalog.uids  # contains rid by path
+    paths = catalog.paths  # contains path by uid
     indexes = catalog.indexes.keys()
     for rid in catalog.data:
         path = paths.get(rid, None)
         if path is None:
             out.append("ERROR: cannot find rid '{}' in paths".format(rid))
             continue
-        if path not in uids:  # we have an rid without object: duplicated rid for same object
-            out.append("CLEANING rid '{}'".format(rid))
+        # 1) we have an rid without object: deleted path
+        # 2) the rid is not the one stored in uids
+        if path not in uids or uids[path] != rid:
+            out.append("CLEANING rid '{}' for path '{}'".format(rid, path))
             for name in indexes:
                 x = catalog.getIndex(name)
                 if hasattr(x, 'unindex_object'):
