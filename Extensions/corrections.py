@@ -293,3 +293,29 @@ def dg_doc_info(self):
     if 'template_uid' in dic:
         ret.append("'template_uid': '%s'" % uuidToObject(dic['template_uid']).absolute_url())
     return '\n'.join(ret)
+
+
+def clean_catalog(self):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    out = []
+    pc = self.portal_catalog
+    catalog = pc._catalog
+    uids = catalog.uids
+    paths = catalog.paths
+    indexes = catalog.indexes.keys()
+    for rid in catalog.data:
+        path = paths.get(rid, None)
+        if path is None:
+            out.append("ERROR: cannot find rid '{}' in paths".format(rid))
+            continue
+        if path not in uids:  # we have an rid without object: duplicated rid for same object
+            out.append("CLEANING rid '{}'".format(rid))
+            for name in indexes:
+                x = catalog.getIndex(name)
+                if hasattr(x, 'unindex_object'):
+                    x.unindex_object(rid)
+            del catalog.data[rid]
+            del paths[rid]
+            catalog._length.change(-1)
+    return '\n'.join(out)
