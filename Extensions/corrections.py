@@ -304,7 +304,7 @@ def clean_catalog(self):
     uids = catalog.uids  # contains rid by path
     paths = catalog.paths  # contains path by uid
     indexes = catalog.indexes.keys()
-    for rid in catalog.data:
+    for rid in catalog.data.keys():
         path = paths.get(rid, None)
         if path is None:
             out.append("ERROR: cannot find rid '{}' in paths".format(rid))

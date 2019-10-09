@@ -65,10 +65,15 @@ def script3():
 
 
 def script4():
-    verbose('Replacing imio.dms.mail front-page title on %s' % obj.absolute_url_path())
-    frontpage = obj['front-page']
+    verbose('Correcting ftw.labels permissions on %s' % obj.absolute_url_path())
+    portal = obj
+    frontpage = portal['front-page']
     if frontpage.Title() == 'Gestion du courrier 3.0':
         frontpage.setTitle('Gestion du courrier 2.1')
+    portal.manage_permission('ftw.labels: Manage Labels Jar', ('Manager', 'Site Administrator'), acquire=0)
+    portal.manage_permission('ftw.labels: Change Labels', ('Manager', 'Site Administrator'), acquire=0)
+    portal.manage_permission('ftw.labels: Change Personal Labels', ('Manager', 'Site Administrator', 'Member'),
+                             acquire=0)
 
     transaction.commit()
 
