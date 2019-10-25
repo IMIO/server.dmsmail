@@ -14,8 +14,8 @@ maindic = {}
 
 # get instance name
 inst = os.getenv('PWD').split('/')[-1]
-dic = {'inst': {inst: {'types': {}}}}
-infos = dic['inst'][inst]
+dic = {inst: {'types': {}}}
+infos = dic[inst]
 
 # get dumped dictionary
 load_var(dumpfile, maindic)
@@ -31,5 +31,5 @@ for typ in types_to_count:
 # get users count
 
 # dump dictionary
-maindic.update(dic)
+maindic['inst'].update(dic)
 dump_var(dumpfile, maindic)
