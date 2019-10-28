@@ -2,6 +2,8 @@
 
 from imio.pyutils.system import dump_var
 from imio.pyutils.system import load_var
+from imio.pyutils.system import read_dir
+from imio.pyutils.system import read_file
 from plone import api
 from Products.CPUtils.Extensions.utils import tobytes
 
@@ -11,12 +13,13 @@ types_to_count = ('dmsincomingmail', 'dmsoutgoingmail', 'task', 'organization', 
                   'dmsommainfile')
 
 zopedir = os.path.expanduser("~")
+instdir = os.getenv('PWD')
 dumpfile = os.path.join(zopedir, 'inst_infos.dic')
 maindic = {}
 
 # get instance name
-inst = os.getenv('PWD').split('/')[-1]
-dic = {inst: {'types': {}, 'users': 0, 'groups': 0, 'fs_nm': '', 'fs_sz': 0}}
+inst = instdir.split('/')[-1]
+dic = {inst: {'types': {}, 'users': 0, 'groups': 0, 'bl_nm': '', 'fs_sz': 0, 'bl_sz': 0}}
 infos = dic[inst]
 
 # get dumped dictionary
@@ -37,14 +40,25 @@ infos['users'] = len(api.user.get_users())
 infos['groups'] = len(api.group.get_groups())
 
 # sizes. app is zope
+# filestorage
 dbs = app['Control_Panel']['Database']
 for db in dbs.getDatabaseNames():
     size = dbs[db].db_size()
     size = int(tobytes(size[:-1] + ' ' + size[-1:] + 'B'))
     if size > infos['fs_sz']:
         infos['fs_sz'] = size
-        infos['fs_nm'] = dbs[db].db_name()
-
+# blobstorage
+vardir = os.path.join(instdir, 'var')
+for blobdirname in read_dir(vardir, only_folders=True):
+    if not blobdirname.startswith('blobstorage'):
+        continue
+    sizefile = os.path.join(vardir, blobdirname, 'size.txt')
+    if os.path.exists(sizefile):
+        lines = read_file(sizefile)
+        size = int(lines[0])
+        if size > infos['bl_sz']:
+            infos['bl_sz'] = size
+            infos['bl_nm'] = blobdirname
 
 # dump dictionary
 maindic['inst'].update(dic)
