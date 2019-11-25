@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
+from collective.contact.core.behaviors import validatePhone
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
 from imio.dms.mail.Extensions.imports import assert_date
 from imio.dms.mail.Extensions.imports import assert_value_in_list
 from imio.dms.mail.Extensions.imports import change_levels
 from imio.dms.mail.Extensions.imports import sort_by_level
+from imio.dms.mail.setuphandlers import create_persons_from_users
 from imio.pyutils import system
 from plone import api
 from plone.app.uuid.utils import uuidToObject
@@ -53,6 +55,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
     exm = self.REQUEST['PUBLISHED']
     path = os.path.dirname(exm.filepath())
     #path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
+    portal = api.portal.get()
     out = []
     cf = False
     if create_file == '1':
@@ -65,15 +68,16 @@ def import_principals(self, add_user='', create_file='', dochange=''):
 
     if cf:
         out.append("Creating file principals_gen.csv")
-        lines = ["GroupId;GroupTitle;Userid;Name;email;Validateur;Éditeur;Lecteur;Encodeur"]
+        lines = ["OrgId;OrgTitle;Userid;Name;email;Validateur;Éditeur;Lecteur;Encodeur;phone;label;im"]
         for uid, title in orgas:
-            lines.append("%s;%s;;;;;;;" %
+            lines.append("%s;%s;;;;;;;;;;" %
                         (uid, title.encode('utf8')))
         if doit:
             fh = open(os.path.join(path, 'principals_gen.csv'), 'w')
             for line in lines:
                 fh.write("%s\n" % line)
             fh.close()
+        out.extend(lines)
         return '\n'.join(out)
 
     # Open file
@@ -89,18 +93,32 @@ def import_principals(self, add_user='', create_file='', dochange=''):
             continue
         try:
             data = line.split(';')
-            orgid = data[0]
+            orgid = data[0].strip()
             orgtit = data[1].strip()
-            userid = data[2]
-            fullname = data[3]
-            email = data[4]
-            validateur = data[5]
-            editeur = data[6]
-            lecteur = data[7]
-            encodeur = data[8]
+            userid = data[2].strip()
+            fullname = data[3].strip()
+            email = data[4].strip()
+            validateur = data[5].strip()
+            editeur = data[6].strip()
+            lecteur = data[7].strip()
+            encodeur = data[8].strip()
         except Exception, ex:
             return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
+        try:
+            phone, hp_label, im_handle = (safe_unicode(data[9].strip()), safe_unicode(data[10].strip()),
+                                          safe_unicode(data[11].strip()))
+            if phone:
+                try:
+                    validatePhone(phone)
+                except:
+                    out.append("Line %d: incorrect phone value '%s'" % (i, safe_encode(phone)))
+                    continue
+        except Exception, ex:
+            phone = hp_label = im_handle = ''
         # check userid
+        if not userid:
+            out.append("Line %d: userid empty. Skipping line" % i)
+            continue
         if not userid.isalnum() or not userid.islower():
             out.append("Line %d: userid '%s' is not alpha lowercase" % (i, userid))
             continue
@@ -146,7 +164,6 @@ def import_principals(self, add_user='', create_file='', dochange=''):
 
         for (name, value) in [('validateur', validateur), ('editeur', editeur), ('lecteur', lecteur),
                               ('encodeur', encodeur)]:
-            value = value.strip()
             if not value:
                 # We don't remove a user from a group
                 continue
@@ -165,6 +182,29 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                     except Exception, ex:
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
                                    % (i, userid, gid, safe_encode(ex.message)))
+        # create person and held position
+        if not encodeur or not doit:
+            continue
+        create_persons_from_users(portal, userid=userid)
+        if not phone or not hp_label:
+            continue
+        # find person
+        res = portal.portal_catalog(mail_type=userid, portal_type='person')
+        if not res:
+            out.append("Line %d: person with userid '%s' not found" % (i, userid))
+            continue
+        # find held position
+        brains = api.content.find(context=res[0].getObject(), portal_type='held_position', review_state='active')
+        hps = [b.getObject() for b in brains if b.getObject().get_organization().UID() == orgid]
+        if not hps or len(hps) > 1:
+            out.append("Line %d: less or more hps '%s'" % (i, hps))
+            continue
+        hp = hps[0]
+        # update attribute
+        for attr, value in (('phone', phone), ('label', hp_label), ('im_handle', im_handle)):
+            if not value:
+                continue
+            setattr(hp, attr, value)
     return '\n'.join(out)
 
 
