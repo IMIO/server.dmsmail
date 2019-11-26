@@ -16,6 +16,7 @@ lib
 parts
 python-eggs
 src
+var
 
 debug.txt
 log.html
