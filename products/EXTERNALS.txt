@@ -1,3 +1,0 @@
-#
-# taken into account by: svn propset svn:externals -F ./EXTERNALS.txt .
-#
