@@ -21,6 +21,7 @@ parts/
 pip-selfcheck.json
 pipeline.cfg
 .plone.versioncheck.*
+port*/
 python-eggs/
 report.html
 .scripts/
