@@ -10,7 +10,7 @@ def update_dv_preview(self, state='created'):
     for brain in brains:
         out.append(brain.internal_reference_number)
         dv_conversion(brain.getObject(), change='1')
-    return '\n'.join(out + 'preview has been updated')
+    return '\n'.join(out)
 
 
 def correct_ref(self, change=''):
