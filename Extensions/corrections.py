@@ -1,5 +1,6 @@
 from plone.app.uuid.utils import uuidToObject
 from Products.CPUtils.Extensions.utils import check_zope_admin, object_link, log_list
+from Products.CPUtils.Extensions.utils import dv_conversion
 from zope.annotation.interfaces import IAnnotations
 
 
