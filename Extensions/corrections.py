@@ -1,6 +1,16 @@
 from plone.app.uuid.utils import uuidToObject
 from Products.CPUtils.Extensions.utils import check_zope_admin, object_link, log_list
+from Products.CPUtils.Extensions.utils import dv_conversion
 from zope.annotation.interfaces import IAnnotations
+
+
+def update_dv_preview(self, state='created'):
+    brains = self.portal_catalog(portal_type='dmsincomingmail', review_state=state)
+    out = []
+    for brain in brains:
+        out.append(brain.internal_reference_number)
+        dv_conversion(brain.getObject(), change='1')
+    return '\n'.join(out)
 
 
 def correct_ref(self, change=''):
