@@ -45,7 +45,7 @@ upgrade:
 
 .PHONY: standard-config
 standard-config:
-	if ! test -f bin/buildout;then make bootstrap;fi
+	if ! test -f bin/buildout;then make setup;fi
 	bin/buildout -vt 5 -c standard-config.cfg
 	git checkout .gitignore
 
