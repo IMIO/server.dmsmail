@@ -54,6 +54,11 @@ run:
 	if ! test -f bin/instance1;then make buildout;fi
 	bin/instance1 fg
 
+.PHONY: ports
+ports:
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run run-scripts.py 1
+
 .PHONY: test-message-script
 test-message-script:
 # Activate test site message

@@ -11,25 +11,11 @@ if len(sys.argv) < 3 or not sys.argv[2].endswith('run-scripts.py'):
 
 
 def script1():
-    if len(sys.argv) < 6:
-        error("Missing profile and step names in args")
-        sys.exit(0)
-    profile = sys.argv[4]
-    step = sys.argv[5]
-    if not profile.startswith('profile-'):
-        profile = 'profile-%s' % profile
-    if step == '_all_':
-        verbose('Running all "%s" steps on %s' % (profile, obj.absolute_url_path()))
-        ret = obj.portal_setup.runAllImportStepsFromProfile(profile)
-    else:
-        verbose('Running "%s#%s" step on %s' % (profile, step, obj.absolute_url_path()))
-        ret = obj.portal_setup.runImportStepFromProfile(profile, step, run_dependencies=False)
-
-    if 'messages' in ret:
-        for step in ret['messages']:
-            verbose("%s:\n%s" % (step, ret['messages'][step]))
-    else:
-        verbose("No output")
+    verbose('Updating ports on %s' % obj.absolute_url_path())
+    from collective.documentgenerator.utils import update_oo_config
+    from imio.dms.mail.utils import update_solr_config
+    update_solr_config()
+    update_oo_config()
     transaction.commit()
 
 
