@@ -93,3 +93,7 @@ coverage:
 .PHONY: cleanall
 cleanall:
 	rm -fr lib bin/buildout develop-eggs downloads eggs parts .installed.cfg
+
+.PHONY: vc
+vc:
+	bin/versioncheck -rbo checkversion.html

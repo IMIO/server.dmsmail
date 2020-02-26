@@ -1,5 +1,6 @@
 active
 bin/
+checkversion.html
 config/
 copy-data.sh
 .coverage
