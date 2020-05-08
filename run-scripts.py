@@ -63,7 +63,7 @@ def script4():
 
     transaction.commit()
 
-info = ["You can pass following parameters (with the first one always script number):", "1: run profile step",
+info = ["You can pass following parameters (with the first one always script number):", "1: run ports update",
         "2: run profile upgrade", "3: activate test message", "4: various"]
 scripts = {'1': script1, '2': script2, '3': script3, '4': script4}
 
