@@ -74,7 +74,7 @@ various-script:
 .PHONY: pipeline
 pipeline:
 	@echo "plone: $(plone)"
-	bin/$(instance) -O$(plone) run src/collective.contact.importexport/src/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg
+	bin/$(instance) run src/collective.contact.importexport/src/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg $(plone)
 
 .PHONY: robot-server
 robot-server:
