@@ -8,6 +8,7 @@ disable=0
 copydata=1
 instance=instance-debug
 profile=imio.dms.mail:singles
+commit=0
 
 all: run
 
@@ -74,7 +75,8 @@ various-script:
 .PHONY: pipeline
 pipeline:
 	@echo "plone: $(plone)"
-	bin/$(instance) run src/collective.contact.importexport/src/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg $(plone)
+	@echo "commit: $(commit)"
+	bin/$(instance) run src/collective.contact.importexport/src/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg $(plone) $(commit)
 
 .PHONY: robot-server
 robot-server:

@@ -20,7 +20,7 @@ log.html
 output.xml
 parts/
 pip-selfcheck.json
-pipeline.cfg
+pipeline*.cfg
 .plone.versioncheck.*
 port*/
 python-eggs/
