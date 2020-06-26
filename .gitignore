@@ -27,6 +27,7 @@ python-eggs/
 report.html
 .scripts/
 send-blobsize.sh
+.sizes.json
 server.dmsmail.sublime-*
 share/
 src/

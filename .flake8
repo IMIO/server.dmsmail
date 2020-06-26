@@ -1,0 +1,17 @@
+[flake8]
+max-line-length=120
+ignore =
+    # continuation line missing indentation or outdented
+    E122
+    # Continuation line over/under-indented for hanging indent
+    E126
+    E121
+    # Missing whitespace around arithmetic operator
+    E226
+    # Multiple statements on one line
+    E704
+    # Line break occurred before a binary operator
+    W503
+    # line break after binary operator
+    W504
+# 'E123' normally ignored (Closing bracket does not match indentation of opening bracket's line)
