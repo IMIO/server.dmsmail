@@ -31,5 +31,6 @@ send-blobsize.sh
 server.dmsmail.sublime-*
 share/
 src/
+./test.py
 update-admin-password.*
 var/
