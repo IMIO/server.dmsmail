@@ -80,12 +80,12 @@ pipeline:
 
 .PHONY: robot-server
 robot-server:
-	bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
 
 .PHONY: doc
 doc:
 	# can be run by example with: make doc opt='-t "Contacts *"'
-	bin/robot $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 
 .PHONY: coverage
 coverage:
