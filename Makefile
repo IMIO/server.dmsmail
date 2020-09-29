@@ -85,7 +85,7 @@ robot-server:
 .PHONY: doc
 doc:
 	# can be run by example with: make doc opt='-t "Contacts *"'
-	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -l NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 
 .PHONY: coverage
 coverage:
