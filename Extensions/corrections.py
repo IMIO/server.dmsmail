@@ -22,8 +22,8 @@ def correct_ref(self, change=''):
             (begin, nb) = prev_ref.split('/')
             new_ref = '%s/%d' % (begin, int(nb)+1)
             # for cpas mons
-            #nb = prev_ref
-            #new_ref = '%03d' % (int(nb) + 1)
+            # nb = prev_ref
+            # new_ref = '%03d' % (int(nb) + 1)
             out.append("<a href='%s'>%s</a>, %s, %s" % (obj.absolute_url(), obj.Title(), prev_ref, new_ref))
             prev_ref = new_ref
             if change == '1':
@@ -148,9 +148,9 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
         ret.append("Cannot eval criteria as dict")
         return '\n'.join(ret)
     criterias = {'review_state': {'not': ['closed']}}
-    start = DateTime('2017-09-22 00:00:01')
-    end = DateTime('2017-10-08 23:59:59')
-    #criterias.update({'created': {'query': (start, end,), 'range': 'min:max'}})
+    start = DateTime('2017-09-22 00:00:01')  # noqa
+    end = DateTime('2017-10-08 23:59:59')  # noqa
+    # criterias.update({'created': {'query': (start, end,), 'range': 'min:max'}})
     criterias.update(crit_dic)
     ret.append("criterias=%s\n" % criterias)
     brains = pc(portal_type=typ, **criterias)
