@@ -11,7 +11,8 @@ if len(sys.argv) < 3 or not sys.argv[2].endswith('run-scripts.py'):
 
 
 def script1():
-    verbose('Updating ports on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Updating ports on %s' % portal.absolute_url_path())
     from collective.documentgenerator.utils import update_oo_config
     from imio.dms.mail.utils import update_solr_config
     update_solr_config()
@@ -37,8 +38,9 @@ def script2():
 
 
 def script3():
-    verbose('Activating test site message on %s' % obj.absolute_url_path())
-    testmsg = obj.unrestrictedTraverse('messages-config/test-site', default=None)
+    portal = obj  # noqa
+    verbose('Activating test site message on %s' % portal.absolute_url_path())
+    testmsg = portal.unrestrictedTraverse('messages-config/test-site', default=None)
     if testmsg:
         if api.content.get_state(testmsg) == 'inactive':
             api.content.transition(testmsg, transition='activate')
@@ -51,8 +53,8 @@ def script3():
 
 
 def script4():
-    verbose('Correcting ftw.labels permissions on %s' % obj.absolute_url_path())
-    portal = obj
+    portal = obj  # noqa
+    verbose('Correcting ftw.labels permissions on %s' % portal.absolute_url_path())
     frontpage = portal['front-page']
     if frontpage.Title() == 'Gestion du courrier 3.0':
         frontpage.setTitle('Gestion du courrier 2.1')
@@ -62,6 +64,7 @@ def script4():
                              acquire=0)
 
     transaction.commit()
+
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run ports update",
         "2: run profile upgrade", "3: activate test message", "4: various"]
@@ -75,11 +78,12 @@ if len(sys.argv) < 4 or sys.argv[3] not in scripts:
 with api.env.adopt_user(username='admin'):
     scripts[sys.argv[3]]()
 
-### OLD scripts ###
+# ## OLD scripts ## #
 
 
 def script4_1():
-    verbose('Setting documentgenerator config on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Setting documentgenerator config on %s' % portal.absolute_url_path())
     from collective.documentgenerator.config import set_oo_port, set_uno_path
     set_oo_port()
     set_uno_path()
@@ -87,23 +91,26 @@ def script4_1():
 
 
 def script4_2():
-    verbose('Change searched types on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Change searched types on %s' % portal.absolute_url_path())
     from imio.dms.mail.setuphandlers import changeSearchedTypes
-    changeSearchedTypes(obj)
+    changeSearchedTypes(portal)
     transaction.commit()
 
 
 def script4_3():
-    verbose('Add transforms on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Add transforms on %s' % portal.absolute_url_path())
     from imio.dms.mail.setuphandlers import add_transforms
-    add_transforms(obj)
-    for brain in obj.portal_catalog(portal_type='dmsommainfile'):
+    add_transforms(portal)
+    for brain in portal.portal_catalog(portal_type='dmsommainfile'):
         brain.getObject().reindexObject(idxs=['SearchableText'])
     transaction.commit()
 
 
 def script4_4():
-    verbose('Correct templates odt_file contentType on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Correct templates odt_file contentType on %s' % portal.absolute_url_path())
     from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
     import hmac
     from hashlib import sha1 as sha
@@ -113,7 +120,7 @@ def script4_4():
     ring = manager[u"_system"]
     template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
     changes = False
-    for brain in obj.portal_catalog(portal_type=template_types):
+    for brain in portal.portal_catalog(portal_type=template_types):
         tmpl = brain.getObject()
         if tmpl.odt_file.contentType == 'applications/odt':
             error("%s has bad content type" % brain.getPath())
@@ -132,9 +139,10 @@ def script4_4():
 
 
 def script4_5():
-    verbose('Set imio.dms.mail parameter on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Set imio.dms.mail parameter on %s' % portal.absolute_url_path())
     from imio.migrator.migrator import Migrator
-    mig = Migrator(obj)
+    mig = Migrator(portal)
     mig.runProfileSteps('imio.dms.mail', steps=['plone.app.registry'])
     mig.upgradeProfile('collective.iconifieddocumentactions:default')
     from imio.dms.mail.browser.settings import IImioDmsMailConfig
@@ -145,44 +153,47 @@ def script4_5():
 
 
 def script4_6():
-    verbose('Set imio.dms.mail models on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Set imio.dms.mail models on %s' % portal.absolute_url_path())
     from plone import api
     from zope.lifecycleevent import modified
-    dprint = obj.templates.get('d-print', None)
+    dprint = portal.templates.get('d-print', None)
     if dprint:
         verbose("Moving d-print")
-        api.content.move(source=dprint, target=obj.templates.om)
-        dprint = obj.templates.om['d-print']
-        obj.templates.om.moveObjectToPosition('d-print', 1)
+        api.content.move(source=dprint, target=portal.templates.om)
+        dprint = portal.templates.om['d-print']
+        portal.templates.om.moveObjectToPosition('d-print', 1)
         if not dprint.style_template:
             verbose("Changing style template")
-            dprint.style_template = obj.templates.om.style.UID()
+            dprint.style_template = portal.templates.om.style.UID()
             modified(dprint)
         transaction.commit()
 
 
 def script4_7():
-    verbose('Change imio.dms.mail settings on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Change imio.dms.mail settings on %s' % portal.absolute_url_path())
     from plone import api
     api.portal.set_registry_record('collective.documentgenerator.browser.controlpanel.'
                                    'IDocumentGeneratorControlPanelSchema.raiseOnError_for_non_managers', True)
-    template = obj.restrictedTraverse('templates/om/d-print')
+    template = portal.restrictedTraverse('templates/om/d-print')
     template.enabled = False
     transaction.commit()
 
 
 def script4_8():
-    verbose('Update templates on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Update templates on %s' % portal.absolute_url_path())
     # changing layout
-    obj.templates.om.layout = 'dg-templates-listing'
+    portal.templates.om.layout = 'dg-templates-listing'
     # defining style_template
     from collective.documentgenerator.content.pod_template import IPODTemplate
     from imio.dms.mail.interfaces import IOMTemplatesFolder
     from zope.interface import alsoProvides
-    om_folder = obj.templates.om
+    om_folder = portal.templates.om
     alsoProvides(om_folder, IOMTemplatesFolder)
     style_uid = om_folder.style.UID()
-    brains = obj.portal_catalog.unrestrictedSearchResults(object_provides=IPODTemplate.__identifier__)
+    brains = portal.portal_catalog.unrestrictedSearchResults(object_provides=IPODTemplate.__identifier__)
     for brain in brains:
         tmp = brain.getObject()
         if tmp.style_template is None:
@@ -194,11 +205,12 @@ def script4_8():
 
 
 def script4_9():
-    verbose('Modify d-print on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Modify d-print on %s' % portal.absolute_url_path())
     import pkg_resources
     from imio.helpers.content import create_NamedBlob
     from zope.lifecycleevent import modified
-    dprint = obj.templates.om.get('d-print', None)
+    dprint = portal.templates.om.get('d-print', None)
     if dprint.has_been_modified():
         error('Beware: d-print has been modified !')
     if not dprint.enabled:
@@ -212,58 +224,62 @@ def script4_9():
 
 
 def script4_10():
+    portal = obj  # noqa
     from datetime import date, datetime, time
-    verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % obj.absolute_url_path())
+    verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % portal.absolute_url_path())
     default_time = time(10, 0)
-    for brain in obj.portal_catalog(portal_type='dmsoutgoingmail'):
+    for brain in portal.portal_catalog(portal_type='dmsoutgoingmail'):
         dom = brain.getObject()
         if dom.outgoing_date:
             dt = dom.outgoing_date
             if isinstance(dt, date):
                 dom.outgoing_date = datetime.combine(dt, default_time)
         dom.reindexObject()
-    for brain in obj.portal_catalog(portal_type='dmsincomingmail'):
+    for brain in portal.portal_catalog(portal_type='dmsincomingmail'):
         brain.getObject().reindexObject(idxs=['organization_type'])
     from imio.dms.mail.utils import list_wf_states
     collections = ['outgoing-mail/mail-searches/searchfor_scanned']
     for stateo in list_wf_states('', 'dmsincomingmail'):
         collections.append("incoming-mail/mail-searches/searchfor_%s" % stateo.id)
     for path in collections:
-        col = obj.restrictedTraverse(path)
+        col = portal.restrictedTraverse(path)
         col.sort_on = 'organization_type'
     transaction.commit()
 
 
 def script4_11():
-    verbose('Changing order on all incoming mail collections on %s' % obj.absolute_url_path())
-    folder = obj['incoming-mail']['mail-searches']
+    portal = obj  # noqa
+    verbose('Changing order on all incoming mail collections on %s' % portal.absolute_url_path())
+    folder = portal['incoming-mail']['mail-searches']
     crit = {'portal_type': 'DashboardCollection',
             'path': {'query': '/'.join(folder.getPhysicalPath()), 'depth': 1}}
-    brains = obj.portal_catalog.searchResults(crit)
+    brains = portal.portal_catalog.searchResults(crit)
     for brain in brains:
         brain.getObject().sort_on = 'organization_type'
     transaction.commit()
 
 
 def script4_12():
-    verbose('Activate versioning, change CMFEditions permissions on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Activate versioning, change CMFEditions permissions on %s' % portal.absolute_url_path())
     # versioning
-    pdiff = obj.portal_diff
+    pdiff = portal.portal_diff
     pdiff.setDiffForPortalType('dmsoutgoingmail', {'any': "Compound Diff for Dexterity types"})
-    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
+    portal.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
     # cmfeditions permissions
-    obj.manage_permission('CMFEditions: Access previous versions', ('Manager', 'Site Administrator', 'Contributor',
-                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
-    obj.manage_permission('CMFEditions: Save new version', ('Manager', 'Site Administrator', 'Contributor',
-                          'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
+    portal.manage_permission('CMFEditions: Access previous versions', ('Manager', 'Site Administrator', 'Contributor',
+                             'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
+    portal.manage_permission('CMFEditions: Save new version', ('Manager', 'Site Administrator', 'Contributor',
+                             'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
     transaction.commit()
 
 
 def script4_13():
-    verbose('Correcting datetime values on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Correcting datetime values on %s' % portal.absolute_url_path())
     from plone import api
     from datetime import timedelta
-    pc = obj.portal_catalog
+    pc = portal.portal_catalog
     # incoming mails
     for typ, attr in (('dmsincomingmail', 'reception_date'), ('dmsoutgoingmail', 'outgoing_date')):
         total = corrected = 0
@@ -291,14 +307,14 @@ def script4_13():
 
 
 def script4_14():
-    verbose('Changing personnel-folder interfaces on %s' % obj.absolute_url_path())
-    from plone import api
+    portal = obj  # noqa
+    verbose('Changing personnel-folder interfaces on %s' % portal.absolute_url_path())
     from imio.dms.mail.interfaces import IPersonnelContact
     from collective.contact.plonegroup.interfaces import IPloneGroupContact
     from zope.interface import alsoProvides, noLongerProvides
     from imio.helpers.cache import invalidate_cachekey_volatile_for
-    pc = obj.portal_catalog
-    pf = obj['contacts']['personnel-folder']
+    pc = portal.portal_catalog
+    pf = portal['contacts']['personnel-folder']
     # personnel contacts
     for brain in pc(path={'query': '/'.join(pf.getPhysicalPath()), 'depth': 2}):
         contact = brain.getObject()
@@ -312,25 +328,27 @@ def script4_14():
 
 
 def script4_15():
-    verbose('Updating workflow on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Updating workflow on %s' % portal.absolute_url_path())
     # Updating workflow
-    wf = obj.portal_workflow['outgoingmail_workflow']
+    wf = portal.portal_workflow['outgoingmail_workflow']
     for tr_name in ['set_scanned', 'back_to_agent']:
         tr = wf.transitions.get(tr_name)
         guard = tr.getGuard()
         guard.permissions = ()
         guard.roles = ('Batch importer',)
     # Updating registry
-    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
-    obj.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'actions', run_dependencies=False)
+    portal.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
+    portal.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'actions', run_dependencies=False)
     transaction.commit()
 
 
 def script4_16():
-    verbose('Updating base on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Updating base on %s' % portal.absolute_url_path())
     from plone import api
     # base model
-    pc = obj.portal_catalog
+    pc = portal.portal_catalog
     for brain in pc(id='base', portal_type='ConfigurablePODTemplate'):
         model = brain.getObject()
         api.content.rename(obj=model, new_id='main')
@@ -339,7 +357,8 @@ def script4_16():
 
 
 def script4_17():
-    verbose('Updating dashboards interfaces on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Updating dashboards interfaces on %s' % portal.absolute_url_path())
     from imio.dms.mail.interfaces import IIMDashboard
     from imio.dms.mail.interfaces import IIMDashboardBatchActions
     from imio.dms.mail.interfaces import IOMDashboard
@@ -348,21 +367,22 @@ def script4_17():
     from imio.dms.mail.interfaces import ITaskDashboardBatchActions
     from zope.interface import alsoProvides
     from zope.interface import noLongerProvides
-    imf = obj['incoming-mail']['mail-searches']
+    imf = portal['incoming-mail']['mail-searches']
     noLongerProvides(imf, IIMDashboard)
     alsoProvides(imf, IIMDashboardBatchActions)
-    omf = obj['outgoing-mail']['mail-searches']
+    omf = portal['outgoing-mail']['mail-searches']
     noLongerProvides(omf, IOMDashboard)
     alsoProvides(omf, IOMDashboardBatchActions)
-    tf = obj['tasks']['task-searches']
+    tf = portal['tasks']['task-searches']
     noLongerProvides(tf, ITaskDashboard)
     alsoProvides(tf, ITaskDashboardBatchActions)
     transaction.commit()
 
 
 def script4_18():
-    verbose('Adding mailing on %s' % obj.absolute_url_path())
-    folder = obj['templates']['om']
+    portal = obj  # noqa
+    verbose('Adding mailing on %s' % portal.absolute_url_path())
+    folder = portal['templates']['om']
     ml_uid = folder['mailing'].UID()
     brains = api.content.find(context=folder, portal_type=['ConfigurablePODTemplate'])
     for brain in brains:
@@ -374,13 +394,15 @@ def script4_18():
 
 
 def script4_19():
-    verbose('Correcting ckeditor skin on %s' % obj.absolute_url_path())
-    obj.portal_properties.ckeditor_properties.skin = 'moono-lisa'
+    portal = obj  # noqa
+    verbose('Correcting ckeditor skin on %s' % portal.absolute_url_path())
+    portal.portal_properties.ckeditor_properties.skin = 'moono-lisa'
     transaction.commit()
 
 
 def script4_20():
-    verbose('Setting imio.dms.mail configuration annotation on %s' % obj.absolute_url_path())
+    portal = obj  # noqa
+    verbose('Setting imio.dms.mail configuration annotation on %s' % portal.absolute_url_path())
     from collections import OrderedDict
     from imio.dms.mail.utils import get_dms_config
     from imio.dms.mail.utils import set_dms_config
