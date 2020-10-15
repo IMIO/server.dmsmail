@@ -38,9 +38,9 @@ def script2():
     #     error("ERR:{}".format(''.join(err)))
     # blob_nb = int(out[-1].strip('\n') or 0)
     res = dv_clean(portal, days_back)
-    # lines = res.split('\n')[3:]
-    # verbose('\n'.join(lines[:3]))
-    # verbose('\n'.join(lines[3:]))
+    lines = res.split('\n')[3:]
+    verbose('\n'.join(lines[:3]))
+    verbose('\n'.join(lines[-5:]))
     transaction.commit()
 
 
