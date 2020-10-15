@@ -1,5 +1,12 @@
+# -*- coding: utf-8 -*-
+
+from datetime import datetime
+from datetime import timedelta
 from plone.app.uuid.utils import uuidToObject
-from Products.CPUtils.Extensions.utils import check_zope_admin, object_link, log_list
+from Products.CPUtils.Extensions.utils import check_zope_admin
+from Products.CPUtils.Extensions.utils import fileSize
+from Products.CPUtils.Extensions.utils import log_list
+from Products.CPUtils.Extensions.utils import object_link
 from zope.annotation.interfaces import IAnnotations
 
 
@@ -230,7 +237,6 @@ def correct_internal_reference(self, toreplace='', by='', request="{'portal_type
         p_o = re.compile(toreplace)
     except Exception, msg:
         return "!! Cannot compile replace expression '%s': '%s'" % (toreplace, msg)
-    from datetime import datetime
     try:
         dic = eval(request)
     except Exception, msg:
@@ -320,4 +326,56 @@ def clean_catalog(self):
             del catalog.data[rid]
             del paths[rid]
             catalog._length.change(-1)
+    return '\n'.join(out)
+
+
+def dv_clean(self, days_back='365', batch='3000'):
+    """ Remove document viewer annotation on old mails """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    start = datetime.now()
+    out = ["call the script followed by needed parameters:",
+           "-> days_back=nb of days to keep (default '365')",
+           "-> batch=batch number to commit each nth (default '3000')"]
+    import logging
+    logger = logging.getLogger('iA.docs dv_clean')
+    commit = int(batch)
+    from Products.CPUtils.Extensions.utils import dv_images_size
+    from Products.CPUtils.Extensions.utils import remove_generated_previews
+    import transaction
+    log_list(out, "Starting dv_clean at {}".format(start), logger)
+    pc = self.portal_catalog
+    criterias = [
+        {'portal_type': ['dmsincomingmail', 'dmsincoming_email'], 'review_state': 'closed'},
+        {'portal_type': ['dmsoutgoingmail', 'dmsoutgoing_email'], 'review_state': 'sent'},
+    ]
+    date_back = start - timedelta(days=int(days_back))
+    total = {'obj': 0, 'pages': 0, 'files': 0, 'size': 0}
+    for criteria in criterias:
+        criteria.update({'modified': {'query': date_back, 'range': 'max'}})  # noqa
+        brains = pc(**criteria)
+        bl = len(brains)
+        log_list(out, "Found {} objects of portal_types '{}'".format(bl, ', '.join(criteria['portal_type'])), logger)
+        total['obj'] += bl
+        for brain in brains:
+            mail = brain.getObject()
+            for fid in mail.objectIds(ordered=False):
+                fobj = mail[fid]
+                if fobj.portal_type not in ['dmsmainfile', 'dmsommainfile', 'dmsappendixfile']:
+                    continue
+                total['files'] += 1
+                sizes = dv_images_size(fobj)
+                total['pages'] += sizes['pages']
+                total['size'] += (sizes['large'] + sizes['normal'] + sizes['small'] + sizes['text'])
+                remove_generated_previews(fobj)
+                if total['files'] % commit == 0:
+                    transaction.commit()
+
+    end = datetime.now()
+    delta = end - start
+    log_list(out, "Finishing dv_clean, duration {}".format(delta), logger)
+    log_list(out, "Objects {}".format(total['obj']), logger)
+    log_list(out, "Files {}".format(total['files']), logger)
+    log_list(out, "Pages {} => blobs deleted {}".format(total['pages'], total['pages'] * 4), logger)
+    log_list(out, "Size {}".format(fileSize(total['size'])), logger)
     return '\n'.join(out)

@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
-from imio.pyutils.system import verbose, error
+from imio.pyutils.system import error
+from imio.pyutils.system import runCommand
+from imio.pyutils.system import verbose
 import transaction
 from plone import api
 
@@ -21,19 +25,23 @@ def script1():
 
 
 def script2():
+    portal = obj  # noqa
     if len(sys.argv) < 5:
-        error("Missing profile name in args")
+        error("Cleaning dv files on '{}': Missing back days number !".format(portal.absolute_url_path()))
         sys.exit(0)
-    profile = sys.argv[4]
-    from imio.migrator.migrator import Migrator
-    # obj is plone site
-    mig = Migrator(obj)
-    if profile == '_all_':
-        verbose('Running all upgrades on %s' % (obj.absolute_url_path()))
-        mig.upgradeAll(omit=['imio.dms.mail:default'])
-    else:
-        verbose('Running "%s" upgrade on %s' % (profile, obj.absolute_url_path()))
-        mig.upgradeProfile(profile)
+    days_back = sys.argv[4]
+    verbose('Cleaning dv files older than {} days on {}'.format(days_back, portal.absolute_url_path()))
+    main_path = os.path.dirname(os.path.realpath(sys.argv[2]))  # full path of this script
+    sys.path[0:0] = ['{}/Extensions'.format(main_path)]
+    from corrections import dv_clean  # noqa
+    # (out, err, code) = runCommand('find {}/var/blobstorage -type f | wc -l'.format(main_path))
+    # if code:
+    #     error("ERR:{}".format(''.join(err)))
+    # blob_nb = int(out[-1].strip('\n') or 0)
+    res = dv_clean(portal, days_back)
+    # lines = res.split('\n')[3:]
+    # verbose('\n'.join(lines[:3]))
+    # verbose('\n'.join(lines[3:]))
     transaction.commit()
 
 
