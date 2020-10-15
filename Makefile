@@ -60,6 +60,13 @@ ports:
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 1
 
+.PHONY: dv_clean
+dv_clean:
+# Clean old document viewer images
+	@echo "plone: $(plone)"
+	@echo "days (back): ${days}"
+	bin/$(instance) -O$(plone) run run-scripts.py 2 $(days)
+
 .PHONY: test-message-script
 test-message-script:
 # Activate test site message
