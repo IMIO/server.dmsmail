@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from DateTime import DateTime
 from datetime import timedelta
 from plone.app.uuid.utils import uuidToObject
 from Products.CPUtils.Extensions.utils import check_zope_admin
@@ -10,6 +11,8 @@ from Products.CPUtils.Extensions.utils import log_list
 from Products.CPUtils.Extensions.utils import object_link
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.annotation.interfaces import IAnnotations
+
+import os
 
 
 def update_dv_preview(self, state='created'):
@@ -350,15 +353,20 @@ def dv_clean(self, days_back='365', batch='3000'):
            "-> batch=batch number to commit each nth (default '3000')"]
     pghandler = ZLogHandler(steps=int(batch))
     log_list(out, "Starting dv_clean at {}".format(start), pghandler)
+    from collective.documentviewer.convert import saveFileToBlob
     from Products.CPUtils.Extensions.utils import dv_images_size
-    from Products.CPUtils.Extensions.utils import remove_generated_previews
-    pc = self.portal_catalog
+    current_dir = os.path.dirname(__file__)
+    normal_blob = saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_normal.jpg'))
+    blobs = {'large': normal_blob, 'normal': normal_blob,
+             'small': saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_small.jpg'))}
     criterias = [
         {'portal_type': ['dmsincomingmail', 'dmsincoming_email'], 'review_state': 'closed'},
         {'portal_type': ['dmsoutgoingmail', 'dmsoutgoing_email'], 'review_state': 'sent'},
     ]
     date_back = start - timedelta(days=int(days_back))
+    already_done = DateTime('2010/01/01').ISO8601()
     total = {'obj': 0, 'pages': 0, 'files': 0, 'size': 0}
+    pc = self.portal_catalog
     for criteria in criterias:
         criteria.update({'modified': {'query': date_back, 'range': 'max'}})  # noqa
         brains = pc(**criteria)
@@ -371,11 +379,29 @@ def dv_clean(self, days_back='365', batch='3000'):
                 fobj = mail[fid]
                 if fobj.portal_type not in ['dmsmainfile', 'dmsommainfile', 'dmsappendixfile']:
                     continue
+                annot = IAnnotations(fobj).get('collective.documentviewer', '')
+                if not annot or not annot.get('successfully_converted'):
+                    continue
+                if annot['last_updated'] == already_done:
+                    continue
                 total['files'] += 1
                 sizes = dv_images_size(fobj)
                 total['pages'] += sizes['pages']
                 total['size'] += (sizes['large'] + sizes['normal'] + sizes['small'] + sizes['text'])
-                remove_generated_previews(fobj)
+                # clean annotation
+                files = annot.get('blob_files', None)
+                keys = files.keys()
+                iformat = annot['pdf_image_format']
+                for name in ['large', 'normal', 'small', 'text']:
+                    for page in range(1, annot['num_pages'] + 1):
+                        img = '%s/dump_%d.%s' % (name, page, (name != 'text' and iformat or 'txt'))
+                        if page == 1 and name != 'text':
+                            files[img] = blobs[name]
+                        elif img in keys:
+                            del files[img]
+                annot['num_pages'] = 1
+                annot['pdf_image_format'] = 'jpg'
+                annot['last_updated'] = already_done
             pghandler.report(i)
         pghandler.finish()
 
