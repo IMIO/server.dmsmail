@@ -5,6 +5,7 @@ import sys
 from imio.pyutils.system import error
 from imio.pyutils.system import runCommand
 from imio.pyutils.system import verbose
+from imio.helpers.security import setup_logger
 import transaction
 from plone import api
 
@@ -12,6 +13,8 @@ from plone import api
 if len(sys.argv) < 3 or not sys.argv[2].endswith('run-scripts.py'):
     error("Inconsistent or unexpected args len: %s" % sys.argv)
     sys.exit(0)
+
+setup_logger()
 
 
 def script1():
@@ -38,10 +41,7 @@ def script2():
     # if code:
     #     error("ERR:{}".format(''.join(err)))
     # blob_nb = int(out[-1].strip('\n') or 0)
-    res = dv_clean(portal, days_back)
-    lines = res.split('\n')[3:]
-    verbose('\n'.join(lines[:3]))
-    verbose('\n'.join(lines[-5:]))
+    dv_clean(portal, days_back)
     transaction.commit()
 
 
