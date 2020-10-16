@@ -8,6 +8,7 @@ from Products.CPUtils.Extensions.utils import dv_conversion
 from Products.CPUtils.Extensions.utils import fileSize
 from Products.CPUtils.Extensions.utils import log_list
 from Products.CPUtils.Extensions.utils import object_link
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.annotation.interfaces import IAnnotations
 
 
@@ -347,13 +348,10 @@ def dv_clean(self, days_back='365', batch='3000'):
     out = ["call the script followed by needed parameters:",
            "-> days_back=nb of days to keep (default '365')",
            "-> batch=batch number to commit each nth (default '3000')"]
-    import logging
-    logger = logging.getLogger('iA.docs dv_clean')
-    commit = int(batch)
+    pghandler = ZLogHandler(steps=int(batch))
+    log_list(out, "Starting dv_clean at {}".format(start), pghandler)
     from Products.CPUtils.Extensions.utils import dv_images_size
     from Products.CPUtils.Extensions.utils import remove_generated_previews
-    import transaction
-    log_list(out, "Starting dv_clean at {}".format(start), logger)
     pc = self.portal_catalog
     criterias = [
         {'portal_type': ['dmsincomingmail', 'dmsincoming_email'], 'review_state': 'closed'},
@@ -365,9 +363,9 @@ def dv_clean(self, days_back='365', batch='3000'):
         criteria.update({'modified': {'query': date_back, 'range': 'max'}})  # noqa
         brains = pc(**criteria)
         bl = len(brains)
-        log_list(out, "Found {} objects of portal_types '{}'".format(bl, ', '.join(criteria['portal_type'])), logger)
+        pghandler.init(criteria['portal_type'][0], bl)
         total['obj'] += bl
-        for brain in brains:
+        for i, brain in enumerate(brains, 1):
             mail = brain.getObject()
             for fid in mail.objectIds(ordered=False):
                 fobj = mail[fid]
@@ -378,14 +376,15 @@ def dv_clean(self, days_back='365', batch='3000'):
                 total['pages'] += sizes['pages']
                 total['size'] += (sizes['large'] + sizes['normal'] + sizes['small'] + sizes['text'])
                 remove_generated_previews(fobj)
-                if total['files'] % commit == 0:
-                    transaction.commit()
+            pghandler.report(i)
+        pghandler.finish()
 
     end = datetime.now()
     delta = end - start
-    log_list(out, "Finishing dv_clean, duration {}".format(delta), logger)
-    log_list(out, "Objects {}".format(total['obj']), logger)
-    log_list(out, "Files {}".format(total['files']), logger)
-    log_list(out, "Pages {} => blobs deleted {}".format(total['pages'], total['pages'] * 4), logger)
-    log_list(out, "Size {}".format(fileSize(total['size'])), logger)
+    log_list(out, "Finishing dv_clean, duration {}".format(delta), pghandler)
+    total['deleted'] = total['pages'] * 4
+    total['size'] = fileSize(total['size'])
+    log_list(out,
+             "Objects: '{obj}', Files: '{files}', Pages: '{pages}', Deleted: '{deleted}', Size: '{size}'".format(**total),
+             pghandler)
     return '\n'.join(out)
