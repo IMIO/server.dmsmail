@@ -344,6 +344,7 @@ def dv_clean(self, days_back='365', batch='3000'):
     pghandler = ZLogHandler(steps=int(batch))
     log_list(out, "Starting dv_clean at {}".format(start), pghandler)
     from collective.documentviewer.convert import saveFileToBlob
+    from BTrees.OOBTree import OOBTree
     from Products.CPUtils.Extensions.utils import dv_images_size
     current_dir = os.path.dirname(__file__)
     normal_blob = saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_normal.jpg'))
@@ -379,16 +380,10 @@ def dv_clean(self, days_back='365', batch='3000'):
                 total['pages'] += sizes['pages']
                 total['size'] += (sizes['large'] + sizes['normal'] + sizes['small'] + sizes['text'])
                 # clean annotation
-                files = annot.get('blob_files', None)
-                keys = files.keys()
-                iformat = annot['pdf_image_format']
-                for name in ['large', 'normal', 'small', 'text']:
-                    for page in range(1, annot['num_pages'] + 1):
-                        img = '%s/dump_%d.%s' % (name, page, (name != 'text' and iformat or 'txt'))
-                        if page == 1 and name != 'text':
-                            files[img] = blobs[name]
-                        elif img in keys:
-                            del files[img]
+                files = OOBTree()
+                for name in ['large', 'normal', 'small']:
+                    files['{}/dump_1.jpg'.format(name)] = blobs[name]
+                annot['blob_files'] = files
                 annot['num_pages'] = 1
                 annot['pdf_image_format'] = 'jpg'
                 annot['last_updated'] = already_done
