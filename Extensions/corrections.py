@@ -354,7 +354,7 @@ def dv_clean(self, days_back='365', batch='3000'):
     pghandler = ZLogHandler(steps=int(batch))
     log_list(out, "Starting dv_clean at {}".format(start), pghandler)
     from collective.documentviewer.convert import saveFileToBlob
-    from BTrees.OOBTree import OOBTree
+    from BTrees.OOBTree import OOBTree  # noqa
     from Products.CPUtils.Extensions.utils import dv_images_size
     current_dir = os.path.dirname(__file__)
     normal_blob = saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_normal.jpg'))
