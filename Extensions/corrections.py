@@ -333,13 +333,18 @@ def clean_catalog(self):
     return '\n'.join(out)
 
 
-def dv_clean(self, days_back='365', batch='3000'):
-    """ Remove document viewer annotation on old mails """
+def dv_clean(self, days_back='365', date_back=None, batch='3000'):
+    """
+        Remove document viewer annotation on old mails.
+        days_back: default behavior: we take closed items not modified from this range
+        date_back: if present, we take items not modified from this date (whatever the state)
+    """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     start = datetime.now()
     out = ["call the script followed by needed parameters:",
-           "-> days_back=nb of days to keep (default '365')",
+           "-> days_back=nb of days to keep (default '365') (not used if date_back is used)",
+           "-> date_back=fixed date to consider (default None) (format YYYYMMDD)",
            "-> batch=batch number to commit each nth (default '3000')"]
     pghandler = ZLogHandler(steps=int(batch))
     log_list(out, "Starting dv_clean at {}".format(start), pghandler)
@@ -351,15 +356,28 @@ def dv_clean(self, days_back='365', batch='3000'):
     blobs = {'large': normal_blob, 'normal': normal_blob,
              'small': saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_small.jpg'))}
     criterias = [
-        {'portal_type': ['dmsincomingmail', 'dmsincoming_email'], 'review_state': 'closed'},
-        {'portal_type': ['dmsoutgoingmail', 'dmsoutgoing_email'], 'review_state': 'sent'},
+        {'portal_type': ['dmsincomingmail', 'dmsincoming_email']},
+        {'portal_type': ['dmsoutgoingmail', 'dmsoutgoing_email']},
     ]
-    date_back = start - timedelta(days=int(days_back))
+    state_criterias = [
+        {'review_state': 'closed'},
+        {'review_state': 'sent'},
+    ]
+    if date_back:
+        if len(date_back) != 8:
+            log_list(out, "Bad date_back length '{}'".format(date_back), pghandler)
+            return
+        mod_date = datetime.strptime(date_back, '%Y%m%d')
+        # mod_date = add_timezone(mod_date, force=True)
+    else:
+        mod_date = start - timedelta(days=int(days_back))
     already_done = DateTime('2010/01/01').ISO8601()
     total = {'obj': 0, 'pages': 0, 'files': 0, 'size': 0}
     pc = self.portal_catalog
-    for criteria in criterias:
-        criteria.update({'modified': {'query': date_back, 'range': 'max'}})  # noqa
+    for j, criteria in enumerate(criterias):
+        if not date_back:
+            criteria.update(state_criterias[j])  # noqa
+        criteria.update({'modified': {'query': mod_date, 'range': 'max'}})  # noqa
         brains = pc(**criteria)
         bl = len(brains)
         pghandler.init(criteria['portal_type'][0], bl)
