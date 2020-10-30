@@ -42,11 +42,20 @@ def script1():
 
 def script2():
     portal = obj  # noqa
-    if len(sys.argv) < 5:
-        error("Cleaning dv files on '{}': Missing back days number !".format(portal.absolute_url_path()))
+    if len(sys.argv) < 6:
+        error("Cleaning dv files on '{}': bad parameters number !".format(portal.absolute_url_path()))
+    params = {
+        'days_back': sys.argv[4],
+        'date_back': sys.argv[5] not in ('', '0') and sys.argv[5] or None,
+    }
+    verbose('Cleaning dv files with params {} on {}'.format(params, portal.absolute_url_path()))
+    try:
+        from datetime import datetime
+        if params['date_back']:
+            datetime.strptime(params['date_back'], '%Y%m%d')
+    except Exception, msg:
+        error("Bad date value '{}': '{}'".format(params['date_back'], msg))
         sys.exit(0)
-    days_back = sys.argv[4]
-    verbose('Cleaning dv files older than {} days on {}'.format(days_back, portal.absolute_url_path()))
     main_path = os.path.dirname(os.path.realpath(sys.argv[2]))  # full path of this script
     sys.path[0:0] = ['{}/Extensions'.format(main_path)]
     from corrections import dv_clean  # noqa
@@ -54,7 +63,7 @@ def script2():
     # if code:
     #     error("ERR:{}".format(''.join(err)))
     # blob_nb = int(out[-1].strip('\n') or 0)
-    dv_clean(portal, days_back)
+    dv_clean(portal, **params)
     transaction.commit()
 
 
