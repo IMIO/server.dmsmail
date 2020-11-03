@@ -71,14 +71,21 @@ def script3():
 
 def script4():
     portal = obj  # noqa
-    verbose('Correcting ftw.labels permissions on %s' % portal.absolute_url_path())
-    frontpage = portal['front-page']
-    if frontpage.Title() == 'Gestion du courrier 3.0':
-        frontpage.setTitle('Gestion du courrier 2.1')
-    portal.manage_permission('ftw.labels: Manage Labels Jar', ('Manager', 'Site Administrator'), acquire=0)
-    portal.manage_permission('ftw.labels: Change Labels', ('Manager', 'Site Administrator'), acquire=0)
-    portal.manage_permission('ftw.labels: Change Personal Labels', ('Manager', 'Site Administrator', 'Member'),
-                             acquire=0)
+    verbose('Correcting collections on %s' % portal.absolute_url_path())
+    # some collections contains in query a list of instances of ZPublisher.HTTPRequest.record. Must be a dict
+    brains = portal.portal_catalog(portal_type='DashboardCollection')
+    for brain in brains:
+        col = brain.getObject()
+        new_lst = []
+        change = False
+        for dic in col.query:
+            if not isinstance(dic, dict):
+                dic = dict(dic)
+                change = True
+            new_lst.append(dic)
+        if change:
+            col.query = new_lst
+            verbose('This collection has been corrected {}'.format(brain.getPath()))
 
     transaction.commit()
 
@@ -444,4 +451,18 @@ def script4_20():
                                 ('realized', {'group': '_validateur', 'org': 'assigned_group'})]))
     set_dms_config(['review_states', 'dmsoutgoingmail'],
                    OrderedDict([('proposed_to_service_chief', {'group': '_validateur', 'org': 'treating_groups'})]))
+    transaction.commit()
+
+
+def script4_21():
+    portal = obj  # noqa
+    verbose('Correcting ftw.labels permissions on %s' % portal.absolute_url_path())
+    frontpage = portal['front-page']
+    if frontpage.Title() == 'Gestion du courrier 3.0':
+        frontpage.setTitle('Gestion du courrier 2.1')
+    portal.manage_permission('ftw.labels: Manage Labels Jar', ('Manager', 'Site Administrator'), acquire=0)
+    portal.manage_permission('ftw.labels: Change Labels', ('Manager', 'Site Administrator'), acquire=0)
+    portal.manage_permission('ftw.labels: Change Personal Labels', ('Manager', 'Site Administrator', 'Member'),
+                             acquire=0)
+
     transaction.commit()
