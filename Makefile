@@ -84,7 +84,7 @@ various-script:
 pipeline:
 	@echo "plone: $(plone)"
 	@echo "commit: $(commit)"
-	bin/$(instance) run src/collective.contact.importexport/src/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg $(plone) $(commit)
+	bin/$(instance) run parts/omelette/collective/contact/importexport/scripts/execute_pipeline.py pipeline.cfg $(plone) $(commit)
 
 .PHONY: robot-server
 robot-server:
