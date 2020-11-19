@@ -417,3 +417,22 @@ def dv_clean(self, days_back='365', date_back=None, batch='3000'):
              "Objects: '{obj}', Files: '{files}', Pages: '{pages}', Deleted: '{deleted}', Size: '{size}'".format(**total),
              pghandler)
     return '\n'.join(out)
+
+
+def check_personnel_folder(self):
+    """ check personnel-folder content to find missing or duplicated information """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    out = []
+    if self.id != 'personnel-folder':
+        return 'You must be on personnel-folder'
+    userids = {}
+    for pers in self.objectValues():
+        if not pers.userid:
+            out.append('empty userid: {}'.format(object_link(pers)))
+        elif pers.userid in userids:
+            out.append("duplicated userid '{}' : {} and {}".format(pers.userid, object_link(userids[pers.userid]),
+                                                                   object_link(pers)))
+        else:
+            userids[pers.userid] = pers
+    return '\n'.join(out)
