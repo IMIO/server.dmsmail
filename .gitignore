@@ -9,6 +9,7 @@ develop-eggs/
 doc/
 htmlcov/
 imports/*
+!imports/.keep
 include/
 .installed.cfg
 *.komodoproject
