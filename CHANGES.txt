@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - Added imports directory.
+- Changed zope_i18n_allowed_languages to add en
+- Simplified buildout.cfg to easier extends it with puppet
 
 2.3.2 (2020-11-19)
 ------------------
