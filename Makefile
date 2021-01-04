@@ -108,3 +108,7 @@ cleanall:
 .PHONY: vc
 vc:
 	bin/versioncheck -rbo checkversion.html
+
+.PHONY: techdoc
+techdoc:
+	bin/sphinxbuilder
