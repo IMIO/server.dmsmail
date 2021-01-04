@@ -7,6 +7,10 @@ copy-data.sh
 debug.txt
 develop-eggs/
 doc/
+docs/Makefile
+docs/doctrees
+docs/html
+docs/make.bat
 htmlcov/
 imports/*
 !imports/.keep
