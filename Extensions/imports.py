@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
-from collective.contact.core.behaviors import validatePhone
+from collective.contact.core.behaviors import validate_phone
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
 from imio.dms.mail.Extensions.imports import assert_date
 from imio.dms.mail.Extensions.imports import assert_value_in_list
@@ -109,7 +109,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                                           safe_unicode(data[11].strip()))
             if phone:
                 try:
-                    validatePhone(phone)
+                    validate_phone(phone)
                 except:
                     out.append("Line %d: incorrect phone value '%s'" % (i, safe_encode(phone)))
                     continue
