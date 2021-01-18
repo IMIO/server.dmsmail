@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.3.4 (unreleased)
+2.3.4 (2021-01-18)
 ------------------
 
 - Added script to remove bad import step.
