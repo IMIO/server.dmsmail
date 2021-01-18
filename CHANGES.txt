@@ -6,6 +6,7 @@ Changelog
 
 - Added script to remove bad import step.
 - Corrected bad import due to renamed function
+- Added ldap cfg file
 
 2.3.3 (2020-12-01)
 ------------------
