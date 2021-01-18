@@ -4,8 +4,8 @@ Changelog
 2.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Added script to remove bad import step.
+- Corrected bad import due to renamed function
 
 2.3.3 (2020-12-01)
 ------------------
