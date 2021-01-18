@@ -18,6 +18,8 @@ Changelog
   [sgeulette]
 - Added restapi cfg file
   [sgeulette]
+- Added ldap cfg file
+  [sgeulette]
 
 2.2-1 (2019-09-12)
 ------------------
