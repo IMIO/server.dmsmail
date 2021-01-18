@@ -3,7 +3,6 @@
 import os
 import sys
 from imio.pyutils.system import error
-from imio.pyutils.system import runCommand
 from imio.pyutils.system import verbose
 from imio.helpers.security import setup_logger
 import transaction
@@ -71,22 +70,13 @@ def script3():
 
 def script4():
     portal = obj  # noqa
-    verbose('Correcting collections on %s' % portal.absolute_url_path())
-    # some collections contains in query a list of instances of ZPublisher.HTTPRequest.record. Must be a dict
-    brains = portal.portal_catalog(portal_type='DashboardCollection')
-    for brain in brains:
-        col = brain.getObject()
-        new_lst = []
-        change = False
-        for dic in col.query:
-            if not isinstance(dic, dict):
-                dic = dict(dic)
-                change = True
-            new_lst.append(dic)
-        if change:
-            col.query = new_lst
-            verbose('This collection has been corrected {}'.format(brain.getPath()))
-
+    verbose('Correcting bad steps on %s' % portal.absolute_url_path())
+    setup = api.portal.get_tool('portal_setup')
+    ir = setup.getImportStepRegistry()
+    for step in ('task-uninstall', 'urban-postinstall'):
+        if step in ir._registered:
+            verbose('Removing bad step {}'.format(step))
+            del ir._registered[step]
     transaction.commit()
 
 
@@ -464,5 +454,23 @@ def script4_21():
     portal.manage_permission('ftw.labels: Change Labels', ('Manager', 'Site Administrator'), acquire=0)
     portal.manage_permission('ftw.labels: Change Personal Labels', ('Manager', 'Site Administrator', 'Member'),
                              acquire=0)
-
     transaction.commit()
+
+
+def script4_22():
+    portal = obj  # noqa
+    verbose('Correcting collections on %s' % portal.absolute_url_path())
+    # some collections contains in query a list of instances of ZPublisher.HTTPRequest.record. Must be a dict
+    brains = portal.portal_catalog(portal_type='DashboardCollection')
+    for brain in brains:
+        col = brain.getObject()
+        new_lst = []
+        change = False
+        for dic in col.query:
+            if not isinstance(dic, dict):
+                dic = dict(dic)
+                change = True
+            new_lst.append(dic)
+        if change:
+            col.query = new_lst
+            verbose('This collection has been corrected {}'.format(brain.getPath()))
