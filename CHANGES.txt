@@ -4,8 +4,7 @@ Changelog
 2.3.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Improved cleanall to run correctly server upgrade.
 
 2.3.4 (2021-01-18)
 ------------------
