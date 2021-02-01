@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 - Removed useless script.
-
+- Checkout bin after cleanall
 
 2.3.5 (2021-01-28)
 ------------------
