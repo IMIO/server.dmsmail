@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    test
+   security
 
 
 Indices and tables
