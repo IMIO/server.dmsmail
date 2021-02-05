@@ -18,6 +18,7 @@ Roles:
 * WB = write base fields
 * WT = write treating_groups field
 * FC = DmsFile contributor
+* D = delete permission
 
 **************
 Incoming mails
@@ -46,7 +47,7 @@ State: created
 +---------------------+----------------+---------------------+
 | Principal           | Roles          | Type                |
 +=====================+================+=====================+
-| encodeurs           | E,C,WB,WT,FC   | static              |
+| encodeurs           | E,C,WB,WT,FC,D | static              |
 +---------------------+----------------+---------------------+
 
 State: proposed_to_manager
@@ -120,3 +121,10 @@ State: closed
 +----------------------------------------+----------------+---------------------+
 | n_plus_1, editeur, lecteur             | R              | f: recipient_groups |
 +----------------------------------------+----------------+---------------------+
+
+dmsmainfile
+###########
+
+__ac_local_roles_block__ = False (overrided in our init)
+
+No workflow or dx local roles.
