@@ -125,13 +125,15 @@ State: closed
 dmsmainfile
 ###########
 
-__ac_local_roles_block__ = False (overrided in our init)
+* __ac_local_roles_block__ = False (overrided in our init)
+* No workflow or dx local roles.
 
-No workflow or dx local roles.
+=> Parent permissions
 
 dmsappendixfile
 ###############
 
-__ac_local_roles_block__ = False (overrided in our init)
+* __ac_local_roles_block__ = False (overrided in our init)
+* No workflow or dx local roles.
 
-No workflow or dx local roles.
+=> Parent permissions
