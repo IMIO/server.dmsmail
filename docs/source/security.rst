@@ -128,3 +128,10 @@ dmsmainfile
 __ac_local_roles_block__ = False (overrided in our init)
 
 No workflow or dx local roles.
+
+dmsappendixfile
+###############
+
+__ac_local_roles_block__ = False (overrided in our init)
+
+No workflow or dx local roles.
