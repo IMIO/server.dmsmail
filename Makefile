@@ -84,6 +84,7 @@ various-script:
 pipeline:
 	@echo "plone: $(plone)"
 	@echo "commit: $(commit)"
+	if ! test -f pipeline-run.cfg; then mv pipeline.cfg pipeline-run.cfg; fi
 	bin/$(instance) run parts/omelette/collective/contact/importexport/scripts/execute_pipeline.py pipeline-run.cfg $(plone) $(commit)
 
 .PHONY: robot-server
