@@ -11,8 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   test
    security
+   pipeline
+   test
 
 
 Indices and tables
