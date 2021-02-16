@@ -66,3 +66,111 @@ csv_ssh_source
 csv_reader
 ----------
 .. autoclass:: collective.contact.importexport.blueprints.contactcsv.CSVReaderSection
+
+common_input_checks
+-------------------
+.. autoclass:: collective.contact.importexport.blueprints.main.CommonInputChecks
+
+plonegrouporganizationpath
+--------------------------
+.. autoclass:: imio.transmogrifier.contact.blueprints.contact.PlonegroupOrganizationPath
+
+plonegroupinternalparent
+------------------------
+.. autoclass:: imio.transmogrifier.contact.blueprints.contact.PlonegroupInternalParent
+
+iadocs_inbw_subtitle
+--------------------
+.. autoclass:: imio.transmogrifier.contact.blueprints.iadocs.InbwSubtitleUpdater
+
+dependencysorter
+----------------
+.. autoclass:: collective.contact.importexport.blueprints.dependency.DependencySorter
+
+relationsinserter
+-----------------
+.. autoclass:: collective.contact.importexport.blueprints.main.RelationsInserter
+
+updatepathinserter
+------------------
+.. autoclass:: collective.contact.importexport.blueprints.main.UpdatePathInserter
+
+pathinserter
+------------
+.. autoclass:: collective.contact.importexport.blueprints.main.PathInserter
+
+constructor
+-----------
+..
+    py:class:: collective.transmogrifier.sections.constructor.ConstructorSection
+.. autoclass:: collective.transmogrifier.sections.constructor.ConstructorSection
+
+    Adds new object (without attributes) following portal_type and path.
+    If path exists, nothing is done.
+
+    Parameters:
+        * type-key = M, item key related to portal_type. Default:
+          _[sectionname]_type or _type.
+        * path-key = M, item key related to path. Default:
+          _[sectionname]_path or _path.
+
+iadocs_userid
+-------------
+.. autoclass:: imio.transmogrifier.contact.blueprints.iadocs.UseridInserter
+
+iadocs_creating_group
+---------------------
+.. autoclass:: imio.transmogrifier.contact.blueprints.iadocs.CreatingGroupInserter
+
+schemaupdater
+-------------
+.. autoclass:: transmogrify.dexterity.schemaupdater.DexterityUpdateSection
+
+    Updates object attributes from path for all key matching a schema attribute.
+    Notifies ObjectModifiedEvent.
+
+    Parameters:
+        * path-key = M, item key related to path. Default:
+          _[sectionname]_path or _path.
+        * files-key = O, item key related to files dict. Default: _files.
+        * disable-constraints = O, disable constraints flag. Default: False.
+        * datafield-prefix = O, collective.jsonify prefix. Default: _datafield_.
+
+reindexobject
+-------------
+.. autoclass:: plone.app.transmogrifier.reindexobject.ReindexObjectSection
+
+    Reindexes object from path.
+
+    Parameters:
+        * path-key = M, item key related to path. Default:
+          _[sectionname]_path or _path.
+        * indexes = O, indexes to reindex. Default: all.
+
+transitions_inserter
+--------------------
+.. autoclass:: collective.contact.importexport.blueprints.main.TransitionsInserter
+
+workflowupdater
+---------------
+.. autoclass:: plone.app.transmogrifier.workflowupdater.WorkflowUpdaterSection
+
+    Applies transitions on object from path.
+
+    Parameters:
+        * path-key = M, item key related to path. Default:
+          _[sectionname]_path or _path.
+        * transitions-key = M, item key related to transitions to apply. Default:
+          _[sectionname]_transitions or _transitions.
+
+short_log
+---------
+.. autoclass:: collective.contact.importexport.blueprints.various.ShortLog
+
+lastsection
+-----------
+.. autoclass:: collective.contact.importexport.blueprints.main.LastSection
+
+breakpoint
+----------
+.. autoclass:: collective.contact.importexport.blueprints.various.BreakpointSection
