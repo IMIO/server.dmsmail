@@ -73,10 +73,14 @@ def script4():
     verbose('Correcting bad steps on %s' % portal.absolute_url_path())
     setup = api.portal.get_tool('portal_setup')
     ir = setup.getImportStepRegistry()
-    for step in ('task-uninstall', 'urban-postinstall'):
+    change = False
+    for step in ('task-uninstall', 'urban-postInstall'):
         if step in ir._registered:
             verbose('Removing bad step {}'.format(step))
             del ir._registered[step]
+            change = True
+    if change:
+        setup._p_changed = True
     transaction.commit()
 
 
