@@ -7,6 +7,7 @@ Changelog
 - Removed useless script.
 - Checkout bin after cleanall
 - Used pipeline-run.cfg in Makefile
+- Corrected step name. Persisted change
 
 2.3.5 (2021-01-28)
 ------------------
