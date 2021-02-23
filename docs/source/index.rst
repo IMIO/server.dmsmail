@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    security
+   indexes
    pipeline
    test
 
