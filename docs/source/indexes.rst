@@ -152,7 +152,7 @@ Stores:
 
 Subject
 -------
-Product = Products.CMFPlone, FieldIndex
+Product = Products.CMFPlone, KeywordIndex
 
 Used on
     * IContentish : Subject
