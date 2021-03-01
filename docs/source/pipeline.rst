@@ -174,3 +174,7 @@ lastsection
 breakpoint
 ----------
 .. autoclass:: collective.contact.importexport.blueprints.various.BreakpointSection
+
+stop
+----
+.. autoclass:: collective.contact.importexport.blueprints.various.StopSection
