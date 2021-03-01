@@ -34,6 +34,14 @@ Product = collective.eeafaceted.collectionwidget, BooleanIndex
 
 Used on ICollection : enabled
 
+external_reference_number
+-------------------------
+Product = collective.dms.mailcontent, FieldIndex
+
+Used on
+    * IDmsIncomingMail : external_reference_no
+    * IDmsOutgoingMail : external_reference_no
+
 in_out_date
 -----------
 Product = imio.dms.mail, DateIndex
@@ -173,6 +181,7 @@ dmsincomingmail, dmsincoming_email
 ----------------------------------
 * assigned_group = creating_group
 * assigned_user
+* external_reference_number = external_reference_no
 * in_out_date = reception_date
 * internal_reference_number = internal_reference_no
 * labels
@@ -188,6 +197,7 @@ dmsoutgoingmail
 ---------------
 * assigned_group = creating_group
 * assigned_user
+* external_reference_number = external_reference_no
 * in_out_date = outgoing_date
 * internal_reference_number = internal_reference_no
 * mail_date
