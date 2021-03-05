@@ -99,6 +99,10 @@ pathinserter
 ------------
 .. autoclass:: collective.contact.importexport.blueprints.main.PathInserter
 
+iadocs_inbw_merger
+------------------
+.. autoclass:: imio.transmogrifier.contact.blueprints.iadocs.InbwMerger
+
 constructor
 -----------
 ..
