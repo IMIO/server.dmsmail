@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from collective.contact.plonegroup.utils import get_organizations
 from datetime import datetime
-from DateTime import DateTime
 from datetime import timedelta
+from DateTime import DateTime
+from imio.dms.mail import CREATING_GROUP_SUFFIX
 from plone.app.uuid.utils import uuidToObject
+from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
 from Products.CPUtils.Extensions.utils import fileSize
 from Products.CPUtils.Extensions.utils import log_list
@@ -435,4 +438,36 @@ def check_personnel_folder(self):
                                                                    object_link(pers)))
         else:
             userids[pers.userid] = pers
+    return '\n'.join(out)
+
+
+def set_creating_group(self, types='', uid='', change='', force=''):
+    """Set creating_group for existing objects."""
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    if not uid or not types:
+        return 'You have to pass types (comma separated) and uid parameters'
+    out = []
+    ptypes = [typ.strip() for typ in types.split(',')]
+    # TODO check if each ptype exists
+    # TODO check if creating_group is in schema
+    # check uid
+    uids = get_organizations(not_empty_suffix=CREATING_GROUP_SUFFIX, only_selected=False, the_objects=False,
+                             caching=False)
+    uid = safe_unicode(uid)
+    if uid not in uids:
+        return "You cannot set this uid '{}' not in configured uids '{}'".format(uid, uids)
+    # search
+    pc = self.portal_catalog
+    brains = pc(portal_type=ptypes)
+    out.append('Found {} objects of types {}'.format(len(brains), ptypes))
+    modified = 0
+    if change == '1':
+        for brain in brains:
+            obj = brain.getObject()
+            if force == '1' or obj.creating_group is None:
+                modified += 1
+                obj.creating_group = uid
+                obj.reindexObject(['assigned_group'])
+    out.append('Modified {} objects'.format(modified))
     return '\n'.join(out)
