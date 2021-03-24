@@ -69,17 +69,17 @@ def relation_infos(rel):
     # rel.from_interfaces, rel.from_interfaces_flattened, rel.to_interfaces, rel.to_interfaces_flattened
 
 
-def list_relations(self):
+def list_all_relations(self):
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     from zope.component import queryUtility
-    from zc.relation.interfaces import ICatalog
+    from zc.relation.interfaces import ICatalog  # noqa
     catalog = queryUtility(ICatalog)
     out = []
     rels = list(catalog.findRelations())
     for rel in rels:
-        out.append(str(rel.__dict__))
-    return '\n<br />'.join(out)
+        out.append(str(relation_infos(rel)))
+    return '\n'.join(out)
 
 
 def check_intids(self, change=''):
