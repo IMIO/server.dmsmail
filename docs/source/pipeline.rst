@@ -9,7 +9,9 @@ Each sheet must be exported as csv file: with ',' separator and '"' as text wrap
 
 The 'collective.contact.importexport' product (using transmogrifier) proposes:
     * a pipeline stored in the plone registry and writed on buildout root (as
-      'pipeline.cfg') at each registry modification
+      'pipeline.cfg') at each registry modification.
+    * a registry record to store emails to which a report is send on exception
+      or when finished.
     * a script named 'execute_pipeline.py' than can be run.
 
 The server.dmsmail Makefile contains a section named 'pipeline' to run this
