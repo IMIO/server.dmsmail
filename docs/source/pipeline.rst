@@ -52,6 +52,7 @@ Parameters:
     * persons_fieldnames = O, persons csv columns names
     * held_positions_filename = O, held positions csv file path
     * held_positions_fieldnames = O, held positions csv columns names
+    * raise_on_error = O, raises exception for critical error if 1, default 1
 
 initialization
 --------------
@@ -96,6 +97,15 @@ relationsinserter
 updatepathinserter
 ------------------
 .. autoclass:: collective.contact.importexport.blueprints.main.UpdatePathInserter
+
+parentpathinserter
+------------------
+.. autoclass:: collective.contact.importexport.blueprints.main.ParentPathInserter
+
+moveobject
+----------
+.. autoclass:: collective.contact.importexport.blueprints.main.MoveObject
+
 
 pathinserter
 ------------
