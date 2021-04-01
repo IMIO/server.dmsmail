@@ -4,6 +4,7 @@ from collective.contact.plonegroup.utils import get_organizations
 from datetime import datetime
 from datetime import timedelta
 from DateTime import DateTime
+from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
 from plone.app.uuid.utils import uuidToObject
 from Products.CMFPlone.utils import safe_unicode
@@ -451,9 +452,10 @@ def set_creating_group(self, types='', uid='', change='', force=''):
     ptypes = [typ.strip() for typ in types.split(',')]
     # TODO check if each ptype exists
     # TODO check if creating_group is in schema
-    # check uid
     uids = get_organizations(not_empty_suffix=CREATING_GROUP_SUFFIX, only_selected=False, the_objects=False,
                              caching=False)
+    uids += get_organizations(not_empty_suffix=CONTACTS_PART_SUFFIX, only_selected=False, the_objects=False,
+                              caching=False)
     uid = safe_unicode(uid)
     if uid not in uids:
         return "You cannot set this uid '{}' not in configured uids '{}'".format(uid, uids)
