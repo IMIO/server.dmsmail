@@ -1,13 +1,14 @@
 Changelog
 =========
 
-2.3.6 (unreleased)
+2.3.6 (2021-04-01)
 ------------------
 
 - Removed useless script.
 - Checkout bin after cleanall
 - Used pipeline-run.cfg in Makefile
 - Corrected step name. Persisted change
+- Upgraded imio.helpers for collective.contact.importexport
 
 2.3.5 (2021-01-28)
 ------------------
