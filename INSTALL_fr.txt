@@ -19,6 +19,7 @@ On installe des librairies nécessaires
 > apt install libpq-dev
 > apt install libxml2-dev
 > apt install libxslt1-dev
+> apt install ssl-dev
 > apt install graphviz graphviz-dev (si pb au buildout, pkg-config en plus)
 > apt install odt2txt
 
@@ -30,7 +31,7 @@ Dépendances de documentviewer:
 > apt install wv
 
 Dépendance d'imio.helpers pour la génération de code-barre
-> apt install libpng12-dev
+> apt install libpng-dev
 > wget https://datapacket.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
 > dpkg -i zint_2.6.0_amd64.deb
 
@@ -49,29 +50,37 @@ On crée maintenant une arborescence de dossiers
 > cd jinstall
 
 On va installer un python2.7 qui sera utilisé dans notre buildout
-> wget https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tar.xz
-> tar xvJf Python-2.7.14.tar.xz
-> cd Python-2.7.14
-> ./configure --prefix=/srv/python2714 --enable-optimizations
+> wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+> tar xvzf Python-2.7.18.tgz
+> cd Python-2.7.18
+> ./configure --prefix=/srv/python2718
 > make
 > make install
 
 On installe l'utilitaire python virtualenv
-> cd /srv/python2714
+> cd /srv/python2718
 > bin/python -m ensurepip
 > bin/pip install virtualenv
-> sudo ln -s /srv/python2.7.14/bin/virtualenv /usr/local/bin/virtualenv-2.7
+> sudo ln -s /srv/python2.7.18/bin/virtualenv /usr/local/bin/virtualenv-2.7
 
 On définit un cache pour buildout (si ce n'est déjà fait)
-Voir http://www.imio.be/support/documentation/tutoriels/utilisation-dun-buildout/definition-dun-cache-pour-buildout/
+> vi ~/.buildout/default.cfg
+[buildout]
+eggs-directory = /srv/cache/eggs
+download-cache = /srv/cache/downloads
+extends-cache = /srv/cache/extends
+> mkdir -p /srv/cache/{eggs,downloads,extends}
 
 On télécharge le buildout dans un dossier
 > cd /srv/instances
-> svn co http://svn.communesplone.org/svn/communesplone/buildout/server.dmsmail/trunk dmsmail
+En lecture seulement:
+> git clone https://github.com/IMIO/server.dmsmail.git dmsmail
+En écriture:
+> git clone git@github.com:IMIO/server.dmsmail.git dmsmail
 > cd dmsmail
 
 On initialise le buildout
-> make bootstrap
+> make setup
 
 ==> 1) Utilisation en développement (sans ZEO, avec des outils de debug)
 

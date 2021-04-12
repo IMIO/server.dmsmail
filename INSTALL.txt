@@ -18,6 +18,7 @@ We install the necessary libraries
 > apt install libpq-dev
 > apt install libxml2-dev
 > apt install libxslt1-dev
+> apt install ssl-dev
 > apt install graphviz graphviz-dev (if buildout error, also pkg-config)
 > apt install odt2txt
 
@@ -78,7 +79,7 @@ For write mode:
 > cd dmsmail
 
 we initialize the buildout
-> make bootstrap
+> make setup
 
 ==> 1) Use in development (without ZEO, with debug products)
 
