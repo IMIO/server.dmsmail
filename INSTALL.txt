@@ -29,7 +29,7 @@ Documentviewer dependencies
 > apt install wv
 
 imio.helpers barcode generation
-> apt install libpng12-dev
+> apt install libpng-dev
 > wget https://datapacket.dl.sourceforge.net/project/zint/zint/2.6.0/zint_2.6.0_amd64.deb
 > dpkg -i zint_2.6.0_amd64.deb
 
@@ -48,25 +48,33 @@ We create some directories
 > cd jinstall
 
 We install python2.7 that will be used to run the buildout and zope instance
-> wget https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tar.xz
-> tar xvJf Python-2.7.14.tar.xz
-> cd Python-2.7.14
-> ./configure --prefix=/srv/python2714
+> wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+> tar xvzf Python-2.7.18.tgz
+> cd Python-2.7.18
+> ./configure --prefix=/srv/python2718
 > make
 > make install
 
 We install the python utility virtualenv
-> cd /srv/python2714
+> cd /srv/python2718
 > bin/python -m ensurepip
 > bin/pip install virtualenv
-> sudo ln -s /srv/python2.7.14/bin/virtualenv /usr/local/bin/virtualenv-2.7
+> sudo ln -s /srv/python2.7.18/bin/virtualenv /usr/local/bin/virtualenv-2.7
 
 We can define a cache for buildout
-See http://www.imio.be/support/documentation/tutoriels/utilisation-dun-buildout/definition-dun-cache-pour-buildout/
+> vi ~/.buildout/default.cfg
+[buildout]
+eggs-directory = /srv/cache/eggs
+download-cache = /srv/cache/downloads
+extends-cache = /srv/cache/extends
+> mkdir -p /srv/cache/{eggs,downloads,extends}
 
 We download the buildout files in our folder
 > cd /srv/instances
-> svn co http://svn.communesplone.org/svn/communesplone/buildout/server.dmsmail/trunk dmsmail
+For readonly mode:
+> git clone https://github.com/IMIO/server.dmsmail.git dmsmail
+For write mode:
+> git clone git@github.com:IMIO/server.dmsmail.git dmsmail
 > cd dmsmail
 
 we initialize the buildout
