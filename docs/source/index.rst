@@ -14,6 +14,7 @@ Contents:
    security
    indexes
    pipeline
+   utils
    test
 
 
