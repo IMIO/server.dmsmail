@@ -113,9 +113,15 @@ cleanall:
 	rm -fr bin include lib local share develop-eggs downloads eggs parts .installed.cfg
 	git checkout bin
 
-.PHONY: vc
-vc:
-	bin/versioncheck -rbo checkversion.html
+.PHONY: vcr
+vcr:
+    # show requirements
+	bin/versioncheck -rbo checkversion-r.html
+
+.PHONY: vcn
+vcn:
+    # show only newer
+	bin/versioncheck -npbo checkversion-n.html
 
 .PHONY: techdoc
 techdoc:
