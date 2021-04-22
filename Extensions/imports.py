@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
-from collective.contact.core.behaviors import validate_email
 from collective.contact.core.behaviors import validate_phone
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
 from collective.wfadaptations.api import get_applied_adaptations
@@ -9,6 +8,7 @@ from imio.dms.mail.Extensions.imports import assert_date
 from imio.dms.mail.Extensions.imports import assert_value_in_list
 from imio.dms.mail.Extensions.imports import change_levels
 from imio.dms.mail.Extensions.imports import sort_by_level
+from imio.helpers.emailer import validate_email_address
 from imio.pyutils import system
 from plone import api
 from plone.app.uuid.utils import uuidToObject
@@ -109,30 +109,31 @@ def import_principals(self, add_user='', create_file='', dochange=''):
     cu = False
     if add_user == '1':
         cu = True
-    for i, dic in enumerate(rows, start=2):
+    for dic in rows:
+        ln = dic.pop('_ln')
         try:
-            validate_email(dic['eml'])
+            validate_email_address(dic['eml'])
         except Exception:
-            out.append("Line %d: incorrect email value '%s'" % (i, dic['eml']))
+            out.append("Line %d: incorrect email value '%s'" % (ln, dic['eml']))
             continue
         if dic['ph']:
             try:
                 validate_phone(dic['ph'])
             except Exception:
-                out.append("Line %d: incorrect phone value '%s'" % (i, dic['ph']))
+                out.append("Line %d: incorrect phone value '%s'" % (ln, dic['ph']))
                 continue
         # check userid
         if not dic['ui']:
-            out.append("Line %d: userid empty. Skipping line" % i)
+            out.append("Line %d: userid empty. Skipping line" % ln)
             continue
         if not dic['ui'].isalnum() or not dic['ui'].islower():
-            out.append("Line %d: userid '%s' is not alpha lowercase" % (i, dic['ui']))
+            out.append("Line %d: userid '%s' is not alpha lowercase" % (ln, dic['ui']))
             continue
         # check user
         user = api.user.get(username=dic['ui'])
         if user is None:
             if not cu:
-                out.append("Line %d: userid '%s' not found" % (i, dic['ui']))
+                out.append("Line %d: userid '%s' not found" % (ln, dic['ui']))
                 continue
             else:
                 try:
@@ -141,14 +142,14 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                         user = api.user.create(username=dic['ui'], email=dic['eml'],
                                                password=regtool.generatePassword(), properties={'fullname': dic['fn']})
                 except Exception, ex:
-                    out.append("Line %d, cannot create user: %s" % (i, safe_encode(ex.message)))
+                    out.append("Line %d, cannot create user: %s" % (ln, safe_encode(ex.message)))
                     continue
         # groups
         if user is not None:
             try:
                 groups = api.group.get_groups(username=dic['ui'])
             except Exception, ex:
-                out.append("Line %d, cannot get groups of userid '%s': %s" % (i, dic['ui'], safe_encode(ex.message)))
+                out.append("Line %d, cannot get groups of userid '%s': %s" % (ln, dic['ui'], safe_encode(ex.message)))
                 groups = []
         else:
             groups = []
@@ -156,14 +157,14 @@ def import_principals(self, add_user='', create_file='', dochange=''):
         # check organization
         if dic['oi']:
             if not [uid for uid, tit in orgas if uid == dic['oi']]:
-                out.append("Line %d, cannot find org_uid '%s' in organizations" % (i, dic['oi']))
+                out.append("Line %d, cannot find org_uid '%s' in organizations" % (ln, dic['oi']))
                 continue
         else:
             tmp = [uid for uid, tit in orgas if tit == safe_unicode(dic['ot'])]
             if tmp:
                 dic['oi'] = tmp[0]
             else:
-                out.append("Line %d, cannot find org_uid from org title '%s'" % (i, dic['ot']))
+                out.append("Line %d, cannot find org_uid from org title '%s'" % (ln, dic['ot']))
                 continue
 
         for (name, value) in [(key, dic[key]) for key, tit in val_levels] + \
@@ -175,7 +176,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
             gid = "%s_%s" % (dic['oi'], name)
             group = api.group.get(groupname=gid)
             if group is None:
-                out.append("Line %d: groupid '%s' not found" % (i, gid))
+                out.append("Line %d: groupid '%s' not found" % (ln, gid))
                 continue
             # add user in group
             if gid not in groups:
@@ -185,19 +186,19 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                         api.group.add_user(groupname=gid, username=dic['ui'])
                     except Exception, ex:
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
-                                   % (i, dic['ui'], gid, safe_encode(ex.message)))
+                                   % (ln, dic['ui'], gid, safe_encode(ex.message)))
         if not dic['ph'] or not dic['lb'] or not dic['im']:
             continue
         # find person
         res = portal.portal_catalog(mail_type=dic['ui'], portal_type='person')
         if not res:
-            out.append("Line %d: person with userid '%s' not found" % (i, dic['ui']))
+            out.append("Line %d: person with userid '%s' not found" % (ln, dic['ui']))
             continue
         # find held position
         brains = api.content.find(context=res[0].getObject(), portal_type='held_position', review_state='active')
         hps = [b.getObject() for b in brains if b.getObject().get_organization().UID() == dic['oi']]
         if not hps or len(hps) > 1:
-            out.append("Line %d: less or more hps '%s'" % (i, hps))
+            out.append("Line %d: less or more hps '%s'" % (ln, hps))
             continue
         hp = hps[0]
         # update attribute
