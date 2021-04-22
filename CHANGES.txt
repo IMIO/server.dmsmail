@@ -1,10 +1,10 @@
 Changelog
 =========
 
-3.0-1 (unreleased)
+3.0.1 (2021-04-22)
 ------------------
 
-- Use imio.dms.mail tag 3.0.
+- First 3.0 prod release with imio.dms.mail set on master
 
 2.3-1 (2020-10-08)
 ------------------
