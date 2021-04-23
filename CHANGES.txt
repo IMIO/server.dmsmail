@@ -1,11 +1,10 @@
 Changelog
 =========
 
-2.3.8 (unreleased)
+2.3.8 (2021-04-23)
 ------------------
 
-- Nothing changed yet.
-
+- Upgraded imio.dms.soap2pm
 
 2.3.7 (2021-04-21)
 ------------------
