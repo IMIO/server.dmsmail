@@ -6,6 +6,7 @@ Changelog
 
 - `import_principals`: use emailer validator and use real line from csv reader.
 - Upgraded imio.dms.soap2pm
+- Upgraded imio.actionspanel
 
 3.0.1 (2021-04-22)
 ------------------
