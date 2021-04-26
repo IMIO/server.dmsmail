@@ -115,12 +115,12 @@ cleanall:
 
 .PHONY: vcr
 vcr:
-    # show requirements
+	# show requirements
 	bin/versioncheck -rbo checkversion-r.html
 
 .PHONY: vcn
 vcn:
-    # show only newer
+	# show only newer
 	bin/versioncheck -npbo checkversion-n.html
 
 .PHONY: techdoc
