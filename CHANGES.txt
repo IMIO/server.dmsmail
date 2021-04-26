@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.2 (unreleased)
+3.0.2 (2021-04-26)
 ------------------
 
 - `import_principals`: use emailer validator and use real line from csv reader.
