@@ -9,6 +9,7 @@ from imio.dms.mail.Extensions.imports import assert_value_in_list
 from imio.dms.mail.Extensions.imports import change_levels
 from imio.dms.mail.Extensions.imports import sort_by_level
 from imio.helpers.emailer import validate_email_address
+from imio.helpers.security import get_user_from_criteria
 from imio.pyutils import system
 from plone import api
 from plone.app.uuid.utils import uuidToObject
@@ -73,6 +74,18 @@ def import_principals(self, add_user='', create_file='', dochange=''):
     if dochange == '1':
         doit = True
 
+    users = get_user_from_criteria(portal, email='@')
+    userids = {}
+    emails = {}
+    # {'description': u'Scanner', 'title': u'Scanner', 'principal_type': 'user', 'userid': 'scanner',
+    #  'email': 'test@macommune.be', 'pluginid': 'mutable_properties', 'login': 'scanner', 'id': 'scanner'}
+    for dic in users:
+        userids[dic['userid']] = dic['email']
+        uids = emails.setdefault(dic['email'], [])
+        uids.append(dic['userid'])
+    for eml in emails:
+        if len(emails[eml]) > 1:
+            out.append("!! same email '{}' for multiples users: {}".format(eml, ', '.join(emails[eml])))
     orgas = get_organizations(self, obj=True)  # [(uid, title)]
     val_levels = [('n_plus_{}'.format(dic['parameters']['validation_level']), dic['parameters']['function_title'])
                   for dic in get_applied_adaptations()
@@ -131,20 +144,30 @@ def import_principals(self, add_user='', create_file='', dochange=''):
             out.append("Line %d: userid '%s' is not well formed" % (ln, dic['ui']))
             continue
         # check user
-        user = api.user.get(username=dic['ui'])
-        if user is None:
+        if dic['ui'] not in userids:
+            emlfound = dic['eml'] in emails
             if not cu:
                 out.append("Line %d: userid '%s' not found" % (ln, dic['ui']))
+                if emlfound:
+                    out.append("Line %d: but email '%s' found on users '%s'" % (ln, dic['eml'], ', '.join(
+                        emails[dic['eml']])))
                 continue
             else:
                 try:
                     out.append("=> Create user '%s': '%s', '%s'" % (dic['ui'], dic['fn'], dic['eml']))
+                    if emlfound:
+                        out.append("Line %d: but email '%s' found on users '%s'" % (ln, dic['eml'], ', '.join(
+                            emails[dic['eml']])))
+                    userids[dic['ui']] = dic['eml']
+                    uids = emails.setdefault(dic['eml'], [])
+                    uids.append(dic['ui'])
                     if doit:
                         user = api.user.create(username=dic['ui'], email=dic['eml'],
                                                password=regtool.generatePassword(), properties={'fullname': dic['fn']})
                 except Exception, ex:
                     out.append("Line %d, cannot create user: %s" % (ln, safe_encode(ex.message)))
                     continue
+        user = api.user.get(userid=dic['ui'])
         # groups
         if user is not None:
             try:
