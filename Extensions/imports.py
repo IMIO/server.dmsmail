@@ -22,6 +22,7 @@ from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import modified
 
 import copy
+import re
 import os
 import phonenumbers
 
@@ -126,8 +127,8 @@ def import_principals(self, add_user='', create_file='', dochange=''):
         if not dic['ui']:
             out.append("Line %d: userid empty. Skipping line" % ln)
             continue
-        if not dic['ui'].isalnum() or not dic['ui'].islower():
-            out.append("Line %d: userid '%s' is not alpha lowercase" % (ln, dic['ui']))
+        if not re.match(r'[a-zA-Z1-9\-]+$', dic['ui']):
+            out.append("Line %d: userid '%s' is not well formed" % (ln, dic['ui']))
             continue
         # check user
         user = api.user.get(username=dic['ui'])
