@@ -95,13 +95,13 @@ robot-server:
 doc:
 	# can be run by example with: make doc opt='-t "Contacts *"' or make doc opt='-i "RUN1"'  (or -e to exclude)
 	# env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -l NONE -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
-	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE -o NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 	rm geckodriver*.log
 
 .PHONY: video-doc
 video-doc:
 	# can be run by example with: make doc opt='-t "Contacts *"'
-	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE -o NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/video-doc.robot
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/video-doc.robot
 	rm geckodriver*.log
 
 .PHONY: coverage
