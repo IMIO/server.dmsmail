@@ -4,8 +4,7 @@ Changelog
 3.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Upgraded collective.contact.plonegroup
 
 3.0.4 (2021-04-30)
 ------------------
