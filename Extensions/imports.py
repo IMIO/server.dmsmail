@@ -51,8 +51,8 @@ def get_organizations(self, obj=False):
 def import_principals(self, add_user='', create_file='', dochange=''):
     """
         Import principals from the file 'Extensions/principals.csv' containing
-        GroupId;GroupTitle;Userid;Name;email;N+;Éditeur;Lecteur;Créateur CS
-        Variable N+ columns following configuration
+        OrgId;OrgTitle;Userid;Fullname;email;Éditeur;Lecteur;Créateur CS;N+;Tel;Label;ImHandle
+        Variable N+ columns following configuration !
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -92,7 +92,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                   if dic['adaptation'] == u'imio.dms.mail.wfadaptations.IMServiceValidation']
 
     fields = ['oi', 'ot', 'ui', 'fn', 'eml', 'ed', 'le', 'cs', 'ph', 'lb', 'im']
-    fieldnames = ['OrgId', 'OrgTitle', 'Userid', 'Fullname', 'email', 'Éditeur', 'Lecteur', 'Créateur CS', 'Tél',
+    fieldnames = ['OrgId', 'OrgTitle', 'Userid', 'Nom complet', 'Email', 'Éditeur', 'Lecteur', 'Créateur CS', 'Tél',
                   'Fonction', 'Autre']
     for fct, tit in reversed(val_levels):
         fields.insert(5, fct)
@@ -131,6 +131,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
             out.append("Line %d: incorrect email value '%s'" % (ln, dic['eml']))
             continue
         if dic['ph']:
+            dic['ph'] = filter(type(dic['ph']).isdigit, dic['ph'])
             try:
                 validate_phone(dic['ph'])
             except Exception:
