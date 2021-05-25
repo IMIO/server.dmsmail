@@ -3,11 +3,13 @@ from collections import OrderedDict
 from collective.behavior.internalnumber.behavior import IInternalNumberBehavior
 from collective.contact.core.behaviors import validate_phone
 from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
+from collective.wfadaptations.api import get_applied_adaptations
 from imio.dms.mail.Extensions.imports import assert_date
 from imio.dms.mail.Extensions.imports import assert_value_in_list
 from imio.dms.mail.Extensions.imports import change_levels
 from imio.dms.mail.Extensions.imports import sort_by_level
-from imio.dms.mail.setuphandlers import create_persons_from_users
+from imio.helpers.emailer import validate_email_address
+from imio.helpers.security import get_user_from_criteria
 from imio.pyutils import system
 from plone import api
 from plone.app.uuid.utils import uuidToObject
@@ -21,6 +23,7 @@ from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import modified
 
 import copy
+import re
 import os
 import phonenumbers
 
@@ -48,15 +51,22 @@ def get_organizations(self, obj=False):
 def import_principals(self, add_user='', create_file='', dochange=''):
     """
         Import principals from the file 'Extensions/principals.csv' containing
-        GroupId;GroupTitle;Userid;Name;email;Validateur;Éditeur;Lecteur;Encodeur
+        OrgId;OrgTitle;Userid;Fullname;email;Éditeur;Lecteur;Créateur CS;N+;Tel;Label;ImHandle
+        Variable N+ columns following configuration !
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     exm = self.REQUEST['PUBLISHED']
     path = os.path.dirname(exm.filepath())
-    #path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
+    # path = '%s/../../Extensions' % os.environ.get('INSTANCE_HOME')
     portal = api.portal.get()
     out = []
+    lf = '\n'
+    out.append("Import principals from principals.csv. Possible parameters:")
+    out.append("-> add_user=1 : add missing users")
+    out.append("-> create_file=1 : create principals_gen.csv and exit")
+    out.append("-> dochange=1 : apply changes")
+    out.append("")
     cf = False
     if create_file == '1':
         cf = True
@@ -64,148 +74,164 @@ def import_principals(self, add_user='', create_file='', dochange=''):
     if dochange == '1':
         doit = True
 
-    orgas = get_organizations(self, obj=True)
+    users = get_user_from_criteria(portal, email='@')
+    userids = {}
+    emails = {}
+    # {'description': u'Scanner', 'title': u'Scanner', 'principal_type': 'user', 'userid': 'scanner',
+    #  'email': 'test@macommune.be', 'pluginid': 'mutable_properties', 'login': 'scanner', 'id': 'scanner'}
+    for dic in users:
+        userids[dic['userid']] = dic['email']
+        uids = emails.setdefault(dic['email'], [])
+        uids.append(dic['userid'])
+    for eml in emails:
+        if len(emails[eml]) > 1:
+            out.append("!! same email '{}' for multiples users: {}".format(eml, ', '.join(emails[eml])))
+    orgas = get_organizations(self, obj=True)  # [(uid, title)]
+    val_levels = [('n_plus_{}'.format(dic['parameters']['validation_level']), dic['parameters']['function_title'])
+                  for dic in get_applied_adaptations()
+                  if dic['adaptation'] == u'imio.dms.mail.wfadaptations.IMServiceValidation']
+
+    fields = ['oi', 'ot', 'ui', 'fn', 'eml', 'ed', 'le', 'cs', 'ph', 'lb', 'im']
+    fieldnames = ['OrgId', 'OrgTitle', 'Userid', 'Nom complet', 'Email', 'Éditeur', 'Lecteur', 'Créateur CS', 'Tél',
+                  'Fonction', 'Autre']
+    for fct, tit in reversed(val_levels):
+        fields.insert(5, fct)
+        fieldnames.insert(5, tit.encode('utf8'))
 
     if cf:
-        out.append("Creating file principals_gen.csv")
-        lines = ["OrgId;OrgTitle;Userid;Name;email;Validateur;Éditeur;Lecteur;Encodeur;phone;label;im"]
+        lines = [";".join(fieldnames)]
+        # TODO improve creation by using existing user group associations
         for uid, title in orgas:
-            lines.append("%s;%s;;;;;;;;;;" %
-                        (uid, title.encode('utf8')))
+            lines.append("{};{};{}".format(uid, title.encode('utf8'), ';' * (len(fields) - 3)))
         if doit:
-            fh = open(os.path.join(path, 'principals_gen.csv'), 'w')
+            gen_file = os.path.join(path, 'principals_gen.csv')
+            out.append("Creating file {}".format(gen_file))
+            fh = open(gen_file, 'w')
             for line in lines:
                 fh.write("%s\n" % line)
             fh.close()
         out.extend(lines)
         return '\n'.join(out)
 
-    # Open file
-    lines = system.read_file(os.path.join(path, 'principals.csv'), skip_empty=True)
+    filename = os.path.join(path, 'principals.csv')
+    out.append("Reading file {}".format(filename))
+    msg, rows = system.read_dictcsv(filename, fieldnames=fields, strip_chars=' ', skip_empty=True, skip_lines=1,
+                                    **{'delimiter': ';'})
+    if msg:  # stop if csv error
+        return msg
     regtool = self.portal_registration
     cu = False
     if add_user == '1':
         cu = True
-    i = 0
-    for line in lines:
-        i += 1
-        if i == 1:
+    for dic in rows:
+        ln = dic.pop('_ln')
+        try:
+            validate_email_address(dic['eml'])
+        except Exception:
+            out.append("Line %d: incorrect email value '%s'" % (ln, dic['eml']))
             continue
-        try:
-            data = line.split(';')
-            orgid = data[0].strip()
-            orgtit = data[1].strip()
-            userid = data[2].strip()
-            fullname = data[3].strip()
-            email = data[4].strip()
-            validateur = data[5].strip()
-            editeur = data[6].strip()
-            lecteur = data[7].strip()
-            encodeur = data[8].strip()
-        except Exception, ex:
-            return "Problem line %d, '%s': %s" % (i, line, safe_encode(ex.message))
-        try:
-            phone, hp_label, im_handle = (safe_unicode(data[9].strip()), safe_unicode(data[10].strip()),
-                                          safe_unicode(data[11].strip()))
-            if phone:
-                try:
-                    validate_phone(phone)
-                except:
-                    out.append("Line %d: incorrect phone value '%s'" % (i, safe_encode(phone)))
-                    continue
-        except Exception, ex:
-            phone = hp_label = im_handle = ''
+        if dic['ph']:
+            dic['ph'] = filter(type(dic['ph']).isdigit, dic['ph'])
+            try:
+                validate_phone(dic['ph'])
+            except Exception:
+                out.append("Line %d: incorrect phone value '%s'" % (ln, dic['ph']))
+                continue
         # check userid
-        if not userid:
-            out.append("Line %d: userid empty. Skipping line" % i)
+        if not dic['ui']:
+            out.append("Line %d: userid empty. Skipping line" % ln)
             continue
-        if not userid.isalnum() or not userid.islower():
-            out.append("Line %d: userid '%s' is not alpha lowercase" % (i, userid))
+        if not re.match(r'[a-zA-Z1-9\-]+$', dic['ui']):
+            out.append("Line %d: userid '%s' is not well formed" % (ln, dic['ui']))
             continue
         # check user
-        user = api.user.get(username=userid)
-        if user is None:
+        if dic['ui'] not in userids:
+            emlfound = dic['eml'] in emails
             if not cu:
-                out.append("Line %d: userid '%s' not found" % (i, userid))
+                out.append("Line %d: userid '%s' not found" % (ln, dic['ui']))
+                if emlfound:
+                    out.append("Line %d: but email '%s' found on users '%s'" % (ln, dic['eml'], ', '.join(
+                        emails[dic['eml']])))
                 continue
             else:
                 try:
-                    out.append("=> Create user '%s': '%s', '%s'" % (userid, fullname, email))
+                    out.append("=> Create user '%s': '%s', '%s'" % (dic['ui'], dic['fn'], dic['eml']))
+                    if emlfound:
+                        out.append("Line %d: but email '%s' found on users '%s'" % (ln, dic['eml'], ', '.join(
+                            emails[dic['eml']])))
+                    userids[dic['ui']] = dic['eml']
+                    uids = emails.setdefault(dic['eml'], [])
+                    uids.append(dic['ui'])
                     if doit:
-                        user = api.user.create(username=userid, email=email, password=regtool.generatePassword(),
-                                               properties={'fullname': fullname},
-                                               )
+                        user = api.user.create(username=dic['ui'], email=dic['eml'],
+                                               password=regtool.generatePassword(), properties={'fullname': dic['fn']})
                 except Exception, ex:
-                    out.append("Line %d, cannot create user: %s" % (i, safe_encode(ex.message)))
+                    out.append("Line %d, cannot create user: %s" % (ln, safe_encode(ex.message)))
                     continue
+        user = api.user.get(userid=dic['ui'])
         # groups
         if user is not None:
             try:
-                groups = api.group.get_groups(username=userid)
+                groups = api.group.get_groups(username=dic['ui'])
             except Exception, ex:
-                if user is not None:
-                    out.append("Line %d, cannot get groups of userid '%s': %s" % (i, userid, safe_encode(ex.message)))
-                # continue
+                out.append("Line %d, cannot get groups of userid '%s': %s" % (ln, dic['ui'], safe_encode(ex.message)))
+                groups = []
         else:
             groups = []
 
         # check organization
-        if orgid:
-            if not [uid for uid, tit in orgas if uid == orgid]:
-                out.append("Line %d, cannot find org_uid '%s' in organizations" % (i, orgid))
+        if dic['oi']:
+            if not [uid for uid, tit in orgas if uid == dic['oi']]:
+                out.append("Line %d, cannot find org_uid '%s' in organizations" % (ln, dic['oi']))
                 continue
         else:
-            tmp = [uid for uid, tit in orgas if tit == safe_unicode(orgtit)]
+            tmp = [uid for uid, tit in orgas if tit == safe_unicode(dic['ot'])]
             if tmp:
-                orgid = tmp[0]
+                dic['oi'] = tmp[0]
             else:
-                out.append("Line %d, cannot find org_uid from org title '%s'" % (i, orgtit))
+                out.append("Line %d, cannot find org_uid from org title '%s'" % (ln, dic['ot']))
                 continue
 
-        for (name, value) in [('validateur', validateur), ('editeur', editeur), ('lecteur', lecteur),
-                              ('encodeur', encodeur)]:
+        for (name, value) in [(key, dic[key]) for key, tit in val_levels] + \
+                             [('editeur', dic['ed']), ('lecteur', dic['le']), ('encodeur', dic['cs'])]:
             if not value:
                 # We don't remove a user from a group
                 continue
             # check groupid
-            gid = "%s_%s" % (orgid, name)
+            gid = "%s_%s" % (dic['oi'], name)
             group = api.group.get(groupname=gid)
             if group is None:
-                out.append("Line %d: groupid '%s' not found" % (i, gid))
+                out.append("Line %d: groupid '%s' not found" % (ln, gid))
                 continue
             # add user in group
             if gid not in groups:
-                out.append("=> Add user '%s' to group '%s' (%s)" % (userid, gid, orgtit))
+                out.append("=> Add user '%s' to group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
                 if doit:
                     try:
-                        api.group.add_user(groupname=gid, username=userid)
+                        api.group.add_user(groupname=gid, username=dic['ui'])
                     except Exception, ex:
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
-                                   % (i, userid, gid, safe_encode(ex.message)))
-        # create person and held position
-        if not encodeur or not doit:
-            continue
-        create_persons_from_users(portal, userid=userid)
-        if not phone or not hp_label:
+                                   % (ln, dic['ui'], gid, safe_encode(ex.message)))
+        if not dic['ph'] or not dic['lb'] or not dic['im']:
             continue
         # find person
-        res = portal.portal_catalog(mail_type=userid, portal_type='person')
+        res = portal.portal_catalog(mail_type=dic['ui'], portal_type='person')
         if not res:
-            out.append("Line %d: person with userid '%s' not found" % (i, userid))
+            out.append("Line %d: person with userid '%s' not found" % (ln, dic['ui']))
             continue
         # find held position
         brains = api.content.find(context=res[0].getObject(), portal_type='held_position', review_state='active')
-        hps = [b.getObject() for b in brains if b.getObject().get_organization().UID() == orgid]
+        hps = [b.getObject() for b in brains if b.getObject().get_organization().UID() == dic['oi']]
         if not hps or len(hps) > 1:
-            out.append("Line %d: less or more hps '%s'" % (i, hps))
+            out.append("Line %d: less or more hps '%s'" % (ln, hps))
             continue
         hp = hps[0]
         # update attribute
-        for attr, value in (('phone', phone), ('label', hp_label), ('im_handle', im_handle)):
+        for attr, value in (('phone', dic['ph']), ('label', dic['lb']), ('im_handle', dic['im'])):
             if not value:
                 continue
-            setattr(hp, attr, value)
-    return '\n'.join(out)
+            setattr(hp, attr, safe_unicode(value))
+    return lf.join(out)
 
 
 def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
@@ -437,8 +463,8 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
             try:
                 birthday = assert_date(data[5])
             except AssertionError, ex:
-                out.append("!! %s: line %d, birthday date problem '%s': " % ('PERS', i, data[5],
-                                                                             safe_encode(ex.message)))
+                out.append("!! %s: line %d, birthday date problem '%s': %s" % ('PERS', i, data[5],
+                                                                               safe_encode(ex.message)))
                 birthday = None
             internal = data[21] and bool(int(data[21])) or False
         except AssertionError, ex:

@@ -4,8 +4,8 @@ Changelog
 2.3.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Upgraded imio.pyutils.
+- Updated import_principals
 
 2.3.8 (2021-04-23)
 ------------------
