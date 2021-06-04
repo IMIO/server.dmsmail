@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 - Improved import_principals
-
+- Upgraded various products
 
 3.0.5 (2021-05-05)
 ------------------
