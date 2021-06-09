@@ -63,10 +63,10 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
     out = []
     lf = '\n'
     out.append("Import principals from principals.csv. Possible parameters:")
-    out.append("-> add_user=1 : add missing users")
-    out.append("-> create_file=1 : create principals_gen.csv and exit")
-    out.append("-> ungroup=0 : remove from group if role column is empty")
-    out.append("-> dochange=1 : apply changes")
+    out.append("-> add_user=1 : add missing users. Default 0")
+    out.append("-> create_file=1 : create principals_gen.csv and exit. Default 0")
+    out.append("-> ungroup=1 : remove from group if role column is empty. Default 0")
+    out.append("-> dochange=1 : apply changes. Default 0")
     out.append("")
     cf = False
     if create_file == '1':
@@ -173,7 +173,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
         # groups
         if user is not None:
             try:
-                groups = api.group.get_groups(username=dic['ui'])
+                groups = [g.id for g in api.group.get_groups(username=dic['ui'])]
             except Exception, ex:
                 out.append("Line %d, cannot get groups of userid '%s': %s" % (ln, dic['ui'], safe_encode(ex.message)))
                 groups = []
@@ -195,7 +195,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
 
         for (name, value) in [(key, dic[key]) for key, tit in val_levels] + \
                              [('editeur', dic['ed']), ('lecteur', dic['le']), ('encodeur', dic['cs'])]:
-            if not value:
+            if not value and ungroup != '1':
                 continue
             # check groupid
             gid = "%s_%s" % (dic['oi'], name)
@@ -213,9 +213,17 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
                                    % (ln, dic['ui'], gid, safe_encode(ex.message)))
             elif ungroup == '1' and not value and gid in groups:  # must remove and user in groups
-                out.append("=> Add user '%s' to group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
+                out.append("=> Remove user '%s' from group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
+                if doit:
+                    try:
+                        api.group.remove_user(groupname=gid, username=dic['ui'])
+                    except Exception, ex:
+                        out.append("Line %d, cannot remove userid '%s' from group '%s': %s"
+                                   % (ln, dic['ui'], gid, safe_encode(ex.message)))
 
         if not dic['ph'] and not dic['lb'] and not dic['im']:
+            continue
+        if not doit or not dic['cs']:
             continue
         # find person
         res = portal.portal_catalog(mail_type=dic['ui'], portal_type='person')
