@@ -48,7 +48,7 @@ def get_organizations(self, obj=False):
     return '\n'.join(['%s;%s' % (t[0], t[1]) for t in terms])
 
 
-def import_principals(self, add_user='', create_file='', dochange=''):
+def import_principals(self, add_user='', create_file='', ungroup='', dochange=''):
     """
         Import principals from the file 'Extensions/principals.csv' containing
         OrgId;OrgTitle;Userid;Fullname;email;Éditeur;Lecteur;Créateur CS;N+;Tel;Label;ImHandle
@@ -65,6 +65,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
     out.append("Import principals from principals.csv. Possible parameters:")
     out.append("-> add_user=1 : add missing users")
     out.append("-> create_file=1 : create principals_gen.csv and exit")
+    out.append("-> ungroup=0 : remove from group if role column is empty")
     out.append("-> dochange=1 : apply changes")
     out.append("")
     cf = False
@@ -195,7 +196,6 @@ def import_principals(self, add_user='', create_file='', dochange=''):
         for (name, value) in [(key, dic[key]) for key, tit in val_levels] + \
                              [('editeur', dic['ed']), ('lecteur', dic['le']), ('encodeur', dic['cs'])]:
             if not value:
-                # We don't remove a user from a group
                 continue
             # check groupid
             gid = "%s_%s" % (dic['oi'], name)
@@ -204,7 +204,7 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                 out.append("Line %d: groupid '%s' not found" % (ln, gid))
                 continue
             # add user in group
-            if gid not in groups:
+            if value and gid not in groups:  # must add and user not in groups
                 out.append("=> Add user '%s' to group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
                 if doit:
                     try:
@@ -212,7 +212,10 @@ def import_principals(self, add_user='', create_file='', dochange=''):
                     except Exception, ex:
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
                                    % (ln, dic['ui'], gid, safe_encode(ex.message)))
-        if not dic['ph'] or not dic['lb'] or not dic['im']:
+            elif ungroup == '1' and not value and gid in groups:  # must remove and user in groups
+                out.append("=> Add user '%s' to group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
+
+        if not dic['ph'] and not dic['lb'] and not dic['im']:
             continue
         # find person
         res = portal.portal_catalog(mail_type=dic['ui'], portal_type='person')
