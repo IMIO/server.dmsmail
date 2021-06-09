@@ -4,8 +4,7 @@ Changelog
 2.3.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Improved import_principals
 
 2.3.9 (2021-05-27)
 ------------------
