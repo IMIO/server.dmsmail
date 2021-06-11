@@ -4,7 +4,8 @@ Changelog
 3.0.7 (unreleased)
 ------------------
 
-- Improved principals.
+- Improved principals
+- Used port.cfg zodb-cache-size value
 
 3.0.6 (2021-06-04)
 ------------------
@@ -20,7 +21,7 @@ Changelog
 3.0.4 (2021-04-30)
 ------------------
 
-- Upgraded imio.helpers.
+- Upgraded imio.helpers
 
 3.0.3 (2021-04-29)
 ------------------
@@ -32,7 +33,7 @@ Changelog
 3.0.2 (2021-04-26)
 ------------------
 
-- `import_principals`: use emailer validator and use real line from csv reader.
+- `import_principals`: use emailer validator and use real line from csv reader
 - Upgraded imio.dms.soap2pm
 - Upgraded imio.actionspanel
 
@@ -44,7 +45,7 @@ Changelog
 2.3-1 (2020-10-08)
 ------------------
 
-- Use imio.dms.mail tag 2.3.
+- Use imio.dms.mail tag 2.3
   [sgeulette]
 - Use Plone 4.3.20
   [sgeulette]
