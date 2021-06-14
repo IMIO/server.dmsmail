@@ -104,6 +104,10 @@ video-doc:
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/video-doc.robot
 	rm geckodriver*.log
 
+.PHONY: perf-test
+perf-test:
+	bin/testme --test-file-pattern=ptest_ ${opt}
+
 .PHONY: coverage
 coverage:
 	bin/coverage
