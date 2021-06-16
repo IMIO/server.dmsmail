@@ -6,6 +6,7 @@ Changelog
 
 - Improved principals
 - Used port.cfg zodb-cache-size value
+- Added perf-test run
 
 3.0.6 (2021-06-04)
 ------------------
