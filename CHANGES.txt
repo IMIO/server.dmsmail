@@ -5,6 +5,7 @@ Changelog
 -------------------
 
 - Improved import_principals
+- Downgraded eea.facetednavigation
 
 2.3.9 (2021-05-27)
 ------------------
