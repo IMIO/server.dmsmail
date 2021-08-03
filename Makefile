@@ -80,8 +80,8 @@ various-script:
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 4
 
-.PHONY: pipeline
-pipeline:
+.PHONY: contact-import
+contact-import:
 	@echo "plone: $(plone)"
 	@echo "commit: $(commit)"
 	if ! test -f pipeline-run.cfg; then mv pipeline.cfg pipeline-run.cfg; fi
