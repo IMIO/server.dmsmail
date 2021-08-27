@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - Merged DMS-402 branch (classification)
+- Released and upgraded packages
 
 3.0.7 (2021-06-24)
 ------------------
