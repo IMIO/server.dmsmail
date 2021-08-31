@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.8 (unreleased)
+3.0.8 (2021-08-31)
 ------------------
 
 - Merged DMS-402 branch (classification)
