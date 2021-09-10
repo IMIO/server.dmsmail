@@ -18,7 +18,7 @@ bootstrap:
 
 .PHONY: setup
 setup:
-	virtualenv-2.7 .
+	if command -v python2 >/dev/null && command -v virtualenv >/dev/null; then virtualenv -p python2 . ; elif command -v virtualenv-2.7 >/dev/null; then virtualenv-2.7 . ;fi
 	./bin/pip install --upgrade pip
 	./bin/pip install -r requirements.txt
 
