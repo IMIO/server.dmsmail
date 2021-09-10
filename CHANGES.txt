@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.9 (unreleased)
+3.0.9 (2021-09-10)
 ------------------
 
 - Corrected Makefile, so virtualenv can run on all servers
