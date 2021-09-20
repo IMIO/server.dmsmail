@@ -4,8 +4,7 @@ Changelog
 3.0.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Can use easierly Products.PrintingMailHost in prod (on demo site).
 
 3.0.9 (2021-09-10)
 ------------------
