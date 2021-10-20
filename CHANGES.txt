@@ -6,6 +6,7 @@ Changelog
 
 - Can use easierly Products.PrintingMailHost in prod (on demo site).
 - Added help section in Makefile
+- Pinned collective.js.tooltipster
 
 3.0.9 (2021-09-10)
 ------------------
