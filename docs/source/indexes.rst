@@ -26,13 +26,18 @@ email
 -----
 Product = collective.contact.core, FieldIndex
 
-Used on IContactContent : email
+Used on
+    * IContactContent : email
+    * IImioDmsIncomingMail : orig_sender_email
+    * IImioDmsOutgoingMail : orig_sender_email
 
 enabled
 -------
 Product = collective.eeafaceted.collectionwidget, BooleanIndex
 
-Used on ICollection : enabled
+Used on
+    * ICollection : enabled
+    * IImioDmsOutgoingMail : "email is ready to be sent"
 
 external_reference_number
 -------------------------
@@ -98,6 +103,12 @@ Used on
     * IDmsPerson : userid
     * IHeldPosition : parent userid
     * ITaskContent : enquirer
+
+markers
+-------
+Product = imio.dms.mail, KeywordIndex
+
+Used on IImioDmsIncomingMail : "lastDmsFileIsOdt"
 
 organization_type
 -----------------
@@ -181,12 +192,14 @@ dmsincomingmail, dmsincoming_email
 ----------------------------------
 * assigned_group = creating_group
 * assigned_user
+* email = orig_sender_email
 * external_reference_number = external_reference_no
 * in_out_date = reception_date
 * internal_reference_number = internal_reference_no
 * labels
 * mail_date = original_mail_date
 * mail_type
+* markers = "lastDmsFileIsOdt"
 * organization_type = reception_date (in sec)
 * recipient_groups
 * sender
@@ -197,6 +210,8 @@ dmsoutgoingmail
 ---------------
 * assigned_group = creating_group
 * assigned_user
+* email = orig_sender_email
+* enabled = "email is ready to be sent"
 * external_reference_number = external_reference_no
 * in_out_date = outgoing_date
 * internal_reference_number = internal_reference_no
