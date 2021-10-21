@@ -4,8 +4,8 @@ Changelog
 3.0.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added Products.cron4plone in instance1. Removed cron4plone.cfg and specific ports.
+  [sgeulette]
 
 3.0.10 (2021-10-20)
 -------------------
