@@ -61,15 +61,11 @@ ports:  ## Updates libreoffice and solr ports
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 1
 
-days=0
-date=0
 .PHONY: dv_clean
 dv_clean:  ## Cleans old dv files
 # Clean old document viewer images
 	@echo "plone: $(plone)"
-	@echo "days (back): $(days)"
-	@echo "date (back): $(date)"
-	bin/$(instance) -O$(plone) run run-scripts.py 2 $(days) $(date)
+	bin/$(instance) -O$(plone) run run-scripts.py 2
 
 .PHONY: test-message-script
 test-message-script:  ## Activates test site message
