@@ -134,3 +134,7 @@ vcn:  ## Shows newer packages in checkversion-n.html
 .PHONY: techdoc
 techdoc:  ## Builds technical docs
 	bin/sphinxbuilder
+
+.PHONY: instance-patch
+instance-patch:  ## Patches instance interpreter to run scripts (needed when front-page is not anonymously accessible)
+	bin/python helper.py -f=patch_instance -i=$(instance)
