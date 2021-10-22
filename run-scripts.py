@@ -28,17 +28,18 @@ def script1():
 
 def script2():
     portal = obj  # noqa
-    if len(sys.argv) < 6:
-        error("Cleaning dv files on '{}': bad parameters number !".format(portal.absolute_url_path()))
     params = {
-        'days_back': sys.argv[4],
-        'date_back': sys.argv[5] not in ('', '0') and sys.argv[5] or None,
+        'days_back': api.portal.get_registry_record('imio.dms.mail.dv_clean_days', default=365),
+        'date_back': api.portal.get_registry_record('imio.dms.mail.dv_clean_date', default=None)
     }
+    for k, v in params.items():
+        if not params[k]:
+            del params[k]
     verbose('Cleaning dv files with params {} on {}'.format(params, portal.absolute_url_path()))
     try:
         from datetime import datetime
-        if params['date_back']:
-            datetime.strptime(params['date_back'], '%Y%m%d')
+        if params.get('date_back'):
+            datetime.strftime(params['date_back'], '%Y%m%d')
     except Exception, msg:
         error("Bad date value '{}': '{}'".format(params['date_back'], msg))
         sys.exit(0)
@@ -85,7 +86,7 @@ def script4():
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run ports update",
-        "2: run profile upgrade", "3: activate test message", "4: various"]
+        "2: clean old dv files", "3: activate test message", "4: various"]
 scripts = {'1': script1, '2': script2, '3': script3, '4': script4}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
