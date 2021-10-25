@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.3.10 (unreleased)
+2.3.10 (2021-10-25)
 -------------------
 
 - Improved import_principals
