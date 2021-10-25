@@ -4,8 +4,9 @@ Changelog
 3.0.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added instance-patch section in Makefile
+- Modified dv_clean call to use configuration settings
+- Modified dv_clean to reuse previously set blobs
 
 3.0.11 (2021-10-21)
 -------------------
