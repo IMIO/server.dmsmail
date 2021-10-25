@@ -357,7 +357,7 @@ def dv_clean(self, days_back='365', date_back=None, batch='3000'):
              'small': saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_small.jpg'))}
     criterias = [
         {'portal_type': ['dmsincomingmail', 'dmsincoming_email']},
-        {'portal_type': ['dmsoutgoingmail', 'dmsoutgoing_email']},
+        {'portal_type': ['dmsoutgoingmail']},
     ]
     state_criterias = [
         {'review_state': 'closed'},
@@ -372,12 +372,14 @@ def dv_clean(self, days_back='365', date_back=None, batch='3000'):
     else:
         mod_date = start - timedelta(days=int(days_back))
     already_done = DateTime('2010/01/01').ISO8601()
+    get_same_blob = True  # we will get previously blobs
     total = {'obj': 0, 'pages': 0, 'files': 0, 'size': 0}
     pc = self.portal_catalog
     for j, criteria in enumerate(criterias):
         if not date_back:
             criteria.update(state_criterias[j])  # noqa
         criteria.update({'modified': {'query': mod_date, 'range': 'max'}})  # noqa
+        criteria.update({'sort_on': 'created'})
         brains = pc(**criteria)
         bl = len(brains)
         pghandler.init(criteria['portal_type'][0], bl)
@@ -392,7 +394,12 @@ def dv_clean(self, days_back='365', date_back=None, batch='3000'):
                 if not annot or not annot.get('successfully_converted'):
                     continue
                 if annot['last_updated'] == already_done:
+                    if get_same_blob:
+                        for name in ('large', 'normal', 'small'):
+                            blobs[name] = annot['blob_files']['{}/dump_1.jpg'.format(name)]
+                        get_same_blob = False
                     continue
+                get_same_blob = False
                 total['files'] += 1
                 sizes = dv_images_size(fobj)
                 total['pages'] += sizes['pages']
