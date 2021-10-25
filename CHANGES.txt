@@ -6,6 +6,8 @@ Changelog
 
 - Improved import_principals
 - Downgraded eea.facetednavigation
+- Modified dv_clean call to use configuration settings
+- Modified dv_clean to reuse previously set blobs
 
 2.3.9 (2021-05-27)
 ------------------
