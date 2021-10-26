@@ -29,12 +29,15 @@ def script1():
 def script2():
     portal = obj  # noqa
     params = {
-        'days_back': api.portal.get_registry_record('imio.dms.mail.dv_clean_days', default=365),
+        'days_back': api.portal.get_registry_record('imio.dms.mail.dv_clean_days', default=None),
         'date_back': api.portal.get_registry_record('imio.dms.mail.dv_clean_date', default=None)
     }
     for k, v in params.items():
         if not params[k]:
             del params[k]
+    if not params:
+        error('No preservation parameters configured')
+        return
     verbose('Cleaning dv files with params {} on {}'.format(params, portal.absolute_url_path()))
     try:
         from datetime import datetime
