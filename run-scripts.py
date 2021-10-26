@@ -2,6 +2,8 @@
 
 import os
 import sys
+
+from imio.dms.mail.utils import dv_clean
 from imio.pyutils.system import error
 from imio.pyutils.system import verbose
 from imio.helpers.security import setup_logger
@@ -46,13 +48,6 @@ def script2():
     except Exception, msg:
         error("Bad date value '{}': '{}'".format(params['date_back'], msg))
         sys.exit(0)
-    main_path = os.path.dirname(os.path.realpath(sys.argv[2]))  # full path of this script
-    sys.path[0:0] = ['{}/Extensions'.format(main_path)]
-    from corrections import dv_clean  # noqa
-    # (out, err, code) = runCommand('find {}/var/blobstorage -type f | wc -l'.format(main_path))
-    # if code:
-    #     error("ERR:{}".format(''.join(err)))
-    # blob_nb = int(out[-1].strip('\n') or 0)
     dv_clean(portal, **params)
     transaction.commit()
 
