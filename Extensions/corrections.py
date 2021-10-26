@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from collective.contact.plonegroup.utils import get_organizations
-from datetime import datetime
-from datetime import timedelta
-from DateTime import DateTime
 from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
-from imio.helpers.content import object_values
 from plone.app.uuid.utils import uuidToObject
 from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
-from Products.CPUtils.Extensions.utils import fileSize
 from Products.CPUtils.Extensions.utils import log_list
 from Products.CPUtils.Extensions.utils import object_link
-from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.annotation.interfaces import IAnnotations
 
 import os
@@ -158,7 +152,7 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     try:
         crit_dic = eval(criteria)
     except Exception, msg:
-        ret.append("Problem evaluating criteria: %s" % (msg))
+        ret.append("Problem evaluating criteria: %s" % msg)
         return '\n'.join(ret)
     if not isinstance(crit_dic, dict):
         ret.append("Cannot eval criteria as dict")
@@ -335,96 +329,6 @@ def clean_catalog(self):
             del catalog.data[rid]
             del paths[rid]
             catalog._length.change(-1)
-    return '\n'.join(out)
-
-
-def dv_clean(self, days_back='365', date_back=None, batch='3000'):
-    """
-        Remove document viewer annotation on old mails.
-        days_back: default behavior: we take closed items not modified from this range
-        date_back: if present, we take items not modified from this date (whatever the state)
-    """
-    if not check_zope_admin():
-        return "You must be a zope manager to run this script"
-    start = datetime.now()
-    out = ["call the script followed by needed parameters:",
-           "-> days_back=nb of days to keep (default '365') (not used if date_back is used)",
-           "-> date_back=fixed date to consider (default None) (format YYYYMMDD)",
-           "-> batch=batch number to commit each nth (default '3000')"]
-    pghandler = ZLogHandler(steps=int(batch))
-    log_list(out, "Starting dv_clean at {}".format(start), pghandler)
-    from collective.documentviewer.convert import saveFileToBlob
-    from BTrees.OOBTree import OOBTree  # noqa
-    from Products.CPUtils.Extensions.utils import dv_images_size
-    current_dir = os.path.dirname(__file__)
-    normal_blob = saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_normal.jpg'))
-    blobs = {'large': normal_blob, 'normal': normal_blob,
-             'small': saveFileToBlob(os.path.join(current_dir, 'previsualisation_supprimee_small.jpg'))}
-    criterias = [
-        {'portal_type': ['dmsincomingmail', 'dmsincoming_email']},
-        {'portal_type': ['dmsoutgoingmail']},
-    ]
-    state_criterias = [
-        {'review_state': 'closed'},
-        {'review_state': 'sent'},
-    ]
-    if date_back:
-        if len(date_back) != 8:
-            log_list(out, "Bad date_back length '{}'".format(date_back), pghandler)
-            return
-        mod_date = datetime.strptime(date_back, '%Y%m%d')
-        # mod_date = add_timezone(mod_date, force=True)
-    else:
-        mod_date = start - timedelta(days=int(days_back))
-    already_done = DateTime('2010/01/01').ISO8601()
-    get_same_blob = True  # we will get previously blobs
-    total = {'obj': 0, 'pages': 0, 'files': 0, 'size': 0}
-    pc = self.portal_catalog
-    for j, criteria in enumerate(criterias):
-        if not date_back:
-            criteria.update(state_criterias[j])  # noqa
-        criteria.update({'modified': {'query': mod_date, 'range': 'max'}})  # noqa
-        criteria.update({'sort_on': 'created'})
-        brains = pc(**criteria)
-        bl = len(brains)
-        pghandler.init(criteria['portal_type'][0], bl)
-        total['obj'] += bl
-        for i, brain in enumerate(brains, 1):
-            mail = brain.getObject()
-            for fobj in object_values(mail, ['DmsFile', 'DmsAppendixFile']):
-                annot = IAnnotations(fobj).get('collective.documentviewer', '')
-                if not annot or not annot.get('successfully_converted'):
-                    continue
-                if annot['last_updated'] == already_done:
-                    if get_same_blob:
-                        for name in ('large', 'normal', 'small'):
-                            blobs[name] = annot['blob_files']['{}/dump_1.jpg'.format(name)]
-                        get_same_blob = False
-                    continue
-                get_same_blob = False
-                total['files'] += 1
-                sizes = dv_images_size(fobj)
-                total['pages'] += sizes['pages']
-                total['size'] += (sizes['large'] + sizes['normal'] + sizes['small'] + sizes['text'])
-                # clean annotation
-                files = OOBTree()
-                for name in ['large', 'normal', 'small']:
-                    files['{}/dump_1.jpg'.format(name)] = blobs[name]
-                annot['blob_files'] = files
-                annot['num_pages'] = 1
-                annot['pdf_image_format'] = 'jpg'
-                annot['last_updated'] = already_done
-            pghandler.report(i)
-        pghandler.finish()
-
-    end = datetime.now()
-    delta = end - start
-    log_list(out, "Finishing dv_clean, duration {}".format(delta), pghandler)
-    total['deleted'] = total['pages'] * 4
-    total['size'] = fileSize(total['size'])
-    log_list(out,
-             "Objects: '{obj}', Files: '{files}', Pages: '{pages}', Deleted: '{deleted}', Size: '{size}'".format(**total),
-             pghandler)
     return '\n'.join(out)
 
 
