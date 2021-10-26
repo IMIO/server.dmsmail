@@ -4,8 +4,7 @@ Changelog
 2.3.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Do not clean images if no param configured
 
 2.3.10 (2021-10-25)
 -------------------
