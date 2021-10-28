@@ -7,6 +7,7 @@ Changelog
 - Added instance-patch section in Makefile
 - Modified dv_clean call to use configuration settings
 - Modified dv_clean to reuse previously set blobs
+- Upgraded imio.pyutils
 
 3.0.11 (2021-10-21)
 -------------------
