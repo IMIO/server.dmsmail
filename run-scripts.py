@@ -44,7 +44,7 @@ def script2():
     try:
         from datetime import datetime
         if params.get('date_back'):
-            datetime.strftime(params['date_back'], '%Y%m%d')
+            params['date_back'] = datetime.strftime(params['date_back'], '%Y%m%d')
     except Exception, msg:
         error("Bad date value '{}': '{}'".format(params['date_back'], msg))
         sys.exit(0)
