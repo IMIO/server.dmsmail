@@ -108,7 +108,8 @@ markers
 -------
 Product = imio.dms.mail, KeywordIndex
 
-Used on IImioDmsIncomingMail : "lastDmsFileIsOdt"
+Used on IImioDmsIncomingMail : "hasResponse"
+Used on IImioDmsOutgoingMail : "lastDmsFileIsOdt"
 
 organization_type
 -----------------
@@ -199,7 +200,7 @@ dmsincomingmail, dmsincoming_email
 * labels
 * mail_date = original_mail_date
 * mail_type
-* markers = "lastDmsFileIsOdt"
+* markers = "hasResponse"
 * organization_type = reception_date (in sec)
 * recipient_groups
 * sender
@@ -217,6 +218,7 @@ dmsoutgoingmail
 * internal_reference_number = internal_reference_no
 * mail_date
 * mail_type
+* markers = "lastDmsFileIsOdt"
 * organization_type = outgoing_date (in sec)
 * recipient_groups
 * recipients_index = recipients
