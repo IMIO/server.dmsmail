@@ -10,6 +10,7 @@ Changelog
 - Upgraded imio.pyutils
 - Updated tech doc
 - Corrected dev amqp part
+- Upgraded appy, imio.actionspanel, imio.helpers, imio.migrator, imio.zamqp.dms, plonetheme.imioapps, collective.documentgenerator, phonenumbers
 
 3.0.11 (2021-10-21)
 -------------------
