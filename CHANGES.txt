@@ -9,6 +9,7 @@ Changelog
 - Modified dv_clean to reuse previously set blobs
 - Upgraded imio.pyutils
 - Updated tech doc
+- Corrected dev amqp part
 
 3.0.11 (2021-10-21)
 -------------------
