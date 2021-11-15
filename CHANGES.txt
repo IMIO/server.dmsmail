@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.12 (unreleased)
+3.0.12 (2021-11-15)
 -------------------
 
 - Added instance-patch section in Makefile
