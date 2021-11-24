@@ -6,6 +6,7 @@ Changelog
 
 - Updated tech doc
 - Moved preview images to imio.dms.mail
+- Upgraded imio.zamqp.dms
 
 3.0.12 (2021-11-15)
 -------------------
