@@ -4,8 +4,8 @@ Changelog
 3.0.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Updated tech doc
+- Moved preview images to imio.dms.mail
 
 3.0.12 (2021-11-15)
 -------------------
