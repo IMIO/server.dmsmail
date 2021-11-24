@@ -108,8 +108,10 @@ markers
 -------
 Product = imio.dms.mail, KeywordIndex
 
-Used on IImioDmsIncomingMail : "hasResponse"
-Used on IImioDmsOutgoingMail : "lastDmsFileIsOdt"
+Used on
+    * IImioDmsIncomingMail : "hasResponse"
+    * IImioDmsOutgoingMail : "lastDmsFileIsOdt"
+    * IDmsFile : "isEml"
 
 organization_type
 -----------------
