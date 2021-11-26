@@ -163,20 +163,27 @@
     <!-- DMS Specific Fields -->
     <field name="assigned_group"        type="string" indexed="true" stored="true" />
     <field name="assigned_user"         type="string" indexed="true" stored="true" />
+    <field name="ClassificationFolderSort" type="string" indexed="true" stored="false" />
+    <field name="classification_categories" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="classification_folders" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="contact_source"        type="string" indexed="false" stored="true" />
     <field name="due_date"              type="date" indexed="true" stored="true" />
+    <field name="email"                 type="string" indexed="true" stored="true" />
     <field name="end"                   type="date" indexed="true" stored="true" />
     <field name="enabled"               type="boolean" indexed="true" stored="true" />
+    <field name="external_reference_number" type="string" indexed="true" stored="false" />
     <field name="get_full_title"        type="string" indexed="true" stored="true" />
     <field name="getObjPositionInParent" type="string" indexed="true" stored="true" />
     <field name="getRawRelatedItems"    type="string" indexed="true" stored="true" />
     <field name="in_out_date"           type="date" indexed="true" stored="true" />
     <field name="in_reply_to"           type="string" indexed="true" stored="true" />
+    <field name="internal_reference_no" type="string" indexed="true" stored="true" />
     <field name="internal_reference_number" type="string" indexed="true" stored="true" />
     <field name="is_default_page"       type="boolean" indexed="true" stored="true" />
     <field name="labels"                type="string" indexed="true" stored="true" multiValued="true" />
     <field name="mail_date"             type="date" indexed="true" stored="true" />
     <field name="mail_type"             type="string" indexed="true" stored="true" />
+    <field name="markers"               type="string" indexed="true" stored="true" multivalued="true"/>
     <field name="meta_type"             type="string" indexed="true" stored="true" />
     <field name="organization_type"     type="string" indexed="true" stored="true" />
     <field name="recipient_groups"      type="string" indexed="true" stored="true" multiValued="true" />
