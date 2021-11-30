@@ -4,8 +4,7 @@ Changelog
 3.0.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added solr schema fields for new indexes
 
 3.0.13 (2021-11-24)
 -------------------
