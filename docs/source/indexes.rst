@@ -67,6 +67,12 @@ Product = collectibe.behavior.internalnumber, FieldIndex
 
 Used on IContentish : internal_number
 
+internal_reference_no
+---------------------
+Product = collective.classification.folder, FieldIndex
+
+Used on IClassificationFolder : internal_reference_no
+
 internal_reference_number
 -------------------------
 Product = collective.dms.mailcontent, FieldIndex
