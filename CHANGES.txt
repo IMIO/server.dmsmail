@@ -5,6 +5,7 @@ Changelog
 -------------------
 
 - Added solr schema fields for new indexes
+- Upgraded some products
 
 3.0.13 (2021-11-24)
 -------------------
