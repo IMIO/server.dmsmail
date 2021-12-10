@@ -4,8 +4,7 @@ Changelog
 3.0.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded collective.dms.mailcontent
 
 3.0.14 (2021-12-06)
 -------------------
