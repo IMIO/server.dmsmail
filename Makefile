@@ -105,6 +105,7 @@ video-doc:  ## Runs `video-doc.robot`
 
 .PHONY: perf-test
 perf-test:  ## Runs performance tests
+	# can be run by example with: make perf-test opt='-t test_'
 	bin/testme --test-file-pattern=ptest_ ${opt}
 
 .PHONY: coverage
