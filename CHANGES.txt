@@ -5,6 +5,7 @@ Changelog
 -------------------
 
 - Corrected git fetch url.
+- Upgraded packages
 
 3.0.15 (2021-12-10)
 -------------------
