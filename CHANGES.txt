@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.17 (unreleased)
+3.0.17 (2022-01-21)
 -------------------
 
 - Upgraded imio.pyutils
