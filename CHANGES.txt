@@ -5,6 +5,7 @@ Changelog
 -------------------
 
 - Upgraded imio.pyutils
+- Added config file 30_config.dic
 
 3.0.16 (2022-01-15)
 -------------------
