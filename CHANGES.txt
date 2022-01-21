@@ -4,8 +4,7 @@ Changelog
 3.0.17 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded imio.pyutils
 
 3.0.16 (2022-01-15)
 -------------------
