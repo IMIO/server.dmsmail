@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.18 (unreleased)
+3.0.18 (2022-01-22)
 -------------------
 
 - Corrected 30_config.dic
