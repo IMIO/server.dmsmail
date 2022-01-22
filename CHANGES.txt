@@ -4,8 +4,7 @@ Changelog
 3.0.18 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Corrected 30_config.dic
 
 3.0.17 (2022-01-21)
 -------------------
