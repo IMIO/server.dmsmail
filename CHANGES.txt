@@ -4,8 +4,7 @@ Changelog
 3.0.19 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Changed Makefile to call standard_config.py
 
 3.0.18 (2022-01-22)
 -------------------
