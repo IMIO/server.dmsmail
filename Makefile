@@ -79,6 +79,11 @@ various-script:  ## Runs `run-scripts.py` 4 plone script that does various thing
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 4
 
+.PHONY: cputils
+cputils:  ## run cputils_install
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run standard-config.py
+
 .PHONY: contact-import
 contact-import:  ## Runs contact import `pipeline-run.cfg`
 	@echo "plone: $(plone)"
