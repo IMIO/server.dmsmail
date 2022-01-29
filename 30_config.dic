@@ -1,1 +1,5 @@
-{'om_mt': {'courrier': 'post', 'recommande': 'post_registered'}, 'flds': None}
+# -*- coding: utf-8 -*-
+{'om_mt': [{'oid': u'courrier' ,'nid': u'post', 't': u'Lettre'},
+           {'oid': u'recommande', 'nid': u'post_registered', 't': u'Lettre recommandée'},
+           {'oid': u'email', 'nid': u'email', 't': u'Email'}],
+ 'flds': None}
