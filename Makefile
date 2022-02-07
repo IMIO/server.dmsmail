@@ -67,9 +67,8 @@ dv_clean:  ## Cleans old dv files
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 2
 
-.PHONY: test-message-script
-test-message-script:  ## Activates test site message
-# Activate test site message
+.PHONY: solr-sync
+solr-sync:  ## Solr synchronization (clear + sync)
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 3
 

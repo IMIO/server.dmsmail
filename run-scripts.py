@@ -45,7 +45,7 @@ def script2():
         from datetime import datetime
         if params.get('date_back'):
             params['date_back'] = datetime.strftime(params['date_back'], '%Y%m%d')
-    except Exception, msg:
+    except Exception as msg:
         error("Bad date value '{}': '{}'".format(params['date_back'], msg))
         sys.exit(0)
     dv_clean(portal, **params)
@@ -54,17 +54,19 @@ def script2():
 
 def script3():
     portal = obj  # noqa
-    verbose('Activating test site message on %s' % portal.absolute_url_path())
-    testmsg = portal.unrestrictedTraverse('messages-config/test-site', default=None)
-    if testmsg:
-        if api.content.get_state(testmsg) == 'inactive':
-            api.content.transition(testmsg, transition='activate')
-            transaction.commit()
-            verbose("Test site message activated")
-        else:
-            verbose("WARN: Test site message already activated")
-    else:
-        error("No test site message found")
+    full_key = 'collective.solr.port'
+    configured_port = api.portal.get_registry_record(full_key, default=None)
+    if configured_port is None:
+        return
+    verbose('Syncing solr on %s' % portal.absolute_url_path())
+    response = portal.REQUEST.RESPONSE
+    original = response.write
+    response.write = lambda x: x  # temporarily ignore output
+    maintenance = portal.unrestrictedTraverse("@@solr-maintenance")
+    maintenance.clear()
+    maintenance.sync()
+    response.write = original
+    transaction.commit()
 
 
 def script4():
@@ -84,7 +86,7 @@ def script4():
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run ports update",
-        "2: clean old dv files", "3: activate test message", "4: various"]
+        "2: clean old dv files", "3: solr reindex", "4: various"]
 scripts = {'1': script1, '2': script2, '3': script3, '4': script4}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
@@ -96,6 +98,21 @@ with api.env.adopt_user(username='admin'):
     scripts[sys.argv[3]]()
 
 # ## OLD scripts ## #
+
+
+def script3_1():
+    portal = obj  # noqa
+    verbose('Activating test site message on %s' % portal.absolute_url_path())
+    testmsg = portal.unrestrictedTraverse('messages-config/test-site', default=None)
+    if testmsg:
+        if api.content.get_state(testmsg) == 'inactive':
+            api.content.transition(testmsg, transition='activate')
+            transaction.commit()
+            verbose("Test site message activated")
+        else:
+            verbose("WARN: Test site message already activated")
+    else:
+        error("No test site message found")
 
 
 def script4_1():
