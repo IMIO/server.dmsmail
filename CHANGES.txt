@@ -6,6 +6,7 @@ Changelog
 
 - Corrected solr schema error avoiding start failure
 - Added section to sync solr (after migration)
+- Upgraded products: task, plonegroup, mailcontent, pyutils, batchactions
 
 3.0.19 (2022-02-03)
 -------------------
