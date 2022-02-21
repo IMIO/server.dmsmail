@@ -4,8 +4,8 @@ Changelog
 3.0.21 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added run-mailtypes.py
+- Upgraded tooltipster, actionspanel, col.eea.collectionwidget, col.eea.dashboard
 
 3.0.20 (2022-02-10)
 -------------------
