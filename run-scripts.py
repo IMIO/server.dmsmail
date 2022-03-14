@@ -71,17 +71,18 @@ def script3():
 
 def script4():
     portal = obj  # noqa
-    verbose('Correcting bad steps on %s' % portal.absolute_url_path())
-    setup = api.portal.get_tool('portal_setup')
-    ir = setup.getImportStepRegistry()
-    change = False
-    for step in ('task-uninstall', 'urban-postInstall'):
-        if step in ir._registered:
-            verbose('Removing bad step {}'.format(step))
-            del ir._registered[step]
-            change = True
-    if change:
-        setup._p_changed = True
+    verbose('Correcting actionspanel transitions config on %s' % portal.absolute_url_path())
+    transaction.commit()
+    key = 'imio.actionspanel.browser.registry.IImioActionsPanelConfig.transitions'
+    values = api.portal.get_registry_record(key)
+    new_values = []
+    for val in values:
+        if val.startswith('dmsincomingmail.'):
+            email_val = val.replace('dmsincomingmail.', 'dmsincoming_email.')
+            if email_val not in values:
+                new_values.append(email_val)
+    if new_values:
+        api.portal.set_registry_record(key, list(values) + new_values)
     transaction.commit()
 
 
@@ -494,3 +495,19 @@ def script4_22():
         if change:
             col.query = new_lst
             verbose('This collection has been corrected {}'.format(brain.getPath()))
+
+
+def script4_23():
+    portal = obj  # noqa
+    verbose('Correcting bad steps on %s' % portal.absolute_url_path())
+    setup = api.portal.get_tool('portal_setup')
+    ir = setup.getImportStepRegistry()
+    change = False
+    for step in ('task-uninstall', 'urban-postInstall'):
+        if step in ir._registered:
+            verbose('Removing bad step {}'.format(step))
+            del ir._registered[step]
+            change = True
+    if change:
+        setup._p_changed = True
+    transaction.commit()
