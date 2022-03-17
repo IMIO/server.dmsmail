@@ -5,6 +5,8 @@ Changelog
 -------------------
 
 - Added script to copy solr
+- Added script to correct actionspanel transitions config
+- Upgraded collective.dms.mailcontent, imio.helpers, imio.zamqp.dms
 
 3.0.21 (2022-02-21)
 -------------------
