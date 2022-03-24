@@ -83,6 +83,11 @@ def script4():
                 new_values.append(email_val)
     if new_values:
         api.portal.set_registry_record(key, list(values) + new_values)
+    verbose('Removing ClassificationCategory workflow on %s' % portal.absolute_url_path())
+    pw = portal.portal_workflow
+    wf = pw.getChainForPortalType('ClassificationCategory')
+    if wf == ('active_inactive_workflow',):
+        pw.setChainForPortalTypes(['ClassificationCategory'], ())
     transaction.commit()
 
 
