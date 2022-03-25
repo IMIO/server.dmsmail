@@ -5,6 +5,7 @@ Changelog
 -------------------
 
 - Added script to correct ClassificationCategory workflow
+- Upgraded imio.helpers, collective.dms.mailcontent
 
 3.0.22 (2022-03-18)
 -------------------
