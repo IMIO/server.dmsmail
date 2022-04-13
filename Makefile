@@ -27,6 +27,7 @@ setup:  ## Setups environment
 
 .PHONY: buildout
 buildout:  ## Runs setup and buildout
+	rm -f .installed.cfg .mr.developer.cfg
 	if ! test -f bin/buildout;then make setup;fi
 	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
 	git checkout .gitignore
