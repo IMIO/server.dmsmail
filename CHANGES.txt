@@ -4,8 +4,8 @@ Changelog
 3.0.24 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded batchimport and imioapps
+- Upgraded Twisted version
 
 3.0.23 (2022-03-25)
 -------------------
