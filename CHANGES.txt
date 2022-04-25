@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.25 (unreleased)
+3.0.25 (2022-04-25)
 -------------------
 
 - Upgraded imio.zamqp.dms
