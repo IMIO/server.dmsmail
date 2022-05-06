@@ -4,8 +4,7 @@ Changelog
 3.0.26 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded plonegroup, imio.helpers, documentgenerator, batchactions.
 
 3.0.25 (2022-04-25)
 -------------------
