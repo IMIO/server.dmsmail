@@ -4,7 +4,7 @@ Changelog
 3.0.27 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Let plone-path be accessible in instance
 
 
 3.0.26 (2022-05-06)
