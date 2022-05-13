@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.27 (unreleased)
+3.0.27 (2022-05-13)
 -------------------
 
 - Let plone-path be accessible in instance
