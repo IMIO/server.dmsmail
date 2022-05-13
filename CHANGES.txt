@@ -5,7 +5,7 @@ Changelog
 -------------------
 
 - Let plone-path be accessible in instance
-
+- Upgraded c.task, imio.helpers, c.eeafaceted.z3ctable
 
 3.0.26 (2022-05-06)
 -------------------
