@@ -71,23 +71,19 @@ def script3():
 
 def script4():
     portal = obj  # noqa
-    verbose('Correcting actionspanel transitions config on %s' % portal.absolute_url_path())
-    transaction.commit()
-    key = 'imio.actionspanel.browser.registry.IImioActionsPanelConfig.transitions'
-    values = api.portal.get_registry_record(key)
-    new_values = []
-    for val in values:
-        if val.startswith('dmsincomingmail.'):
-            email_val = val.replace('dmsincomingmail.', 'dmsincoming_email.')
-            if email_val not in values:
-                new_values.append(email_val)
-    if new_values:
-        api.portal.set_registry_record(key, list(values) + new_values)
-    verbose('Removing ClassificationCategory workflow on %s' % portal.absolute_url_path())
-    pw = portal.portal_workflow
-    wf = pw.getChainForPortalType('ClassificationCategory')
-    if wf == ('active_inactive_workflow',):
-        pw.setChainForPortalTypes(['ClassificationCategory'], ())
+    verbose('Correcting bad migration %s' % portal.absolute_url_path())
+    for wf_name, method in (('incomingmail_workflow', 'wf_conditions'),
+                            ('outgoingmail_workflow', 'wf_conditions')):
+        wf = portal.portal_workflow[wf_name]
+        for tr_id in wf.transitions:
+            tr = wf.transitions[tr_id]
+            guard = tr.getGuard()
+            cur_expr = guard.getExprText()
+            to_replace = "wfconditions"
+            if to_replace in cur_expr:
+                new_expr = cur_expr.replace(to_replace, '{}'.format(method))
+                if guard.changeFromProperties({'guard_expr': new_expr}):
+                    tr.guard = guard
     transaction.commit()
 
 
@@ -515,4 +511,26 @@ def script4_23():
             change = True
     if change:
         setup._p_changed = True
+    transaction.commit()
+
+
+def script4_24():
+    portal = obj  # noqa
+    verbose('Correcting actionspanel transitions config on %s' % portal.absolute_url_path())
+    transaction.commit()
+    key = 'imio.actionspanel.browser.registry.IImioActionsPanelConfig.transitions'
+    values = api.portal.get_registry_record(key)
+    new_values = []
+    for val in values:
+        if val.startswith('dmsincomingmail.'):
+            email_val = val.replace('dmsincomingmail.', 'dmsincoming_email.')
+            if email_val not in values:
+                new_values.append(email_val)
+    if new_values:
+        api.portal.set_registry_record(key, list(values) + new_values)
+    verbose('Removing ClassificationCategory workflow on %s' % portal.absolute_url_path())
+    pw = portal.portal_workflow
+    wf = pw.getChainForPortalType('ClassificationCategory')
+    if wf == ('active_inactive_workflow',):
+        pw.setChainForPortalTypes(['ClassificationCategory'], ())
     transaction.commit()
