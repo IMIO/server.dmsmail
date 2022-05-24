@@ -4,8 +4,8 @@ Changelog
 3.0.29 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added correciton script
+- Downgraded pycountry
 
 3.0.28 (2022-05-21)
 -------------------
