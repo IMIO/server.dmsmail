@@ -4,6 +4,7 @@ from collective.contact.plonegroup.utils import get_organizations
 from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
 from plone.app.uuid.utils import uuidToObject
+from plone import api
 from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
 from Products.CPUtils.Extensions.utils import log_list
@@ -134,7 +135,7 @@ def add_md5(self, change=''):
     return '\n'.join(ret)
 
 
-def do_transition(self, typ='dmsincomingmail', transition='close_manager', criteria="{}", limit=10000, change=''):
+def do_transition(self, typ='dmsincomingmail', transition='close_manager', criteria="{}", limit=5000, change=''):
     """ Apply a transition to many objects """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -142,13 +143,11 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     from DateTime import DateTime
     pc = self.portal_catalog
     pw = self.portal_workflow
-    ret = []
-    ret.append('Parameters:')
-    ret.append("typ= '%s'" % typ)
-    ret.append("transition: '%s'" % transition)
-    ret.append("criteria: '%s'" % criteria)
-    ret.append("limit: '%s'" % limit)
-    ret.append("change: '%s'\n" % change)
+    ret = ["Can be run like this: \n* script_name?criteria={'created': {'query': (DateTime('2022-04-01 00:00:01'), "
+           "DateTime('2022-09-22 00:00:01'),), 'range': 'min:max'}}\n* script_name?criteria={'created': {'query': "
+           "(DateTime('2022-04-01 00:00:01'),), 'range': 'max:'}}\n\n",
+           'Parameters:', "typ= '%s'" % typ, "transition: '%s'" % transition, "criteria: '%s'" % criteria,
+           "limit: '%s'" % limit, "change: '%s'\n" % change]
     try:
         crit_dic = eval(criteria)
     except Exception, msg:
@@ -157,10 +156,7 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     if not isinstance(crit_dic, dict):
         ret.append("Cannot eval criteria as dict")
         return '\n'.join(ret)
-    criterias = {'review_state': {'not': ['closed']}}
-    start = DateTime('2017-09-22 00:00:01')  # noqa
-    end = DateTime('2017-10-08 23:59:59')  # noqa
-    # criterias.update({'created': {'query': (start, end,), 'range': 'min:max'}})
+    criterias = {'review_state': {'not': ['closed']}}  # must be a parameter
     criterias.update(crit_dic)
     ret.append("criterias=%s\n" % criterias)
     brains = pc(portal_type=typ, **criterias)
@@ -168,6 +164,7 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     changed = 0
     for i, brain in enumerate(brains):
         if i >= int(limit):
+            ret.append('!! Limit of {} objects reached !! Must run script again\n'.format(limit))
             break
         obj = brain.getObject()
         try:
@@ -177,6 +174,55 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
         except WorkflowException:
             ret.append("Cannot do transition on '%s'" % brain.getPath())
     ret.append("Tot=%d" % tot)
+    ret.append("Changed=%d" % changed)
+    return '\n'.join(ret)
+
+
+def set_state(self, typ='dmsincomingmail', state='closed', criteria="{}", limit=5000, change=''):
+    """Set state on many objects.
+
+    """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    from Products.CMFCore.WorkflowCore import WorkflowException
+    from DateTime import DateTime
+    pc = self.portal_catalog
+    pw = self.portal_workflow
+    ret = ["Can be run like this: \n* script_name?criteria={'created': {'query': (DateTime('2022-04-01 00:00:01'), "
+           "DateTime('2022-09-22 00:00:01'),), 'range': 'min:max'}}\n* script_name?criteria={'created': {'query': "
+           "(DateTime('2022-04-01 00:00:01'),), 'range': 'max:'}}\n\n",
+           'Parameters:', "typ= '%s'" % typ, "state: '%s'" % state, "criteria: '%s'" % criteria, "limit: '%s'" % limit,
+           "change: '%s'\n" % change]
+    try:
+        crit_dic = eval(criteria)
+    except Exception, msg:
+        ret.append("Problem evaluating criteria: %s" % msg)
+        return '\n'.join(ret)
+    if not isinstance(crit_dic, dict):
+        ret.append("Cannot eval criteria as dict")
+        return '\n'.join(ret)
+    criterias = {'review_state': {'not': [state]}}
+    criterias.update(crit_dic)
+    ret.append("criterias=%s\n" % criterias)
+    brains = pc(portal_type=typ, **criterias)
+    ret.append("Tot=%d" % len(brains))
+    changed = 0
+    workflow_id = ''
+    member_id = api.user.get_current().getId()
+    for i, brain in enumerate(brains):
+        if not workflow_id:
+            workflow_id = pw.getChainForPortalType(brain.portal_type)[0]
+        if i >= int(limit):
+            ret.append('\n!! Limit of {} objects reached !! Must run script again\n'.format(limit))
+            break
+        obj = brain.getObject()
+        mod_time = DateTime()
+        if change == '1':
+            pw.setStatusOf(workflow_id, obj, {'action': state, 'review_state': state, 'actor': member_id,
+                                              'comments': '', 'time': mod_time})
+            obj.setModificationDate(mod_time)  # also to update cache...
+            obj.reindexObject(['review_state', 'state_group', 'modified'])
+            changed += 1
     ret.append("Changed=%d" % changed)
     return '\n'.join(ret)
 
@@ -288,6 +334,40 @@ def various(self):
         if len(mails[mail]) > 1:
             ret.append(u"Multiple scan_ids in '%s': %s" % (object_link(mail), mails[mail]))
     return "</br>\n".join(ret)
+
+
+def various2(self):
+    """ various check script """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    from imio.dms.mail.interfaces import IActionsPanelFolder
+    from collective.querynextprev.interfaces import INextPrevNotNavigable
+    from zope.interface import alsoProvides
+    portal = self
+    pc = portal.portal_catalog
+    for fld in (portal['templates']['om'], portal['contacts']['contact-lists-folder']):
+        folders = pc(path='/'.join(fld.getPhysicalPath()), portal_type='Folder')
+        for brain in folders:
+            folder = brain.getObject()
+            if folder == fld:
+                continue
+            print brain.getPath()
+            alsoProvides(folder, IActionsPanelFolder)
+            alsoProvides(folder, INextPrevNotNavigable)
+
+
+def various3(self):
+    """ various check script """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    from plone import api
+    pc = self.portal_catalog
+    for brain in pc(portal_type='dmsincoming_email', sort_on='created', sort_order='descending'):
+        nb = int(brain.internal_reference_number[1:])
+        if nb < 10723:
+            break
+        # api.content.delete(obj=brain.getObject())
+        print(brain.Title)
 
 
 def dg_doc_info(self):
