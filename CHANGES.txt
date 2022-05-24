@@ -4,8 +4,9 @@ Changelog
 3.0.29 (unreleased)
 -------------------
 
-- Added correciton script
+- Added correction script
 - Downgraded pycountry
+- Added external method to set state
 
 3.0.28 (2022-05-21)
 -------------------
