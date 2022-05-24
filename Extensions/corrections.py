@@ -136,7 +136,16 @@ def add_md5(self, change=''):
 
 
 def do_transition(self, typ='dmsincomingmail', transition='close_manager', criteria="{}", limit=5000, change=''):
-    """ Apply a transition to many objects """
+    """ Apply a transition to objects found following criterias.
+
+    :param self: portal is the best
+    :param typ: portal_type searched
+    :param transition: transition to apply
+    :param criteria: criteria string that will be evaluated
+    :param limit: maximum objects handled
+    :param change: must be to 1 to apply changes
+    :return: messages string
+    """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
     from Products.CMFCore.WorkflowCore import WorkflowException
@@ -179,8 +188,15 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
 
 
 def set_state(self, typ='dmsincomingmail', state='closed', criteria="{}", limit=5000, change=''):
-    """Set state on many objects.
+    """Set state on objects found following criterias.
 
+    :param self: portal is the best
+    :param typ: portal_type searched
+    :param state: destination state
+    :param criteria: criteria string that will be evaluated
+    :param limit: maximum objects handled
+    :param change: must be to 1 to apply changes
+    :return: messages string
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
