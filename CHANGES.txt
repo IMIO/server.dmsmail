@@ -8,7 +8,9 @@ Changelog
 - Downgraded pycountry
 - Added external method to set state
 - Added decorate_acl_methods env variable
-- Upgraded z3c.table, imio.helpers
+- Upgraded z3c.table, imio.helpers, col.contact.core, col.contact.plonegroup, col.contact.widget,
+  col.dms.basecontent, col.task, imio.history, plonetheme.imioapps, col.documentgenerator,
+  col.eeafaceted.z3ctable, imio.prettylink, appy
 - Defined plone-path on all instances
 
 3.0.28 (2022-05-21)
