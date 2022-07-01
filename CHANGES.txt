@@ -4,8 +4,8 @@ Changelog
 3.0.30 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded plonegroup, basecontent, dx.localroles, imio.helpers, pyutils
+- Switched to imio.dms.mail 3.0 branch
 
 3.0.29 (2022-06-24)
 -------------------
