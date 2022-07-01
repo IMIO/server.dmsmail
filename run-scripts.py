@@ -301,7 +301,7 @@ def script4_12():
     # versioning
     pdiff = portal.portal_diff
     pdiff.setDiffForPortalType('dmsoutgoingmail', {'any': "Compound Diff for Dexterity types"})
-    portal.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'repositorytool', run_dependencies=False)
+    portal.portal_setup.runImportStepFromProfile('profile-imio.dms.mail:default', 'repositorytool', run_dependencies=False)
     # cmfeditions permissions
     portal.manage_permission('CMFEditions: Access previous versions', ('Manager', 'Site Administrator', 'Contributor',
                              'Editor', 'Member', 'Owner', 'Reviewer'), acquire=0)
@@ -374,8 +374,8 @@ def script4_15():
         guard.permissions = ()
         guard.roles = ('Batch importer',)
     # Updating registry
-    portal.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
-    portal.portal_setup.runImportStepFromProfile('imio.dms.mail:default', 'actions', run_dependencies=False)
+    portal.portal_setup.runImportStepFromProfile('profile-imio.dms.mail:default', 'plone.app.registry', run_dependencies=False)
+    portal.portal_setup.runImportStepFromProfile('profile-imio.dms.mail:default', 'actions', run_dependencies=False)
     transaction.commit()
 
 
