@@ -105,7 +105,7 @@ doc:  ## Runs `doc.robot`
 
 .PHONY: video-doc
 video-doc:  ## Runs `video-doc.robot`
-	# can be run by example with: make doc opt='-t "Contacts *"'
+	# can be run by example with: make video-doc opt='-t "Contacts *"' or opt='-i "RUN1"'
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/video-doc.robot
 	rm geckodriver*.log
 
