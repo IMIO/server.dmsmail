@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.31 (unreleased)
+3.0.31 (2022-08-23)
 -------------------
 
 - Upgraded contact.duplicated, contact.plonegroup, dms.mailcontent, task, imio.helpers, pyutils, zamqp.dms
