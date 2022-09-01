@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.32 (unreleased)
+3.0.32 (2022-09-01)
 -------------------
 
 - Upgraded imiO.helpers.
