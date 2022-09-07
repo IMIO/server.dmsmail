@@ -4,8 +4,8 @@ Changelog
 3.0.33 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Removed decorate_acl_methods from instance-debug to avoid ZODB.POSException.ConflictError in migration
+- Set pack gc to False, so we avoid problem with multiple dbs (async)
 
 3.0.32 (2022-09-01)
 -------------------
