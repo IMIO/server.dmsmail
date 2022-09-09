@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from imio.helpers.content import object_values
+# from imio.helpers.content import object_values
 from plone import api
 
 
@@ -20,11 +20,11 @@ brains = pc.unrestrictedSearchResults(portal_type=types)
 count = 0
 for brain in brains:
     mail = brain.getObject()
-    files = object_values(mail, ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile'])
-    if not files:
-        continue
-    count += len(files)
-    api.content.delete(objects=files, check_linkintegrity=False)
+    # files = object_values(mail, ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile']) dmsmail 3.0 only
+    for contained in mail.objectValues():  # works with dmsmail 2.3
+        if contained.__class__.__name__ in ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile']:
+            count += 1
+            api.content.delete(obj=contained, check_linkintegrity=False)
 
 logger.warn('Deleted {} files'.format(count))
 
