@@ -20,8 +20,7 @@ brains = pc.unrestrictedSearchResults(portal_type=types)
 count = 0
 for brain in brains:
     mail = brain.getObject()
-    # files = object_values(mail, ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile']) dmsmail 3.0 only
-    for contained in mail.objectValues():  # works with dmsmail 2.3
+    for contained in mail.objectValues():
         if contained.__class__.__name__ in ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile']:
             count += 1
             api.content.delete(obj=contained, check_linkintegrity=False)
