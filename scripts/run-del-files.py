@@ -4,13 +4,16 @@ from plone import api
 
 
 import logging
+import sys
 import transaction
 
 
 portal = obj  # noqa
 logger = logging.getLogger('del files')
-
 types = ['dmsincomingmail', 'dmsincoming_email', 'dmsoutgoingmail']
+doit = False
+if sys.argv[-1] == 'doit':
+    doit = True
 
 pc = portal.portal_catalog
 brains = pc.unrestrictedSearchResults(portal_type=types)
@@ -25,4 +28,6 @@ for brain in brains:
 
 logger.warn('Deleted {} files'.format(count))
 
-transaction.commit()
+if doit:
+    transaction.commit()
+    logger.warn('Commit done')
