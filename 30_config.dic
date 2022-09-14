@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-{'om_mt': [{'oid': u'courrier' ,'nid': u'post', 't': u'Lettre'},
-           {'oid': u'recommande', 'nid': u'post_registered', 't': u'Lettre recommandée'},
-           {'oid': u'email', 'nid': u'email', 't': u'Email'}],
+{'om_mt': [{'oid': u'courrier' ,'nid': u'post', 't': u'Lettre', 'a': True},
+           {'oid': u'recommande', 'nid': u'post_registered', 't': u'Lettre recommandée', 'a': True},
+           {'oid': u'email', 'nid': u'email', 't': u'Email', 'a': True}],
  'flds': None}
