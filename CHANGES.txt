@@ -10,6 +10,7 @@ Changelog
 3.0.34 (2022-09-16)
 -------------------
 
+- Added 30_config.dic file copy in Makefile
 - Added script to delete document viewer annotations.
 - Added script to delete all files
 - Modified 30_config.dic file
