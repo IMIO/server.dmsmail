@@ -32,6 +32,7 @@ buildout:  ## Runs setup and buildout
 	if ! test -f bin/buildout;then make setup;fi
 	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
 	git checkout .gitignore
+	if [ -f copy-data.sh ]; then echo '\nrsync -e "ssh -o $StrictHostKeyChecking=no" -ah --info=stats1 "$${SOURCE_HOST}:$${SOURCE_PATH}/30_config.dic" $${TARGET_PATH}/ --delete' >> copy_data.sh; fi
 
 .PHONY: copy
 copy:  ## Runs `copy-data.sh`
