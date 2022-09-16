@@ -4,8 +4,10 @@ Changelog
 3.0.34 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added script to delete document viewer annotations.
+- Added script to delete all files
+- Modified 30_config.dic file
+- Upgraded imio.pyutils and imio.dataexchange.core
 
 3.0.33 (2022-09-07)
 -------------------
