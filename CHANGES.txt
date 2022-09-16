@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.34 (unreleased)
+3.0.34 (2022-09-16)
 -------------------
 
 - Added script to delete document viewer annotations.
