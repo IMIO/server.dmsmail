@@ -11,4 +11,7 @@ for term in vocab:
         unicode(term.token)
     except Exception:
         print(term.token)
-
+        continue
+    for char in (' ',):
+        if char in term.token:
+            print(term.token)
