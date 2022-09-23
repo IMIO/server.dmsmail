@@ -23,7 +23,10 @@ for brain in brains:
     for contained in mail.objectValues():
         if contained.__class__.__name__ in ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile']:
             count += 1
-            api.content.delete(obj=contained, check_linkintegrity=False)
+            try:
+                api.content.delete(obj=contained, check_linkintegrity=False)
+            except AssertionError as error:  # in zc.relation
+                logger.error("Cannot delete {}".format(contained.absolute_url()))
 
 logger.warn('Deleted {} files'.format(count))
 
