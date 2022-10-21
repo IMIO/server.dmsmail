@@ -11,11 +11,17 @@ import transaction
 
 
 portal = obj  # noqa
-logger = logging.getLogger('del files')
+logger = logging.getLogger('del mails')
 types = ['dmsincomingmail', 'dmsincoming_email', 'dmsoutgoingmail']
 doit = False
 if sys.argv[-1] == 'doit':
     doit = True
+# deactivate versioning
+pr = portal.portal_repository
+for typ in types:
+    for pol_id in (u'at_edit_autoversion', u'version_on_revert'):
+        pr.removePolicyFromContentType(typ, pol_id)
+pr.setVersionableContentTypes([typ for typ in list(pr.getVersionableContentTypes()) if typ not in types])
 
 pc = portal.portal_catalog
 brains = pc.unrestrictedSearchResults(portal_type=types, sort_on='path')
