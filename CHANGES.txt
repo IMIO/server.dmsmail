@@ -1,11 +1,12 @@
 Changelog
 =========
 
-3.0.36 (unreleased)
+3.0.36 (2022-11-05)
 -------------------
 
-- Nothing changed yet.
-
+- Added exception handling in run-del-files script
+- Added script to delete all mails
+- Upgraded c.dms.basecontent, c.dms.mailcontent, c.wfadaptations, imio.helpers, imio.zamqp.core
 
 3.0.35 (2022-09-22)
 -------------------
