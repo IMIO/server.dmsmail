@@ -4,31 +4,37 @@ from plone import api
 
 
 import logging
+import os
 import sys
 import transaction
 
 
 portal = obj  # noqa
 logger = logging.getLogger('del files')
-types = ['dmsincomingmail', 'dmsincoming_email', 'dmsoutgoingmail']
+types = ['dmsmainfile', 'dmsappendixfile', 'dmsommainfile']
 doit = False
 if sys.argv[-1] == 'doit':
     doit = True
+batch_value = int(os.getenv('BATCH', '0'))
 
 pc = portal.portal_catalog
 brains = pc.unrestrictedSearchResults(portal_type=types)
-count = 0
-for brain in brains:
-    mail = brain.getObject()
-    for contained in mail.objectValues():
-        if contained.__class__.__name__ in ['DmsFile', 'DmsAppendixFile', 'ImioDmsFile']:
-            count += 1
-            try:
-                api.content.delete(obj=contained, check_linkintegrity=False)
-            except AssertionError as error:  # in zc.relation
-                logger.error("Cannot delete {}".format(contained.absolute_url()))
 
-logger.warn('Deleted {} files'.format(count))
+for i, brain in enumerate(brains, start=1):
+    # if i > 1001:
+    #     sys.exit(1)
+    if batch_value and i > batch_value:  # so it is possible to run this step partially
+        break
+    fil = brain.getObject()
+    try:
+        api.content.delete(obj=fil, check_linkintegrity=False)
+    except AssertionError as error:  # in zc.relation
+        logger.error("Cannot delete {}".format(fil.absolute_url()))
+    if doit and i % 1000 == 0:
+        logger.warn('Commit done on count {}'.format(i))
+        transaction.commit()
+
+logger.warn('Deleted {} files'.format(i))
 
 if doit:
     transaction.commit()
