@@ -72,9 +72,14 @@ dv_clean:  ## Cleans old dv files
 	bin/$(instance) -O$(plone) run run-scripts.py 2
 
 .PHONY: solr-sync
-solr-sync:  ## Solr synchronization (clear + sync)
+solr-sync:  ## Solr synchronization (sync)
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 3
+
+.PHONY: solr-clear-sync
+solr-clear-sync:  ## Solr synchronization (clear + sync)
+	@echo "plone: $(plone)"
+	bin/$(instance) -O$(plone) run run-scripts.py 3 clear
 
 .PHONY: various-script
 various-script:  ## Runs `run-scripts.py` 4 plone script that does various things
