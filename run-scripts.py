@@ -63,7 +63,8 @@ def script3():
     original = response.write
     response.write = lambda x: x  # temporarily ignore output
     maintenance = portal.unrestrictedTraverse("@@solr-maintenance")
-    maintenance.clear()
+    if len(sys.argv) > 4 and sys.argv[4] == 'clear':
+        maintenance.clear()
     maintenance.sync()
     response.write = original
     transaction.commit()
