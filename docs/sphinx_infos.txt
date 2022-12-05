@@ -18,7 +18,7 @@ Either, you use a directory "_build" within the root path, or you separate
 Inside the root directory, two more directories will be created; "_templates"
 for custom HTML templates and "_static" for custom stylesheets and other static
 files. You can enter another prefix (such as ".") to replace the underscore.
-> Name prefix for templates and static dir [_]: 
+> Name prefix for templates and static dir [_]:
 
 The project name will occur in several places in the built documentation.
 > Project name: iA.docs
@@ -30,17 +30,17 @@ Python the version is something like 2.5 or 3.0, while the release is
 something like 2.5.1 or 3.0a1.  If you don't need this dual structure,
 just set both to the same value.
 > Project version: 3.0
-> Project release [3.0]: 
+> Project release [3.0]:
 
 The file name suffix for source files. Commonly, this is either ".txt"
 or ".rst".  Only files with this suffix are considered documents.
-> Source file suffix [.rst]: 
+> Source file suffix [.rst]:
 
 One document is special in that it is considered the top node of the
 "contents tree", that is, it is the root of the hierarchical structure
 of the documents. Normally, this is "index", but if your "index"
 document is a custom template, you can also set this to another filename.
-> Name of your master document (without suffix) [index]: 
+> Name of your master document (without suffix) [index]:
 
 Sphinx can also add configuration for epub output:
 > Do you want to use the epub builder (y/N) [n]: n
@@ -51,9 +51,9 @@ Please indicate if you want to use one of the following Sphinx extensions:
 > intersphinx: link between Sphinx documentation of different projects (y/N) [n]: n
 > todo: write "todo" entries that can be shown or hidden on build (y/N) [n]: y
 > coverage: checks for documentation coverage (y/N) [n]: y
-> pngmath: include math, rendered as PNG images (y/N) [n]: 
-> mathjax: include math, rendered in the browser by MathJax (y/N) [n]: 
-> ifconfig: conditional inclusion of content based on config values (y/N) [n]: 
+> pngmath: include math, rendered as PNG images (y/N) [n]:
+> mathjax: include math, rendered in the browser by MathJax (y/N) [n]:
+> ifconfig: conditional inclusion of content based on config values (y/N) [n]:
 > viewcode: include links to the source code of documented Python objects (y/N) [n]: y
 
 A Makefile and a Windows command file can be generated for you so that you
