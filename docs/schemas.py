@@ -57,6 +57,7 @@ res = get_pt_fields_info('person', ['INameFromTitle.title'])
 res = get_pt_fields_info('held_position', ['INameFromTitle.title'])
 res = get_pt_fields_info('ClassificationFolder', ['INameFromTitle.title'])
 res = get_pt_fields_info('ClassificationSubfolder', ['INameFromTitle.title'])
+# res = get_pt_fields_info('ClassificationCategory', [])  # doens't work: no defined schema
 for name, title, klass, value in res:
     if check:
         print('{}: {}'.format(name, title.encode('utf8')))

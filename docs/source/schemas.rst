@@ -5,6 +5,14 @@ Schemas
 ..
   bin/instance1 -Oc30-5 run docs/schemas.py
 
+Fields Tables with:
+    * field name (prefixed on behavior)
+    * title (in french)
+    * field class
+    * value type, with extra informations:
+        * 📌: indicates a link to another object
+        * ❓: indicates a special content
+
 **********************************************************************
 dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
 **********************************************************************
@@ -20,15 +28,15 @@ dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
    * - IClassificationFolder.classification_categories
      - Codes de classement
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **code de classement**)
    * - IClassificationFolder.classification_folders
      - Dossiers
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **farde ou chemise**)
    * - IDmsMailCreatingGroup.creating_group
      - Groupe indicateur
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **service**)
    * - IDublinCore.description
      - Description
      - zope.schema._bootstrapfields.Text
@@ -40,7 +48,7 @@ dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
    * - ITask.assigned_user
      - Utilisateur assigné
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **utilisateur d'un groupe**)
    * - ITask.due_date
      - Échéance
      - zope.schema._field.Date
@@ -60,11 +68,11 @@ dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
    * - internal_reference_no
      - Référence interne
      - zope.schema._bootstrapfields.TextLine
-     -
+     - (❓ *référence interne spécifique*)
    * - mail_type
      - Type de courrier
      - zope.schema._field.Choice
-     -
+     - (📌 **config: type**)
    * - orig_sender_email
      - Email de l'expéditeur original
      - zope.schema._bootstrapfields.TextLine
@@ -80,19 +88,19 @@ dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
    * - recipient_groups
      - Services en copie
      - dexterity.localrolesfield.field.LocalRolesField
-     - Choice
+     - Choice (📌 **service**)
    * - reply_to
      - Courriers liés
      - collective.dms.basecontent.relateddocs.RelatedDocs
-     - RelationChoice
+     - RelationChoice (📌 **courrier entrant ou sortant**)
    * - sender
      - Expéditeurs
      - collective.contact.widget.schema.ContactList
-     - ContactChoice
+     - ContactChoice (📌 **contact**)
    * - treating_groups
      - Service traitant
      - collective.task.field.LocalRoleMasterSelectField
-     -
+     - (📌 **service**)
 
 **********************************
 dmsoutgoingmail (courrier sortant)
@@ -109,15 +117,15 @@ dmsoutgoingmail (courrier sortant)
    * - IClassificationFolder.classification_categories
      - Codes de classement
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **code de classement**)
    * - IClassificationFolder.classification_folders
      - Dossiers
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **farde ou chemise**)
    * - IDmsMailCreatingGroup.creating_group
      - Groupe indicateur
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **service**)
    * - IDublinCore.description
      - Description
      - zope.schema._bootstrapfields.Text
@@ -129,7 +137,7 @@ dmsoutgoingmail (courrier sortant)
    * - ITask.assigned_user
      - Utilisateur assigné
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **utilisateur d'un groupe**)
    * - ITask.due_date
      - Échéance
      - zope.schema._field.Date
@@ -141,7 +149,7 @@ dmsoutgoingmail (courrier sortant)
    * - email_attachments
      - Pièces jointes
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **fichier ged ou annexe**)
    * - email_body
      - Corps de l'email
      - plone.app.textfield.RichText
@@ -169,7 +177,7 @@ dmsoutgoingmail (courrier sortant)
    * - external_reference_no
      - Référence externe
      - zope.schema._bootstrapfields.TextLine
-     -
+     - (❓ *référence interne spécifique*)
    * - internal_reference_no
      - Référence interne
      - zope.schema._bootstrapfields.TextLine
@@ -181,7 +189,7 @@ dmsoutgoingmail (courrier sortant)
    * - mail_type
      - Type de courrier
      - zope.schema._field.Choice
-     -
+     - (📌 **config: type**)
    * - orig_sender_email
      - Email de l'expéditeur original
      - zope.schema._bootstrapfields.TextLine
@@ -193,27 +201,27 @@ dmsoutgoingmail (courrier sortant)
    * - recipient_groups
      - Services en copie
      - dexterity.localrolesfield.field.LocalRolesField
-     - Choice
+     - Choice (📌 **service**)
    * - recipients
      - Destinataires
      - collective.contact.widget.schema.ContactList
-     - ContactChoice
+     - ContactChoice (📌 **contact**)
    * - reply_to
      - Courriers liés
      - collective.dms.basecontent.relateddocs.RelatedDocs
-     - RelationChoice
+     - RelationChoice (📌 **courrier**)
    * - send_modes
      - Formes d'envoi
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **config: forme d'envoi**)
    * - sender
      - Expéditeur
      - zope.schema._field.Choice
-     -
+     - (📌 **fonction occupée interne**)
    * - treating_groups
      - Service traitant
      - collective.task.field.LocalRoleMasterSelectField
-     -
+     - (📌 **service**)
 
 *****************************************
 dmsmainfile & dmsommainfile (fichier ged)
@@ -623,6 +631,35 @@ held_position (fonction occupée)
    * - start_date
      - Date de début
      - zope.schema._field.Date
+     -
+
+*******************************************
+ClassificationCategory (code de classement)
+*******************************************
+
+.. list-table:: FIELDS
+   :widths: 30 30 30 10
+   :header-rows: 1
+
+   * - Field name
+     - Title
+     - Class
+     - Value type
+   * - enabled
+     - Activé
+     - zope.schema._bootstrapfields.Bool
+     -
+   * - identifier
+     - Identifiant
+     - zope.schema._bootstrapfields.TextLine
+     -
+   * - informations
+     - Informations
+     - zope.schema._bootstrapfields.TextLine
+     -
+   * - title
+     - Nom
+     - zope.schema._bootstrapfields.TextLine
      -
 
 ****************************************************************
