@@ -1,6 +1,10 @@
-#######
+########
+Contents
+########
+
+*******
 Schemas
-#######
+*******
 
 ..
   bin/instance1 -Oc30-5 run docs/schemas.py
@@ -13,9 +17,8 @@ Fields Tables with:
         * 📌: indicates a link to another object
         * ❓: indicates a special content
 
-**********************************************************************
 dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
-**********************************************************************
+----------------------------------------------------------------------
 
 Parent: specific Folder /incoming-mail
 
@@ -104,9 +107,8 @@ Parent: specific Folder /incoming-mail
      - collective.task.field.LocalRoleMasterSelectField
      - (📌 **service**)
 
-**********************************
 dmsoutgoingmail (courrier sortant)
-**********************************
+----------------------------------
 
 Parent: specific Folder /outgoing-mail
 
@@ -227,9 +229,8 @@ Parent: specific Folder /outgoing-mail
      - collective.task.field.LocalRoleMasterSelectField
      - (📌 **service**)
 
-*****************************************
 dmsmainfile & dmsommainfile (fichier ged)
-*****************************************
+-----------------------------------------
 
 Parent:
     * im or iem
@@ -288,9 +289,8 @@ Parent:
      - zope.schema._bootstrapfields.TextLine
      -
 
-************************
 dmsappendixfile (annexe)
-************************
+------------------------
 
 Parent:
     * im or iem
@@ -317,9 +317,8 @@ Parent:
      - plone.namedfile.field.NamedBlobFile
      -
 
-********************
 directory (annuaire)
-********************
+--------------------
 
 Specific object /contacts
 
@@ -352,9 +351,8 @@ Specific object /contacts
      - zope.schema._field.List
      - DictRow
 
-***************************
 organization (organisation)
-***************************
+---------------------------
 
 Parent:
     * directory /contacts
@@ -453,9 +451,8 @@ Parent:
      - zope.schema._field.Choice
      - (📌 **type ou niveau de l'annuaire**)
 
-*****************
 person (personne)
-*****************
+-----------------
 
 Parent: directory /contacts
 
@@ -560,9 +557,8 @@ Parent: directory /contacts
      - zope.schema._field.Choice
      - (📌 **utilisateur**)
 
-********************************
 held_position (fonction occupée)
-********************************
+--------------------------------
 
 Parent: person
 
@@ -655,9 +651,8 @@ Parent: person
      - zope.schema._field.Date
      -
 
-*******************************************
 ClassificationCategory (code de classement)
-*******************************************
+-------------------------------------------
 
 Parent: specific ClassificationContainer /tree
 
@@ -686,9 +681,8 @@ Parent: specific ClassificationContainer /tree
      - zope.schema._bootstrapfields.TextLine
      -
 
-****************************************************************
 ClassificationFolder (farde) & ClassificationSubfolder (chemise)
-****************************************************************
+----------------------------------------------------------------
 
 Parent:
     * specific ClassificationFolders /folders
@@ -731,9 +725,8 @@ Parent:
      - dexterity.localrolesfield.field.LocalRoleField
      - (📌 **service**)
 
-************
 task (tâche)
-************
+------------
 
 Parent:
     * im or iem

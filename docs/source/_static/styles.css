@@ -5,3 +5,7 @@ tbody .row-odd {
 tbody .row-even {
     background: #F9F9F9;
 }
+
+body div.document div.body {
+    max-width: inherit;
+}

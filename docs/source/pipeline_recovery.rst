@@ -3,9 +3,9 @@ Recovery pipeline
 #################
 
 
-**************************
-Main steps order to follow
-**************************
+**********************************
+Main steps order to create content
+**********************************
 
 #. Organization (service). Mapping to be done with actual service. Can be deactivated service (prefixed).
    Found in:
