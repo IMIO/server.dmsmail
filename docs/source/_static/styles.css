@@ -9,3 +9,10 @@ tbody .row-even {
 body div.document div.body {
     max-width: inherit;
 }
+
+body div.document div.sphinxsidebar {
+    width: 350px;
+}
+body div.document div.bodywrapper {
+    margin: 0 0 0 350px;
+}
