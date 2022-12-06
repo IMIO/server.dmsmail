@@ -14,6 +14,7 @@ Contents:
    schemas
    security
    indexes
+   pipeline_recovery
    pipeline_contact
    utils
    test
