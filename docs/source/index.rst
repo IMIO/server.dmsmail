@@ -11,7 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   contents
+   contents/index
    security
    indexes
    pipeline_recovery
