@@ -17,6 +17,8 @@ Fields Tables with:
 dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
 **********************************************************************
 
+Parent: specific Folder /incoming-mail
+
 .. list-table:: FIELDS
    :widths: 30 30 30 10
    :header-rows: 1
@@ -105,6 +107,8 @@ dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
 **********************************
 dmsoutgoingmail (courrier sortant)
 **********************************
+
+Parent: specific Folder /outgoing-mail
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -227,6 +231,10 @@ dmsoutgoingmail (courrier sortant)
 dmsmainfile & dmsommainfile (fichier ged)
 *****************************************
 
+Parent:
+    * im or iem
+    * om
+
 .. list-table:: FIELDS
    :widths: 30 30 30 10
    :header-rows: 1
@@ -284,6 +292,10 @@ dmsmainfile & dmsommainfile (fichier ged)
 dmsappendixfile (annexe)
 ************************
 
+Parent:
+    * im or iem
+    * om
+
 .. list-table:: FIELDS
    :widths: 30 30 30 10
    :header-rows: 1
@@ -308,6 +320,8 @@ dmsappendixfile (annexe)
 ********************
 directory (annuaire)
 ********************
+
+Specific object /contacts
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -341,6 +355,10 @@ directory (annuaire)
 ***************************
 organization (organisation)
 ***************************
+
+Parent:
+    * directory /contacts
+    * other organization
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -433,11 +451,13 @@ organization (organisation)
    * - organization_type
      - Type ou niveau
      - zope.schema._field.Choice
-     -
+     - (📌 **type ou niveau de l'annuaire**)
 
 *****************
 person (personne)
 *****************
+
+Parent: directory /contacts
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -538,11 +558,13 @@ person (personne)
    * - userid
      - Identifiant Plone
      - zope.schema._field.Choice
-     -
+     - (📌 **utilisateur**)
 
 ********************************
 held_position (fonction occupée)
 ********************************
+
+Parent: person
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -627,7 +649,7 @@ held_position (fonction occupée)
    * - position
      - Organisation/Fonction
      - collective.contact.widget.schema.ContactChoice
-     -
+     - (📌 **organisation**)
    * - start_date
      - Date de début
      - zope.schema._field.Date
@@ -636,6 +658,8 @@ held_position (fonction occupée)
 *******************************************
 ClassificationCategory (code de classement)
 *******************************************
+
+Parent: specific ClassificationContainer /tree
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -666,6 +690,10 @@ ClassificationCategory (code de classement)
 ClassificationFolder (farde) & ClassificationSubfolder (chemise)
 ****************************************************************
 
+Parent:
+    * specific ClassificationFolders /folders
+    * ClassificationFolder
+
 .. list-table:: FIELDS
    :widths: 30 30 30 10
    :header-rows: 1
@@ -681,7 +709,7 @@ ClassificationFolder (farde) & ClassificationSubfolder (chemise)
    * - classification_categories
      - Codes de classement
      - zope.schema._field.List
-     - Choice
+     - Choice (📌 **code de classement**)
    * - classification_informations
      - Informations
      - zope.schema._bootstrapfields.Text
@@ -693,7 +721,7 @@ ClassificationFolder (farde) & ClassificationSubfolder (chemise)
    * - recipient_groups
      - Services en copie
      - dexterity.localrolesfield.field.LocalRolesField
-     - Choice
+     - Choice (📌 **service**)
    * - title
      - Titre
      - zope.schema._bootstrapfields.TextLine
@@ -701,11 +729,16 @@ ClassificationFolder (farde) & ClassificationSubfolder (chemise)
    * - treating_groups
      - Service traitant
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **service**)
 
 ************
 task (tâche)
 ************
+
+Parent:
+    * im or iem
+    * om
+    * task
 
 .. list-table:: FIELDS
    :widths: 30 30 30 10
@@ -718,11 +751,11 @@ task (tâche)
    * - ITask.assigned_group
      - Groupe assigné
      - collective.task.field.LocalRoleMasterSelectField
-     -
+     - (📌 **service**)
    * - ITask.assigned_user
      - Utilisateur assigné
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **utilisateur d'un groupe**)
    * - ITask.due_date
      - Échéance
      - zope.schema._field.Date
@@ -730,7 +763,7 @@ task (tâche)
    * - ITask.enquirer
      - Service proposant
      - dexterity.localrolesfield.field.LocalRoleField
-     -
+     - (📌 **service**)
    * - ITask.task_description
      - Description du travail
      - plone.app.textfield.RichText
@@ -738,11 +771,11 @@ task (tâche)
    * - parents_assigned_groups
      - Groupes assignés venant des tâches parentes
      - dexterity.localrolesfield.field.LocalRolesField
-     - Choice
+     - Choice (📌 **service**)
    * - parents_enquirers
      - Initiateurs venant des tâches parentes
      - dexterity.localrolesfield.field.LocalRolesField
-     - Choice
+     - Choice (📌 **service**)
    * - title
      - Titre
      - zope.schema._bootstrapfields.TextLine
