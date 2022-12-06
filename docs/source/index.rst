@@ -14,7 +14,7 @@ Contents:
    schemas
    security
    indexes
-   pipeline
+   pipeline_contact
    utils
    test
 
