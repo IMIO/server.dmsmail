@@ -5,7 +5,7 @@ Changelog
 -------------------
 
 - Improved run-del-files to work in BATCH mode
-- Made solr clean following parameter. Added `make solr-clean-sync`
+- Made solr clear following parameter. Added `make solr-clear-sync`
 - Modified `copy-data.sh` before use
 
 3.0.36 (2022-11-05)
