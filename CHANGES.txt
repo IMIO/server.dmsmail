@@ -4,8 +4,9 @@ Changelog
 3.0.37 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Improved run-del-files to work in BATCH mode
+- Made solr clean following parameter. Added `make solr-clean-sync`
+- Modified `copy-data.sh` before use
 
 3.0.36 (2022-11-05)
 -------------------
