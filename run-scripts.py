@@ -67,7 +67,7 @@ def script3():
         maintenance.clear()
     maintenance.sync()
     response.write = original
-    transaction.commit()
+    # transaction.commit()
 
 
 def script4():
