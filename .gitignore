@@ -12,6 +12,7 @@ docs/doctrees
 docs/html
 docs/make.bat
 htmlcov/
+.idea/
 imports/*
 !imports/.keep
 include/
@@ -41,3 +42,4 @@ src/
 ./test.py
 update-admin-password.*
 var/
+.vscode/
