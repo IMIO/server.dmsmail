@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.38 (unreleased)
+3.0.38 (2022-12-12)
 -------------------
 
 - Corrected typo in Makefile
