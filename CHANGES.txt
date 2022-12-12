@@ -4,8 +4,9 @@ Changelog
 3.0.38 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Corrected typo in Makefile
+- Upgraded appy, c.dms.mailcontent, c.documentgenerator, c.eeafaceted.dashboard, i.dashboard, i.migrator, i.pyutils,
+  plonetheme.imioapps. Migration improvements, setup correction, added methods.
 
 3.0.37 (2022-12-09)
 -------------------
