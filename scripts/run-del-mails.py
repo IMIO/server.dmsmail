@@ -9,6 +9,7 @@ import os
 import sys
 import transaction
 
+# MUST BE TESTED AGAIN !!
 
 portal = obj  # noqa
 logger = logging.getLogger('del mails')
@@ -16,6 +17,7 @@ types = ['dmsincomingmail', 'dmsincoming_email', 'dmsoutgoingmail']
 doit = False
 if sys.argv[-1] == 'doit':
     doit = True
+batch_value = int(os.getenv('BATCH', '0'))
 # deactivate versioning
 pr = portal.portal_repository
 for typ in types:
@@ -28,13 +30,15 @@ brains = pc.unrestrictedSearchResults(portal_type=types, sort_on='path')
 count = 0
 old_parent = None
 
-for brain in brains:
+for i, brain in enumerate(brains, start=1):
     if brain.id == 'test_creation_modele':
         continue
+    if batch_value and count > batch_value:  # so it is possible to run this step partially
+        break
     bpath = os.path.dirname(brain.getPath())
     mail = brain.getObject()
     parent = aq_parent(aq_inner(mail))
-    if old_parent and parent != old_parent:
+    if old_parent and parent != old_parent and old_parent.id not in ('incoming-mail', 'outgoing-mail'):
         if not old_parent.objectIds():
             # logger.warn("Delete folder '{}'".format(old_parent.absolute_url()))
             api.content.delete(obj=old_parent, check_linkintegrity=False)
@@ -43,10 +47,10 @@ for brain in brains:
     # logger.warn("Delete mail '{}'".format(mail.absolute_url()))
     api.content.delete(obj=mail, check_linkintegrity=False)
     count += 1
-else:
-    if old_parent and not old_parent.objectIds():
-        # logger.warn("Delete folder '{}'".format(old_parent.absolute_url()))
-        api.content.delete(obj=old_parent, check_linkintegrity=False)
+
+if old_parent and not old_parent.objectIds() and old_parent.id not in ('incoming-mail', 'outgoing-mail'):
+    # logger.warn("Delete folder '{}'".format(old_parent.absolute_url()))
+    api.content.delete(obj=old_parent, check_linkintegrity=False)
 
 logger.warn('Will delete {} mails'.format(count))
 
