@@ -14,6 +14,7 @@ if sys.argv[-1] == 'check':
     check = True
 zcmls = [
     'src/collective.behavior.internalnumber/src/collective/behavior/internalnumber/configure.zcml',
+    'parts/omelette/collective/documentviewer/dexterity.zcml',
     'src/collective.classification.folder/src/collective/classification/folder/content/configure.zcml',
     'src/collective.classification.tree/src/collective/classification/tree/contents/configure.zcml',
     'src/collective.contact.core/src/collective/contact/core/configure.zcml',
@@ -46,11 +47,17 @@ def resolve_path(fil, value):
     if not value.startswith('.'):
         return value
     fparts = fil.split('/')
-    product = fparts[1]
-    start = 2
-    if fparts[2] == 'src':
-        start = 3
-    ns_parts = len(product.split('.'))
+    if fparts[0] == 'src':
+        product = fparts[1]
+        start = 2
+        if fparts[2] == 'src':
+            start = 3
+        ns_parts = len(product.split('.'))
+    elif fparts[0] == 'parts':
+        # asserting product name is in 2 parts
+        product = '{}.{}'.format(fparts[2], fparts[3])
+        start = 2
+        ns_parts = 2
     rel_path = '.'.join(fparts[start+ns_parts:-1])  # can be '' or 'content'
     return '{}{}{}'.format(product, rel_path and '.{}'.format(rel_path) or '', value)
 
@@ -92,7 +99,7 @@ for itf in itfs:
         print(itf_fmt.format(itf, '-'*len(itf)))
     unset = itfs[itf].pop('unset')
     if unset:
-        print('\n* Unconfigure:')
+        print('\n* UNCONFIGURE:')
         for evt, decl in unset:
             print('\n  * {}\n\n    * .. autofunction:: {}'.format(evt and evt or itf, decl['handler']))
     for evt in sorted(itfs[itf].keys()):

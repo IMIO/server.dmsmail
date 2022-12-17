@@ -81,7 +81,7 @@ z3c.relationfield.interfaces.IHasIncomingRelations
 plone.registry.interfaces.IRecordModifiedEvent
 ----------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * plone.registry.interfaces.IRecordModifiedEvent
 
@@ -142,7 +142,7 @@ Products.PluggableAuthService.interfaces.events.IGroupDeletedEvent
 collective.contact.widget.interfaces.IContactContent
 ----------------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * zope.lifecycleevent.interfaces.IObjectMovedEvent
 
@@ -190,7 +190,7 @@ zope.interface.Interface
 collective.task.behaviors.ITask
 -------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * Products.DCWorkflow.interfaces.IAfterTransitionEvent
 
@@ -241,7 +241,7 @@ Products.PluggableAuthService.interfaces.events.IPropertiesUpdatedEvent
 Products.PluggableAuthService.interfaces.events.IPrincipalAddedToGroupEvent
 ---------------------------------------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * Products.PluggableAuthService.interfaces.events.IPrincipalAddedToGroupEvent
 
@@ -256,7 +256,7 @@ Products.PluggableAuthService.interfaces.events.IPrincipalAddedToGroupEvent
 Products.PluggableAuthService.interfaces.events.IPrincipalRemovedFromGroupEvent
 -------------------------------------------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * Products.PluggableAuthService.interfaces.events.IPrincipalRemovedFromGroupEvent
 
@@ -284,6 +284,10 @@ plone.dexterity.interfaces.IDexterityContent
 
   * .. autofunction:: dexterity.localrolesfield.subscriber.related_change_on_moving
 
+* Products.CMFCore.interfaces.IActionSucceededEvent
+
+  * .. autofunction:: collective.documentviewer.subscribers.handle_workflow_change
+
 * Products.DCWorkflow.interfaces.IAfterTransitionEvent
 
   * .. autofunction:: dexterity.localroles.subscriber.related_change_on_transition
@@ -294,11 +298,15 @@ plone.dexterity.interfaces.IDexterityContent
 
 * zope.lifecycleevent.interfaces.IObjectAddedEvent
 
+  * .. autofunction:: collective.documentviewer.subscribers.handle_file_creation
+
   * .. autofunction:: dexterity.localroles.subscriber.related_change_on_addition
 
   * .. autofunction:: dexterity.localrolesfield.subscriber.related_change_on_addition
 
 * zope.lifecycleevent.interfaces.IObjectModifiedEvent
+
+  * .. autofunction:: collective.documentviewer.subscribers.handle_file_creation
 
   * .. autofunction:: dexterity.localrolesfield.subscriber.object_modified
 
@@ -317,7 +325,7 @@ plone.dexterity.interfaces.IDexterityContent
 dexterity.localroles.browser.interfaces.ILocalRoleListUpdatedEvent
 ------------------------------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * dexterity.localroles.browser.interfaces.ILocalRoleListUpdatedEvent
 
@@ -339,7 +347,7 @@ plone.dexterity.interfaces.IDexterityFTI
 z3c.relationfield.interfaces.IHasOutgoingRelations
 --------------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * zope.app.container.interfaces.IObjectRemovedEvent
 
@@ -455,7 +463,7 @@ Products.ATContentTypes.interfaces.folder.IATFolder
 plone.app.controlpanel.interfaces.IConfigurationChangedEvent
 ------------------------------------------------------------
 
-* Unconfigure:
+* UNCONFIGURE:
 
   * plone.app.controlpanel.interfaces.IConfigurationChangedEvent
 
