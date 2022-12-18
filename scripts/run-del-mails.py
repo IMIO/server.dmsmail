@@ -30,7 +30,7 @@ brains = pc.unrestrictedSearchResults(portal_type=types, sort_on='path')
 count = 0
 old_parent = None
 
-for i, brain in enumerate(brains, start=1):
+for brain in brains:
     if brain.id == 'test_creation_modele':
         continue
     if batch_value and count > batch_value:  # so it is possible to run this step partially
