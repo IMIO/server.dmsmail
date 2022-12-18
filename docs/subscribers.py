@@ -15,8 +15,8 @@ if sys.argv[-1] == 'check':
 zcmls = [
     'src/collective.behavior.internalnumber/src/collective/behavior/internalnumber/configure.zcml',
     'parts/omelette/collective/documentviewer/dexterity.zcml',
-    'src/collective.classification.folder/src/collective/classification/folder/content/configure.zcml',
     'src/collective.classification.tree/src/collective/classification/tree/contents/configure.zcml',
+    'src/collective.classification.folder/src/collective/classification/folder/content/configure.zcml',
     'src/collective.contact.core/src/collective/contact/core/configure.zcml',
     'src/collective.contact.plonegroup/src/collective/contact/plonegroup/configure.zcml',
     'src/collective.contact.plonegroup/src/collective/contact/plonegroup/subscribers.zcml',

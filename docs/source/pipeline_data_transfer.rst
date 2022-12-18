@@ -73,3 +73,4 @@ Points of attention
 *******************
 
 * checks if internalnumber is activated and if a default value is needed (must the counter be increased ?).
+* tree: caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", container.UID())
