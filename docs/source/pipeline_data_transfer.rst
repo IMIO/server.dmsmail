@@ -1,6 +1,6 @@
-#################
-Recovery pipeline
-#################
+######################
+Data transfer pipeline
+######################
 
 
 **********************************
@@ -67,3 +67,9 @@ Main steps order to create content
 #. dmsoutgoingmail email_attachments
 #. Relations between im and om (reply_to)
 #. tasks ❓
+
+*******************
+Points of attention
+*******************
+
+* checks if internalnumber is activated and if a default value is needed (must the counter be increased ?).

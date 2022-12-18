@@ -2,6 +2,11 @@
 Subscribers
 ***********
 
+Data transfer info:
+    * ❓: to check following cases
+    * ✅: to keep
+    * ❌: to deactivate
+
 collective.behavior.internalnumber.behavior.IInternalNumberBehavior
 -------------------------------------------------------------------
 

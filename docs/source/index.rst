@@ -14,7 +14,7 @@ Contents:
    contents/index
    security
    indexes
-   pipeline_recovery
+   pipeline_data_transfer
    pipeline_contact
    utils
    test
