@@ -14,6 +14,28 @@ collective.behavior.internalnumber.behavior.IInternalNumberBehavior
 
   * .. autofunction:: collective.behavior.internalnumber.subscribers.object_added
 
+collective.classification.tree.contents.container.IClassificationContainer
+--------------------------------------------------------------------------
+
+* zope.container.interfaces.IContainerModifiedEvent
+
+  * .. autofunction:: collective.classification.tree.contents.container.container_modified
+
+collective.classification.tree.contents.category.IClassificationCategory
+------------------------------------------------------------------------
+
+* zope.container.interfaces.IContainerModifiedEvent
+
+  * .. autofunction:: collective.classification.tree.contents.category.container_modified
+
+* zope.lifecycleevent.IObjectModifiedEvent
+
+  * .. autofunction:: collective.classification.tree.contents.category.category_modified
+
+* zope.lifecycleevent.interfaces.IObjectRemovedEvent
+
+  * .. autofunction:: collective.classification.tree.contents.category.category_deleted
+
 collective.classification.folder.content.classification_folders.IClassificationFolders
 --------------------------------------------------------------------------------------
 
@@ -46,28 +68,6 @@ collective.classification.folder.content.classification_subfolder.IClassificatio
 * zope.lifecycleevent.interfaces.IObjectMovedEvent
 
   * .. autofunction:: collective.classification.folder.content.classification_subfolder.on_move
-
-collective.classification.tree.contents.container.IClassificationContainer
---------------------------------------------------------------------------
-
-* zope.container.interfaces.IContainerModifiedEvent
-
-  * .. autofunction:: collective.classification.tree.contents.container.container_modified
-
-collective.classification.tree.contents.category.IClassificationCategory
-------------------------------------------------------------------------
-
-* zope.container.interfaces.IContainerModifiedEvent
-
-  * .. autofunction:: collective.classification.tree.contents.category.container_modified
-
-* zope.lifecycleevent.IObjectModifiedEvent
-
-  * .. autofunction:: collective.classification.tree.contents.category.category_modified
-
-* zope.lifecycleevent.interfaces.IObjectRemovedEvent
-
-  * .. autofunction:: collective.classification.tree.contents.category.category_deleted
 
 plone.app.relationfield.interfaces.IDexterityHasRelations
 ---------------------------------------------------------
