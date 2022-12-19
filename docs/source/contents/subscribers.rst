@@ -434,6 +434,8 @@ collective.dms.basecontent.dmsfile.IDmsFile
 
 * zope.lifecycleevent.interfaces.IObjectAddedEvent
 
+  * .. autofunction:: collective.dms.basecontent.dmsfile.update_higher_version
+
   * .. autofunction:: imio.dms.mail.subscribers.dmsmainfile_added
 
 * zope.lifecycleevent.interfaces.IObjectModifiedEvent
