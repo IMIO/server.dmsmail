@@ -69,12 +69,43 @@ collective.classification.folder.content.classification_subfolder.IClassificatio
 
   * .. autofunction:: collective.classification.folder.content.classification_subfolder.on_move
 
-plone.app.relationfield.interfaces.IDexterityHasRelations
----------------------------------------------------------
+collective.contact.core.interfaces.IHeldPosition
+------------------------------------------------
 
-* zope.lifecycleevent.interfaces.IObjectRemovedEvent
+* zope.lifecycleevent.interfaces.IObjectAddedEvent
 
-  * .. autofunction:: collective.contact.core.subscribers.referencedObjectRemoved
+  * .. autofunction:: collective.contact.core.subscribers.update_related_with_held_position
+
+* zope.lifecycleevent.interfaces.IObjectModifiedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.update_related_with_held_position
+
+collective.contact.core.content.position.IPosition
+--------------------------------------------------
+
+* zope.lifecycleevent.interfaces.IObjectModifiedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.update_related_with_position
+
+collective.contact.core.content.person.IPerson
+----------------------------------------------
+
+* zope.lifecycleevent.interfaces.IObjectModifiedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.update_related_with_person
+
+collective.contact.core.content.organization.IOrganization
+----------------------------------------------------------
+
+* zope.lifecycleevent.interfaces.IObjectModifiedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.update_related_with_organization
+
+  * .. autofunction:: imio.dms.mail.subscribers.organization_modified
+
+* zope.lifecycleevent.interfaces.IObjectMovedEvent
+
+  * .. autofunction:: imio.dms.mail.subscribers.organization_modified
 
 z3c.relationfield.interfaces.IHasIncomingRelations
 --------------------------------------------------
@@ -82,6 +113,24 @@ z3c.relationfield.interfaces.IHasIncomingRelations
 * OFS.interfaces.IObjectWillBeRemovedEvent
 
   * .. autofunction:: collective.contact.core.subscribers.referenceRemoved
+
+plone.app.relationfield.interfaces.IDexterityHasRelations
+---------------------------------------------------------
+
+* zope.lifecycleevent.interfaces.IObjectRemovedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.referencedObjectRemoved
+
+collective.contact.core.behaviors.IContactDetails
+-------------------------------------------------
+
+* zope.lifecycleevent.interfaces.IObjectAddedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.clear_fields_use_parent_address
+
+* zope.lifecycleevent.interfaces.IObjectModifiedEvent
+
+  * .. autofunction:: collective.contact.core.subscribers.clear_fields_use_parent_address
 
 plone.registry.interfaces.IRecordModifiedEvent
 ----------------------------------------------
@@ -481,17 +530,6 @@ plone.app.controlpanel.interfaces.IConfigurationChangedEvent
   * .. autofunction:: imio.dms.mail.subscribers.user_related_modification
 
   * .. autofunction:: imio.dms.mail.subscribers.wsclient_configuration_changed
-
-collective.contact.core.content.organization.IOrganization
-----------------------------------------------------------
-
-* zope.lifecycleevent.interfaces.IObjectModifiedEvent
-
-  * .. autofunction:: imio.dms.mail.subscribers.organization_modified
-
-* zope.lifecycleevent.interfaces.IObjectMovedEvent
-
-  * .. autofunction:: imio.dms.mail.subscribers.organization_modified
 
 collective.contact.contactlist.interfaces.IContactList
 ------------------------------------------------------
