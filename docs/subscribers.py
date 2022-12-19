@@ -20,6 +20,7 @@ zcmls = [
     'src/collective.contact.core/src/collective/contact/core/configure.zcml',
     'src/collective.contact.plonegroup/src/collective/contact/plonegroup/configure.zcml',
     'src/collective.contact.plonegroup/src/collective/contact/plonegroup/subscribers.zcml',
+    'src/collective.dms.basecontent/src/collective/dms/basecontent/configure.zcml',
     'src/collective.dms.mailcontent/src/collective/dms/mailcontent/configure.zcml',
     'src/collective.querynextprev/src/collective/querynextprev/subscribers.zcml',
     'src/collective.task/src/collective/task/subscribers.zcml',
