@@ -14,6 +14,8 @@ collective.behavior.internalnumber.behavior.IInternalNumberBehavior
 
   * .. autofunction:: collective.behavior.internalnumber.subscribers.object_added
 
+        data transfer: ❓
+
 collective.classification.tree.contents.container.IClassificationContainer
 --------------------------------------------------------------------------
 
