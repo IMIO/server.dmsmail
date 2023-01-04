@@ -99,6 +99,12 @@ contact-import:  ## Runs contact import `pipeline-run.cfg`
 	if ! test -f pipeline-run.cfg; then mv pipeline.cfg pipeline-run.cfg; fi
 	bin/$(instance) run parts/omelette/collective/contact/importexport/scripts/execute_pipeline.py pipeline-run.cfg $(plone) $(commit)
 
+.PHONY: data-transfer
+data-transfer:  ## Runs iadocs transmo `pipeline-run.cfg`
+	@echo "commit: $(commit)"
+	# bin/$(instance) -O$(plone) run parts/omelette/imio/transmogrifier/iadocs/execute_pipeline.py data-transfer.cfg
+	bin/$(instance) -O$(plone) run src/imio.transmogrifier.iadocs/src/imio/transmogrifier/iadocs/execute_pipeline.py data-transfer.cfg
+
 .PHONY: robot-server
 robot-server:  ## Starts robot server
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
