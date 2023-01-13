@@ -11,6 +11,7 @@ import transaction
 
 portal = obj  # noqa
 logger = logging.getLogger('ob')
+logger.setLevel(logging.INFO)
 run_part = os.getenv('FUNC_PART', '')
 parts = os.getenv('PARTS', '')
 batch_value = int(os.getenv('BATCH', '0'))
@@ -20,7 +21,9 @@ if sys.argv[-1] == 'doit':
     doit = True
 paths = {}
 filename = 'to_index.pickle'
+# load pickle file to have already handled mails
 if os.path.exists(filename):
+    logger.info('Loading pickle file')
     with open(filename, 'rb') as fh:
         paths = pickle.load(fh)
 
@@ -47,14 +50,18 @@ def store(obj, path):
 pc = portal.portal_catalog
 # clear
 if '1' in parts:
+    logger.info('Clearing catalog')
     pc.manage_catalogClear()
 # index root items
 if '2' in parts:
+    logger.info('Reindexing root items')
     portal.ZopeFindAndApply(portal, search_sub=False, apply_func=indexObject)
     # portal.ZopeFindAndApply(portal, search_sub=False, apply_func=log)
+# get root items
 res = portal.ZopeFindAndApply(portal, search_sub=False)
 # index all except root mail folders
 if '3' in parts:
+    logger.info('Reindexing all except root mail folders')
     for path, obj in res:
         if path not in ('incoming-mail', 'outgoing-mail'):
             portal.ZopeFindAndApply(obj, search_sub=True, apply_func=indexObject, pre=path)
@@ -62,6 +69,7 @@ if '3' in parts:
         transaction.commit()
 # store root mail folders content
 if '4' in parts:
+    logger.info('Storing mails paths in pickle file')
     for path, obj in res:
         if path in ('incoming-mail', 'outgoing-mail'):
             portal.ZopeFindAndApply(obj, search_sub=True, apply_func=store, pre=path)
@@ -88,10 +96,12 @@ def index_paths(excluded=[]):
 
 # index all but files
 if '5' in parts and 'a' == run_part:
+    logger.info('Reindexing all mails but files')
     index_paths(excluded=['dmsmainfile', 'dmsommainfile', 'dmsappendixfile'])
 
 # index files
 if '6' in parts and 'b' == run_part:
+    logger.info('Reindexing all mail files')
     index_paths()
 
 if doit:
