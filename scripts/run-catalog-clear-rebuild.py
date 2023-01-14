@@ -10,7 +10,7 @@ import transaction
 
 
 portal = obj  # noqa
-logger = logging.getLogger('ob')
+logger = logging.getLogger('rb')
 logger.setLevel(logging.INFO)
 run_part = os.getenv('FUNC_PART', '')
 parts = os.getenv('PARTS', '')
@@ -86,12 +86,15 @@ def index_paths(excluded=[]):
         if batch_value and count >= batch_value:
             break
         # logger.warning(path)
-        obj = portal.unrestrictedTraverse(path)
+        obj = portal.unrestrictedTraverse(path.lstrip('/'))
         obj.reindexObject()
         paths[path]['i'] = True
         if doit and commit_value and count % commit_value == 0:
             logger.info("Committing {} '{}'".format(count, path))
             transaction.commit()
+    if doit:
+        with open(filename, 'wb') as fh:
+            pickle.dump(paths, fh)
 
 
 # index all but files
