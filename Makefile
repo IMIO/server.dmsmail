@@ -102,8 +102,7 @@ contact-import:  ## Runs contact import `pipeline-run.cfg`
 .PHONY: data-transfer
 data-transfer:  ## Runs iadocs transmo `pipeline-run.cfg`
 	@echo "commit: $(commit)"
-	# bin/$(instance) -O$(plone) run parts/omelette/imio/transmogrifier/iadocs/execute_pipeline.py data-transfer.cfg
-	bin/$(instance) -O$(plone) run src/imio.transmogrifier.iadocs/src/imio/transmogrifier/iadocs/execute_pipeline.py data-transfer.cfg
+	bin/$(instance) -O$(plone) run parts/omelette/imio/transmogrifier/iadocs/execute_pipeline.py data-transfer.cfg -c$(commit)
 
 .PHONY: robot-server
 robot-server:  ## Starts robot server
