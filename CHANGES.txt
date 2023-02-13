@@ -4,8 +4,10 @@ Changelog
 3.0.39 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Improved tech doc.
+- Improved run scripts.
+- Added script to clear and rebuild catalog with dmsfiles at the end and batchly.
+- Upgraded compoundcriterion, messagesviewlet, actionspanel, imio.helpers, imio.zamqp.dms, plonetheme, wsclient
 
 3.0.38 (2022-12-12)
 -------------------
