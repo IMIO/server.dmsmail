@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.39 (unreleased)
+3.0.39 (2023-02-13)
 -------------------
 
 - Improved tech doc.
