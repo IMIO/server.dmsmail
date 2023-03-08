@@ -11,6 +11,7 @@ commit=0
 
 all: run
 
+.PHONY: help
 help:
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
@@ -138,12 +139,10 @@ cleanall:  ## Cleans all installed buildout files
 
 .PHONY: vcr
 vcr:  ## Shows requirements in checkversion-r.html
-	# show requirements
 	bin/versioncheck -rbo checkversion-r.html
 
 .PHONY: vcn
 vcn:  ## Shows newer packages in checkversion-n.html
-	# show only newer
 	bin/versioncheck -npbo checkversion-n.html
 
 .PHONY: techdoc
@@ -153,3 +152,11 @@ techdoc:  ## Builds technical docs
 .PHONY: instance-patch
 instance-patch:  ## Patches instance interpreter to run scripts (needed when front-page is not anonymously accessible)
 	bin/python helper.py -f=patch_instance -i=$(instance)
+
+.PHONY: guard-%
+guard-%:
+	@ if [ "${${*}}" = "" ]; then echo "You must give a value for variable '$*' : like $*=xxx"; exit 1; fi
+
+.PHONY: oneof-%
+oneof-%:
+	@ if ! echo "${${*}s}" | tr " " '\n' |grep -Fqx "${${*}}"; then echo "Invalid '$*' parameter ('${${*}}') : must be one of '${${*}s}'"; fi
