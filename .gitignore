@@ -23,6 +23,7 @@ lib/
 local/
 *.log
 log.html
+mailqueue/
 .mr.developer.cfg
 output.xml
 parts/
