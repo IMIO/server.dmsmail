@@ -1,7 +1,6 @@
 active
 bin/
 checkversion*.html
-config/
 copy-data.sh
 .coverage
 debug.txt
@@ -39,6 +38,7 @@ send-blobsize.sh
 .sizes.json
 server.dmsmail.sublime-*
 share/
+solr/
 src/
 ./test.py
 update-admin-password.*
