@@ -4,8 +4,8 @@ Changelog
 3.0.41 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Used solr new variables
+- Updated Makefile
 
 3.0.40 (2023-03-30)
 -------------------
@@ -14,7 +14,6 @@ Changelog
 - Used select2 widget in place of chosen (upgrade classification.folder, classification.tree, dms.basecontent)
 - Upgraded plonegroup, task, actionspanel, imio.helpers, imio.history, pyutils, plonetheme.imioapps, eeafaceted.z3ctable
 - Corrected duplicated sources
-- Used solr new variables
 
 3.0.39 (2023-02-13)
 -------------------
