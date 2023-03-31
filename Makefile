@@ -160,3 +160,8 @@ guard-%:
 .PHONY: oneof-%
 oneof-%:
 	@ if ! echo "${${*}s}" | tr " " '\n' |grep -Fqx "${${*}}"; then echo "Invalid '$*' parameter ('${${*}}') : must be one of '${${*}s}'"; fi
+
+.PHONY: various
+various:  ## Runs various commands
+	if ! test -f src/collective.classification.folder ;then rm -rf src/collective.classification.folder;fi
+	if ! test -f src/collective.classification.tree ;then rm -rf src/collective.classification.tree;fi
