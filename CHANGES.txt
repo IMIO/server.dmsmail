@@ -4,8 +4,8 @@ Changelog
 3.0.42 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Corrected collective.z3cform.select2 selector.
+  [sgeulette]
 
 3.0.41 (2023-03-31)
 -------------------
