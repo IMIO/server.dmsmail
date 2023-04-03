@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.42 (unreleased)
+3.0.42 (2023-04-03)
 -------------------
 
 - Corrected collective.z3cform.select2 selector.
