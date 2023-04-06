@@ -7,7 +7,7 @@ Data transfer pipeline
 Main steps order to create content
 **********************************
 
-#. (a) Organization (service). Mapping to be done with actual service. Can be deactivated service (prefixed).
+#. (Part a) Organization (service). Mapping to be done with actual service. Can be deactivated service (prefixed).
    Found in:
 
     * dmsincomingmail & dmsincoming_email (treating_groups, recipient_groups, creating_group)
@@ -16,57 +16,57 @@ Main steps order to create content
     * ClassificationFolder & ClassificationSubfolder (recipient_groups, treating_groups)
     * task (assigned_group, enquirer, parents_assigned_groups, parents_enquirers)
 
-#. (b) Configuration:
+#. (Part b) Configuration:
 
     * mail_types (dmsincomingmail mail_type)
     * omail_types (dmsoutgoingmail mail_type)
     * omail_send_modes (dmsoutgoingmail send_modes)
 
-#. (c) User. Mapping to be done with actual user. Can be deactivated user (prefixed). Must be mandatory put in group ❓
+#. (Part c) User. Mapping to be done with actual user. Can be deactivated user (prefixed). Must be mandatory put in group ❓
 
     * dmsincomingmail & dmsincoming_email (assigned_user)
     * dmsoutgoingmail (assigned_user)
     * person (userid)
     * task (assigned_user)
 
-#. (d) held_position (in personnel)
+#. (Part d) held_position (in personnel)
 
     * dmsoutgoingmail (sender)
 
-#. (e) ClassificationCategory (code de classement)
+#. (Part e) ClassificationCategory (code de classement)
 
     * dmsincomingmail & dmsincoming_email (classification_categories)
     * dmsoutgoingmail (classification_categories)
     * ClassificationFolder (classification_categories)
     * ClassificationSubfolder (classification_categories)
 
-#. (f) ClassificationFolder (farde)
+#. (Part f) ClassificationFolder (farde)
 
     * dmsincomingmail & dmsincoming_email (classification_folders)
     * dmsoutgoingmail (classification_folders)
 
-#. (g) ClassificationSubfolder (chemise)
+#. (Part g) ClassificationSubfolder (chemise)
 
     * dmsincomingmail & dmsincoming_email (classification_folders)
     * dmsoutgoingmail (classification_folders)
 
-#. (h) directory (organization_types, organization_levels)
+#. (Part h) directory (organization_types, organization_levels)
 
     * organization (organization_type)
 
-#. (i) Contact (organization, person, held_position)
+#. (Part i) Contact (organization, person, held_position)
 
     * dmsincomingmail & dmsincoming_email (sender)
     * dmsoutgoingmail (recipients, sender)
 
-#. (l) dmsincomingmail & dmsincoming_email
-#. (p) dmsoutgoingmail
-#. (t) dmsmainfile (in im and iem)
-#. (u) dmsommainfile (in om)
-#. (v) dmsappendixfile
-#. (w) dmsoutgoingmail email_attachments
-#. (x) Relations between im and om (reply_to)
-#. (y) tasks ❓
+#. (Part l) dmsincomingmail & dmsincoming_email
+#. (Part p) dmsoutgoingmail
+#. (Part t) dmsmainfile (in im and iem)
+#. (Part u) dmsommainfile (in om)
+#. (Part v) dmsappendixfile
+#. (Part w) dmsoutgoingmail email_attachments
+#. (Part x) Relations between im and om (reply_to)
+#. (Part y) tasks ❓
 
 *******************
 Points of attention
