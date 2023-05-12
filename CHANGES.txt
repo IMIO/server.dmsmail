@@ -4,8 +4,8 @@ Changelog
 3.0.43 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded dms.basecontent, imio.helpers, imio.policy, imio.pyutils.
+  [sgeulette]
 
 3.0.42 (2023-04-03)
 -------------------
