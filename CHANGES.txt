@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.43 (unreleased)
+3.0.43 (2023-05-12)
 -------------------
 
 - Upgraded dms.basecontent, imio.helpers, imio.policy, imio.pyutils.
