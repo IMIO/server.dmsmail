@@ -4,8 +4,8 @@ Changelog
 3.0.44 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Used transmogrify.dexterity fork.
+  [sgeulette]
 
 3.0.43 (2023-05-12)
 -------------------
