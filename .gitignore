@@ -3,6 +3,7 @@ bin/
 checkversion*.html
 copy-data.sh
 .coverage
+data-transfer.cfg*
 debug.txt
 develop-eggs/
 doc/
@@ -10,6 +11,8 @@ docs/Makefile
 docs/doctrees
 docs/html
 docs/make.bat
+dt_csv_dir*
+dt_files_dir*
 htmlcov/
 .idea/
 imports/*
