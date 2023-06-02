@@ -34,8 +34,7 @@ fi
 
 while read line
 do
-    FPATH=`echo $line | cut -d ',' -f2`
+    FPATH=`echo $line | cut -d ',' -f2`;
     # echo $FPATH
-    scp ws:$FPATH $TODIR
+    scp ws:$FPATH $TODIR;
 done < "$FILE"
-
