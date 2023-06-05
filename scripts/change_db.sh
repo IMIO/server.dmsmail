@@ -35,7 +35,7 @@ do
   fi
 done
 
-for path in dt_csv_dir dt_files_dir
+for path in dt_csv_dir dt_files_dir data_transfer.cfg
 do
   if [ -e "$path" ]; then
     cmd=(mv $path $path.$CUR)
@@ -46,32 +46,3 @@ do
     execute_cmd "${cmd[@]}"
   fi
 done
-
-exit 0;
-
-while read line
-do
-    FPATH=`echo $line | cut -d ',' -f2`;
-    FPATH=${FPATH/\/srv\//\/srv\/webservice\/}
-    # echo $FPATH
-    if [[ "$FPATH" =~ .*\.(pdf|PDF) ]]
-    then
-        pdfgrep -iH --cache "$PAT" $FPATH;
-    elif [[ "$FPATH" == *.tar ]]
-    then
-       tar tf "$FPATH" 2>/dev/null | while read -r FILE
-       do
-           if [[ "$FILE" =~ .*\.(pdf|PDF) ]]
-           then
-              tar -C /tmp -xf "$FPATH" "$FILE" 2>/dev/null;
-              RES=`pdfgrep -iH "$PAT" "/tmp/$FILE"`
-              if [ "$RES" != "" ]
-              then
-                echo "> FOUND in $FPATH: $RES"
-              fi
-	      rm -f "/tmp/$FILE"
-	   fi
-       done
-    fi
-done < "$FILE"
-
