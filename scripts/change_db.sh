@@ -2,6 +2,7 @@
 
 CUR=''
 if [ -e .db-version ]; then CUR=`cat .db-version`; fi
+echo "CUR=$CUR"
 NEW=''
 DOIT=0
 WRITE_NEW=0
@@ -26,7 +27,6 @@ execute_cmd () {
     fi
   fi
 }
-echo "CUR=$CUR"
 echo "NEW=$NEW"
 
 for path in var/filestorage/Data.fs var/blobstorage dt_csv_dir dt_files_dir data-transfer.cfg
