@@ -18,6 +18,7 @@ if len(sys.argv) < 4 or not sys.argv[2].endswith('/run-change-ws-password.py'):
 new_password = sys.argv[3]
 prefix = 'imio.pm.wsclient.browser.settings.IWS4PMClientSettings'
 if not api.portal.get_registry_record('{}.pm_url'.format(prefix), default=False):
+    verbose("Password not set")
     sys.exit(0)
 gen_act = api.portal.get_registry_record('{}.generated_actions'.format(prefix))
 if gen_act and gen_act[0].get('permissions') and gen_act[0]['permissions'] != 'Modify view template':
@@ -25,3 +26,5 @@ if gen_act and gen_act[0].get('permissions') and gen_act[0]['permissions'] != 'M
     api.portal.set_registry_record('{}.pm_password'.format(prefix), new_password)
     verbose("Password changed")
     transaction.commit()
+else:
+    verbose("Password not set")
