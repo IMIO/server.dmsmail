@@ -4,8 +4,12 @@ Changelog
 3.0.45 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added script to copy webservice file to a local directory, following a given files list.
+- Added script to search in documents on ws server
+- Added script to change of db easierly
+- Added script to change pm ws password
+- Upgraded appy, beh.internalnumber, beh.talcondition, compoundcriterion, eeafaceted.z3ctable, imio.helpers,
+  plonetheme.imioapps
 
 3.0.44 (2023-05-30)
 -------------------
