@@ -238,6 +238,7 @@ def set_state(self, typ='dmsincomingmail', state='closed', criteria="{}", limit=
                                               'comments': '', 'time': mod_time})
             obj.setModificationDate(mod_time)  # also to update cache...
             obj.reindexObject(['review_state', 'state_group', 'modified'])
+            obj.reindexObjectSecurity()
             changed += 1
     ret.append("Changed=%d" % changed)
     return '\n'.join(ret)
