@@ -159,7 +159,7 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
            "limit: '%s'" % limit, "change: '%s'\n" % change]
     try:
         crit_dic = eval(criteria)
-    except Exception, msg:
+    except Exception as msg:
         ret.append("Problem evaluating criteria: %s" % msg)
         return '\n'.join(ret)
     if not isinstance(crit_dic, dict):
@@ -211,7 +211,7 @@ def set_state(self, typ='dmsincomingmail', state='closed', criteria="{}", limit=
            "change: '%s'\n" % change]
     try:
         crit_dic = eval(criteria)
-    except Exception, msg:
+    except Exception as msg:
         ret.append("Problem evaluating criteria: %s" % msg)
         return '\n'.join(ret)
     if not isinstance(crit_dic, dict):
@@ -253,7 +253,7 @@ def users_to_group(self, source='editeur,validateur', dest='encodeur', change=''
            "'change' parameter = '%s'" % change]
     try:
         sources = source.split(',')
-    except Exception, msg:
+    except Exception as msg:
         return "Source parameter isn't correct: %s" % (msg)
     ret.append('<h2>Add users to %s groups</h2>' % (dest))
     from plone import api
@@ -264,7 +264,7 @@ def users_to_group(self, source='editeur,validateur', dest='encodeur', change=''
             enc_group = api.group.get('%s_%s' % (org, dest))
             if not enc_group:
                 raise Exception('group is None')
-        except Exception, msg:
+        except Exception as msg:
             ret.append("!! Group '%s_%s' doesn't exist: %s" % (org, dest, msg))
             continue
         enc_users = api.user.get_users(group=enc_group)
@@ -274,7 +274,7 @@ def users_to_group(self, source='editeur,validateur', dest='encodeur', change=''
                 group = api.group.get(gname)
                 if not group:
                     raise Exception('group is None')
-            except Exception, msg:
+            except Exception as msg:
                 ret.append("!! Group '%s' doesn't exist: %s" % (gname, msg))
                 continue
             for user in api.user.get_users(group=group):
@@ -301,11 +301,11 @@ def correct_internal_reference(self, toreplace='', by='', request="{'portal_type
     from Products.CMFPlone.utils import safe_unicode
     try:
         p_o = re.compile(toreplace)
-    except Exception, msg:
+    except Exception as msg:
         return "!! Cannot compile replace expression '%s': '%s'" % (toreplace, msg)
     try:
         dic = eval(request)
-    except Exception, msg:
+    except Exception as msg:
         return "!! Cannot eval request '%s': '%s'" % (request, msg)
     out = ['request= %s' % dic]
     for brain in self.portal_catalog(**dic):
@@ -368,7 +368,7 @@ def various2(self):
             folder = brain.getObject()
             if folder == fld:
                 continue
-            print brain.getPath()
+            print(brain.getPath())
             alsoProvides(folder, IActionsPanelFolder)
             alsoProvides(folder, INextPrevNotNavigable)
 
