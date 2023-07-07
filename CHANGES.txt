@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.47 (unreleased)
+3.0.47 (2023-07-07)
 -------------------
 
 - Added cfg files to remove async or amqp if needed.
