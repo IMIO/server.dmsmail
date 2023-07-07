@@ -4,8 +4,9 @@ Changelog
 3.0.47 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added cfg files to remove async or amqp if needed.
+- Added script to reindex security
+- Upgraded imio.dashboard, imio.helpers, imio.zamqp.dms, plonetheme.imioapps
 
 3.0.46 (2023-06-22)
 -------------------
