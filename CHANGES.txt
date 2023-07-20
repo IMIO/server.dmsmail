@@ -4,8 +4,9 @@ Changelog
 3.0.48 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Used own plone.formwidget.datetime.
+- Upgraded classification.folder, classification.tree, contact.core, dms.mailcontent, dms.scanbehavior, col.task, imio.helpers
+- Upgraded contact.plonegroup, documentgenerator, eea.batchactions, pm.locales
 
 3.0.47 (2023-07-07)
 -------------------
