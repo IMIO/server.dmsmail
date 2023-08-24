@@ -60,7 +60,11 @@ Main steps order to create content
     * dmsoutgoingmail (recipients, sender)
 
 #. (Part l) dmsincomingmail & dmsincoming_email
+#. (Part m) (1) dmsincomingmail & dmsincoming_email recipients
 #. (Part p) dmsoutgoingmail
+#. (Part q) (1) dmsoutgoingmail recipients
+#. (Part r) (1) dmsoutgoingmail recipient_groups
+#. (Part s) classification_folders assignments
 #. (Part t) dmsmainfile (in im and iem)
 #. (Part u) dmsommainfile (in om)
 #. (Part v) dmsappendixfile
