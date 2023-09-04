@@ -5,6 +5,7 @@ config/
 copy-data.sh
 .coverage
 data-transfer.cfg*
+.db-version
 debug.txt
 develop-eggs/
 doc/
