@@ -17,6 +17,7 @@ Contents:
    pipeline_data_transfer
    pipeline_contact
    utils
+   imio.transmogrifier.iadocs
    test
 
 
