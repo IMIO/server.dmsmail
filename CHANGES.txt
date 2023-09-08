@@ -4,8 +4,13 @@ Changelog
 3.0.50 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Updated tech doc, including data transfer.
+- Moved ipzope from dev to test, so it will be available in production
+- Upgraded classification.folder, contact.core, dms.mailcontent, dms.scanbehavior, documentgenerator, eea.batchactions,
+  eea.collectionwidget, eea.z3ctable, imio.actionspanel, imio.helpers, imio.history, imio.migrator, imio.pm.wsclient,
+  imio.prettylink, plonetheme.imioapps
+- Used corrective facetednavigation fork and dashboard
+- Upgraded classification products that will be downloadable
 
 3.0.49 (2023-07-26)
 -------------------
