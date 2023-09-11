@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.50 (unreleased)
+3.0.50 (2023-09-11)
 -------------------
 
 - Updated tech doc, including data transfer.
