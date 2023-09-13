@@ -4,7 +4,7 @@ Changelog
 3.0.51 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Upgraded contact.core, dms.mailcontent.
 
 
 3.0.50 (2023-09-11)
