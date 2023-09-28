@@ -4,8 +4,10 @@ Changelog
 3.0.52 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added transmo.iadocs in tests
+- Set ENV variable when running tests
+- Correctly removed async in no-async.cfg
+- Upgraded imio.helpers, imio.pyutils
 
 3.0.51 (2023-09-13)
 -------------------
