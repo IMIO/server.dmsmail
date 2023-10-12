@@ -4,8 +4,8 @@ Changelog
 3.0.53 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added appy egg copy command in Makefile.
+- Upgraded six
 
 3.0.52 (2023-09-28)
 -------------------
