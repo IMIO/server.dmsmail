@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.54 (unreleased)
+3.0.54 (2023-10-16)
 -------------------
 
 - Correction in appy egg copy command
