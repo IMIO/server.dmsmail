@@ -19,89 +19,109 @@ dmsincomingmail (courrier entrant) & dmsincoming_email (email entrant)
 Parent: specific Folder /incoming-mail
 
 .. list-table:: FIELDS
-   :widths: 30 30 30 10
+   :widths: 30 25 30 10 5
    :header-rows: 1
 
    * - Field name
      - Title
      - Class
      - Value type
+     - Default
    * - IClassificationFolder.classification_categories
      - Codes de classement
      - zope.schema._field.List
      - Choice (📌 **code de classement**)
+     -
    * - IClassificationFolder.classification_folders
      - Dossiers
      - zope.schema._field.List
      - Choice (📌 **farde ou chemise**)
+     -
    * - IDmsMailCreatingGroup.creating_group
      - Groupe indicateur
      - dexterity.localrolesfield.field.LocalRoleField
      - (📌 **service**)
+     -
    * - IDublinCore.description
      - Description
      - zope.schema._bootstrapfields.Text
+     -
      -
    * - IDublinCore.title
      - Titre
      - zope.schema._bootstrapfields.TextLine
      -
+     -
    * - ITask.assigned_user
      - Utilisateur assigné
      - dexterity.localrolesfield.field.LocalRoleField
      - (📌 **utilisateur d'un groupe**)
+     -
    * - ITask.due_date
      - Échéance
      - zope.schema._field.Date
+     -
      -
    * - ITask.task_description
      - Description du travail
      - plone.app.textfield.RichText
      -
+     -
    * - document_in_service
      - Le document original est dans le service
      - zope.schema._bootstrapfields.Bool
      -
+     - Oui
    * - external_reference_no
      - Référence externe
      - zope.schema._bootstrapfields.TextLine
+     -
      -
    * - internal_reference_no
      - Référence interne
      - zope.schema._bootstrapfields.TextLine
      - (❓ *référence interne spécifique*)
+     - Oui
    * - mail_type
      - Type de courrier
      - zope.schema._field.Choice
      - (📌 **config: type**)
+     -
    * - orig_sender_email
      - Email de l'expéditeur original
      - zope.schema._bootstrapfields.TextLine
+     -
      -
    * - original_mail_date
      - Date du courrier
      - zope.schema._field.Date
      -
+     - Oui
    * - reception_date
      - Date de réception
      - zope.schema._field.Datetime
      -
+     - Oui
    * - recipient_groups
      - Services en copie
      - dexterity.localrolesfield.field.LocalRolesField
      - Choice (📌 **service**)
+     -
    * - reply_to
      - Courriers liés
      - collective.dms.basecontent.relateddocs.RelatedDocs
      - RelationChoice (📌 **courrier entrant ou sortant**)
+     -
    * - sender
      - Expéditeurs
      - collective.contact.widget.schema.ContactList
      - ContactChoice (📌 **contact**)
+     -
    * - treating_groups
      - Service traitant
      - collective.task.field.LocalRoleMasterSelectField
      - (📌 **service**)
+     -
 
 dmsoutgoingmail (courrier sortant)
 ----------------------------------
@@ -109,121 +129,149 @@ dmsoutgoingmail (courrier sortant)
 Parent: specific Folder /outgoing-mail
 
 .. list-table:: FIELDS
-   :widths: 30 30 30 10
+   :widths: 30 25 30 10 5
    :header-rows: 1
 
    * - Field name
      - Title
      - Class
      - Value type
+     - Default
    * - IClassificationFolder.classification_categories
      - Codes de classement
      - zope.schema._field.List
      - Choice (📌 **code de classement**)
+     -
    * - IClassificationFolder.classification_folders
      - Dossiers
      - zope.schema._field.List
      - Choice (📌 **farde ou chemise**)
+     -
    * - IDmsMailCreatingGroup.creating_group
      - Groupe indicateur
      - dexterity.localrolesfield.field.LocalRoleField
      - (📌 **service**)
+     -
    * - IDublinCore.description
      - Description
      - zope.schema._bootstrapfields.Text
+     -
      -
    * - IDublinCore.title
      - Titre
      - zope.schema._bootstrapfields.TextLine
      -
+     -
    * - ITask.assigned_user
      - Utilisateur assigné
      - dexterity.localrolesfield.field.LocalRoleField
      - (📌 **utilisateur d'un groupe**)
+     -
    * - ITask.due_date
      - Échéance
      - zope.schema._field.Date
+     -
      -
    * - ITask.task_description
      - Description du travail
      - plone.app.textfield.RichText
      -
+     -
    * - email_attachments
      - Pièces jointes
      - zope.schema._field.List
      - Choice (📌 **fichier ged ou annexe**)
+     -
    * - email_body
      - Corps de l'email
      - plone.app.textfield.RichText
+     -
      -
    * - email_cc
      - Emails des destinataires en copie
      - zope.schema._bootstrapfields.TextLine
      -
+     -
    * - email_recipient
      - Emails des destinataires
      - zope.schema._bootstrapfields.TextLine
+     -
      -
    * - email_sender
      - Email de l'expéditeur
      - zope.schema._bootstrapfields.TextLine
      -
+     -
    * - email_status
      - Statut
      - zope.schema._bootstrapfields.TextLine
+     -
      -
    * - email_subject
      - Sujet de l'email
      - zope.schema._bootstrapfields.TextLine
      -
+     -
    * - external_reference_no
      - Référence externe
      - zope.schema._bootstrapfields.TextLine
      - (❓ *référence interne spécifique*)
+     -
    * - internal_reference_no
      - Référence interne
      - zope.schema._bootstrapfields.TextLine
+     -
      -
    * - mail_date
      - Date du courrier
      - zope.schema._field.Date
      -
+     - Oui
    * - mail_type
      - Type de courrier
      - zope.schema._field.Choice
      - (📌 **config: type**)
+     -
    * - orig_sender_email
      - Email de l'expéditeur original
      - zope.schema._bootstrapfields.TextLine
+     -
      -
    * - outgoing_date
      - Date d'expédition
      - zope.schema._field.Datetime
      -
+     -
    * - recipient_groups
      - Services en copie
      - dexterity.localrolesfield.field.LocalRolesField
      - Choice (📌 **service**)
+     -
    * - recipients
      - Destinataires
      - collective.contact.widget.schema.ContactList
      - ContactChoice (📌 **contact**)
+     -
    * - reply_to
      - Courriers liés
      - collective.dms.basecontent.relateddocs.RelatedDocs
      - RelationChoice (📌 **courrier**)
+     -
    * - send_modes
      - Formes d'envoi
      - zope.schema._field.List
      - Choice (📌 **config: forme d'envoi**)
+     -
    * - sender
      - Expéditeur
      - zope.schema._field.Choice
      - (📌 **fonction occupée interne**)
+     -
    * - treating_groups
      - Service traitant
      - collective.task.field.LocalRoleMasterSelectField
      - (📌 **service**)
+     -
 
 dmsmainfile & dmsommainfile (fichier ged)
 -----------------------------------------

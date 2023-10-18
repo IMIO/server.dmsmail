@@ -31,6 +31,8 @@ setup:  ## Setups environment
 buildout:  ## Runs setup and buildout
 	rm -f .installed.cfg .mr.developer.cfg
 	if ! test -f bin/buildout;then make setup;fi
+	if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
+	if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
 	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
 	git checkout .gitignore
 
@@ -160,3 +162,8 @@ guard-%:
 .PHONY: oneof-%
 oneof-%:
 	@ if ! echo "${${*}s}" | tr " " '\n' |grep -Fqx "${${*}}"; then echo "Invalid '$*' parameter ('${${*}}') : must be one of '${${*}s}'"; fi
+
+.PHONY: various
+various:  ## Runs various commands
+	if ! test -f src/collective.classification.folder ;then rm -rf src/collective.classification.folder;fi
+	if ! test -f src/collective.classification.tree ;then rm -rf src/collective.classification.tree;fi

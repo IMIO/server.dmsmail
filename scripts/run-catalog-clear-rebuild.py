@@ -12,7 +12,7 @@ import transaction
 portal = obj  # noqa
 logger = logging.getLogger('rb')
 logger.setLevel(logging.INFO)
-run_part = os.getenv('FUNC_PART', '')
+func_part = os.getenv('FUNC_PART', '')
 parts = os.getenv('PARTS', '')
 batch_value = int(os.getenv('BATCH', '0'))
 commit_value = int(os.getenv('COMMIT', '0'))
@@ -98,12 +98,12 @@ def index_paths(excluded=[]):
 
 
 # index all but files
-if '5' in parts and 'a' == run_part:
+if '5' in parts and 'a' == func_part:
     logger.info('Reindexing all mails but files')
     index_paths(excluded=['dmsmainfile', 'dmsommainfile', 'dmsappendixfile'])
 
 # index files
-if '6' in parts and 'b' == run_part:
+if '6' in parts and 'b' == func_part:
     logger.info('Reindexing all mail files')
     index_paths()
 

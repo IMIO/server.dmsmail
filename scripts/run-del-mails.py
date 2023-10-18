@@ -54,6 +54,12 @@ if old_parent and not old_parent.objectIds() and old_parent.id not in ('incoming
 
 logger.warn('Will delete {} mails'.format(count))
 
+pr = portal.portal_repository
+for typ in types:
+    for pol_id in (u'at_edit_autoversion', u'version_on_revert'):
+        pr.addPolicyForContentType(typ, pol_id)
+pr.setVersionableContentTypes([typ for typ in list(pr.getVersionableContentTypes()) if typ not in types])
+
 if doit:
     transaction.commit()
     logger.warn('Commit done')
