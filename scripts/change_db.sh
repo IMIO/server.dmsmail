@@ -18,7 +18,12 @@ if [ "$2" != "" ]; then NEW=$2; else usage; exit 3; fi
 if [ "$3" == "1" ]; then DOIT=1; fi
 
 execute_cmd () {
+  action=$1
+  shift
   echo "+ $*" >&2
+  if [ $action -eq 1 ] && [ -e "${!#}" ]; then
+    echo "!! dest file '${!#}' already exists" >&2;
+  fi
   if [ $DOIT -eq 1 ]; then
     "$@"
     if [ $? -ne 0 ] ; then
@@ -33,11 +38,11 @@ for path in var/filestorage/Data.fs var/blobstorage dt_csv_dir dt_files_dir data
 do
   if [ -e "$path" ]; then
     cmd=(mv $path $path.$CUR)
-    execute_cmd "${cmd[@]}"
+    execute_cmd 1 "${cmd[@]}"
   fi
   if [ -e "$path.$NEW" ]; then
     cmd=(mv $path.$NEW $path)
-    execute_cmd "${cmd[@]}"
+    execute_cmd 0 "${cmd[@]}"
     WRITE_NEW=1
   fi
 done
