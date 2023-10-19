@@ -4,6 +4,7 @@ import os
 pyu_path = os.path.realpath('parts/omelette/imio/pyutils')
 import sys
 sys.path[0:0] = ['/'.join(pyu_path.split('/')[:-2])]
+sys.path[0:0] = [os.path.realpath('parts/omelette')]
 
 from imio.pyutils.system import error
 from imio.pyutils.system import read_file
