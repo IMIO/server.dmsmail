@@ -1,7 +1,6 @@
 On suppose l'installation dans un répertoire /srv/instances/dmsmail
  (qui peut être changé) et sur une distribution ubuntu.
 Le nom de votre utilisateur est remplacé dans nos commandes par "username".
- Veuillez utiliser le votre à la place.
 Chaque commande, précisée ci-dessous après le symbole ">", peut être exécutée
  (sans taper le symbole >).
 
@@ -25,7 +24,8 @@ Considérant une nouvelle installation d'Ubuntu propre, certaines librairies doi
 > apt install libxml2-dev
 > apt install libxslt1-dev
 > apt install libssl-dev
-> apt install graphviz graphviz-dev (si pb au buildout, pkg-config en plus)
+> apt install pkg-config
+> apt install graphviz graphviz-dev
 > apt install odt2txt
 
 Pour documentviewer, nous avons besoin de Ruby 2.7.6, ce qui requiert RVM (Ruby Version Manager) :

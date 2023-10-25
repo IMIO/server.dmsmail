@@ -24,7 +24,8 @@ We install the necessary libraries
 > apt install libxml2-dev
 > apt install libxslt1-dev
 > apt install libssl-dev
-> apt install graphviz graphviz-dev (si pb au buildout, pkg-config en plus)
+> apt install pkg-config
+> apt install graphviz graphviz-dev
 > apt install odt2txt
 
 For documentviewer, we need Ruby 2.7.6, wich asks for RVM (Ruby Version Manager) :
