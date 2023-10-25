@@ -1,6 +1,6 @@
 On suppose l'installation dans un répertoire /srv/instances/dmsmail
  (qui peut être changé) et sur une distribution ubuntu.
-Le nom de votre utilisateur est remplacé dans nos commandes par "votreuser".
+Le nom de votre utilisateur est remplacé dans nos commandes par "username".
  Veuillez utiliser le votre à la place.
 Chaque commande, précisée ci-dessous après le symbole ">", peut être exécutée
  (sans taper le symbole >).
@@ -8,7 +8,12 @@ Chaque commande, précisée ci-dessous après le symbole ">", peut être exécut
 On passe d'abord en root
 > sudo -s
 
-On installe des librairies nécessaires
+Considérant une nouvelle installation d'Ubuntu propre, certaines librairies doivent être isntallées au préalable
+> apt install curl 
+> apt install g++
+> apt install gcc
+> apt install make
+> apt install cmake
 > apt install build-essential
 > apt install libreadline6-dev
 > apt install zlib1g-dev (support zlib)
@@ -19,15 +24,22 @@ On installe des librairies nécessaires
 > apt install libpq-dev
 > apt install libxml2-dev
 > apt install libxslt1-dev
-> apt install ssl-dev
+> apt install libssl-dev
 > apt install graphviz graphviz-dev (si pb au buildout, pkg-config en plus)
 > apt install odt2txt
 
-Dépendances de documentviewer:
-> apt install ruby
+Pour documentviewer, nous avons besoin de Ruby 2.7.6, ce qui requiert RVM (Ruby Version Manager) :
+> apt install gnupg2
+> curl -sSL https://get.rvm.io | bash -s stable
+> source ~/.rvm/scripts/rvm
+Puis Ruby 2.7.6 :
+> rvm pkg install openssl
+> rvm install ruby-2.7.6 --with-openssl-dir=$HOME/.rvm/usr
+Pour voir la version de ruby installée :
+> which ruby
+Enfin, on peut installer les autres dépendances de documentviewer :
 > gem install docsplit
 > apt install graphicsmagick
-> apt install poppler-utils
 > apt install wv
 
 Dépendance d'imio.helpers pour la génération de code-barre
@@ -40,35 +52,39 @@ Dépendance d'imio.helpers pour la génération de code-barre
 > cmake ..
 > make install
 
-> dpkg -i zint_2.6.0_amd64.deb
-
 On va travailler dans le dossier /srv
 > cd /srv
 
 On se met propriétaire du dossier pour ne plus devoir travailler en root
-> chown -R votreuser:votreuser .
+> chown -R username:username .
 
 On quitte l'utilisateur root.
 > exit
 
-On crée maintenant une arborescence de dossiers
-> mkdir jinstall
-> mkdir instances
-> cd jinstall
+Dans /srv/, on crée un dossier qui contiendra nos répertoires de code, puis on clone le répertoire server.dmsmail via git :
+> mkdir src
+> cd /srv/src
+> git clone git@github.com:IMIO/server.dmsmail.git dmsmail
+> cd dmsmail
 
-On va installer un python2.7 qui sera utilisé dans notre buildout
-> wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
-> tar xvzf Python-2.7.18.tgz
-> cd Python-2.7.18
-> ./configure --prefix=/srv/python2718
-> make
-> make install
+On doit installer python2.7 qui sera utilisé dans notre buildout. On va l'installer via Pyenv.
 
-On installe l'utilitaire python virtualenv
-> cd /srv/python2718
-> bin/python -m ensurepip
-> bin/pip install virtualenv
-> sudo ln -s /srv/python2.7.18/bin/virtualenv /usr/local/bin/virtualenv-2.7
+Dépendances de Pyenv qui n'ont pas été installées dans la section précédente :
+> sudo apt update
+> sudo apt install libsqlite3-dev llvm libncursesw5-dev xz-utils /
+tk-dev libxmlsec1-dev libffi-dev liblzma-dev libsasl2-dev python3-dev libldap2-dev
+
+Installer Pyenv et le configurer : 
+> curl https://pyenv.run | bash
+> echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+> echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+> echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+> pyenv install 2.7.18
+> pyenv local 2.7.18
+
+Installer virtual-env et l'activer dans server.dmsmail :
+> pip install virtualenv
+> virtualenv .
 
 On définit un cache pour buildout (si ce n'est déjà fait)
 > vi ~/.buildout/default.cfg
@@ -77,14 +93,6 @@ eggs-directory = /srv/cache/eggs
 download-cache = /srv/cache/downloads
 extends-cache = /srv/cache/extends
 > mkdir -p /srv/cache/{eggs,downloads,extends}
-
-On télécharge le buildout dans un dossier
-> cd /srv/instances
-En lecture seulement:
-> git clone https://github.com/IMIO/server.dmsmail.git dmsmail
-En écriture:
-> git clone git@github.com:IMIO/server.dmsmail.git dmsmail
-> cd dmsmail
 
 On initialise le buildout
 > make setup
