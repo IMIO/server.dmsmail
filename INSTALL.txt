@@ -8,6 +8,11 @@ First we become root
 > sudo -s
 
 We install the necessary libraries
+> apt install curl 
+> apt install g++
+> apt install gcc
+> apt install make
+> apt install cmake
 > apt install build-essential
 > apt install libreadline6-dev
 > apt install zlib1g-dev (support zlib)
@@ -18,15 +23,22 @@ We install the necessary libraries
 > apt install libpq-dev
 > apt install libxml2-dev
 > apt install libxslt1-dev
-> apt install ssl-dev
-> apt install graphviz graphviz-dev (if buildout error, also pkg-config)
+> apt install libssl-dev
+> apt install graphviz graphviz-dev (si pb au buildout, pkg-config en plus)
 > apt install odt2txt
 
-Documentviewer dependencies
-> apt install ruby
+For documentviewer, we need Ruby 2.7.6, wich asks for RVM (Ruby Version Manager) :
+> apt install gnupg2
+> curl -sSL https://get.rvm.io | bash -s stable
+> source ~/.rvm/scripts/rvm
+Then Ruby 2.7.6 :
+> rvm pkg install openssl
+> rvm install ruby-2.7.6 --with-openssl-dir=$HOME/.rvm/usr
+See installed Ruby version :
+> which ruby
+Then other documentviewer dependancies :
 > gem install docsplit
 > apt install graphicsmagick
-> apt install poppler-utils
 > apt install wv
 
 imio.helpers barcode generation
@@ -48,24 +60,30 @@ We change the owner of the folder to avoid continue working as root
 We leave the user root.
 > exit
 
-We create some directories
-> mkdir jinstall
-> mkdir instances
-> cd jinstall
+We create a directory in /srv/ which will host all our code repositories. Then clone the server.dmsmail repo :
+> mkdir src
+> cd /srv/src
+> git clone git@github.com:IMIO/server.dmsmail.git dmsmail
+> cd dmsmail
 
-We install python2.7 that will be used to run the buildout and zope instance
-> wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
-> tar xvzf Python-2.7.18.tgz
-> cd Python-2.7.18
-> ./configure --prefix=/srv/python2718
-> make
-> make install
+We need Python2.7, and we'll install it through Pyenv :
 
-We install the python utility virtualenv
-> cd /srv/python2718
-> bin/python -m ensurepip
-> bin/pip install virtualenv
-> sudo ln -s /srv/python2.7.18/bin/virtualenv /usr/local/bin/virtualenv-2.7
+Pyenv dependancies :
+> sudo apt update
+> sudo apt install libsqlite3-dev llvm libncursesw5-dev xz-utils /
+tk-dev libxmlsec1-dev libffi-dev liblzma-dev libsasl2-dev python3-dev libldap2-dev
+
+Install Pyenv and configure it :
+> curl https://pyenv.run | bash
+> echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+> echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+> echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+> pyenv install 2.7.18
+> pyenv local 2.7.18
+
+Install virtual-env and activate it in server.dmsmail :
+> pip install virtualenv
+> virtualenv .
 
 We can define a cache for buildout
 > vi ~/.buildout/default.cfg
@@ -75,15 +93,7 @@ download-cache = /srv/cache/downloads
 extends-cache = /srv/cache/extends
 > mkdir -p /srv/cache/{eggs,downloads,extends}
 
-We download the buildout files in our folder
-> cd /srv/instances
-For readonly mode:
-> git clone https://github.com/IMIO/server.dmsmail.git dmsmail
-For write mode:
-> git clone git@github.com:IMIO/server.dmsmail.git dmsmail
-> cd dmsmail
-
-we initialize the buildout
+We initialize the buildout
 > make setup
 
 ==> 1) Use in development (without ZEO, with debug products)
