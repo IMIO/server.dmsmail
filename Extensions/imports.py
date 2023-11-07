@@ -166,7 +166,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
                     if doit:
                         user = api.user.create(username=dic['ui'], email=dic['eml'],
                                                password=regtool.generatePassword(), properties={'fullname': dic['fn']})
-                except Exception, ex:
+                except Exception as ex:
                     out.append("Line %d, cannot create user: %s" % (ln, safe_encode(ex.message)))
                     continue
         user = api.user.get(userid=dic['ui'])
@@ -174,7 +174,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
         if user is not None:
             try:
                 groups = [g.id for g in api.group.get_groups(username=dic['ui'])]
-            except Exception, ex:
+            except Exception as ex:
                 out.append("Line %d, cannot get groups of userid '%s': %s" % (ln, dic['ui'], safe_encode(ex.message)))
                 groups = []
         else:
@@ -209,7 +209,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
                 if doit:
                     try:
                         api.group.add_user(groupname=gid, username=dic['ui'])
-                    except Exception, ex:
+                    except Exception as ex:
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
                                    % (ln, dic['ui'], gid, safe_encode(ex.message)))
             elif ungroup == '1' and not value and gid in groups:  # must remove and user in groups
@@ -217,7 +217,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
                 if doit:
                     try:
                         api.group.remove_user(groupname=gid, username=dic['ui'])
-                    except Exception, ex:
+                    except Exception as ex:
                         out.append("Line %d, cannot remove userid '%s' from group '%s': %s"
                                    % (ln, dic['ui'], gid, safe_encode(ex.message)))
 
@@ -226,7 +226,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
         if not doit or not dic['cs']:
             continue
         # find person
-        res = portal.portal_catalog(mail_type=dic['ui'], portal_type='person')
+        res = portal.portal_catalog(userid=dic['ui'], portal_type='person')
         if not res:
             out.append("Line %d: person with userid '%s' not found" % (ln, dic['ui']))
             continue
@@ -473,14 +473,14 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
             gender = assert_value_in_list(data[3], ['', 'F', 'M'])
             try:
                 birthday = assert_date(data[5])
-            except AssertionError, ex:
+            except AssertionError as ex:
                 out.append("!! %s: line %d, birthday date problem '%s': %s" % ('PERS', i, data[5],
                                                                                safe_encode(ex.message)))
                 birthday = None
             internal = data[21] and bool(int(data[21])) or False
-        except AssertionError, ex:
+        except AssertionError as ex:
             errors.append("!! PERS: problem line %d: %s" % (i, safe_encode(ex.message)))
-        except Exception, ex:
+        except Exception as ex:
             errors.append("!! PERS: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message)))
         if not id or id in persons:
             errors.append("!! PERS: problem line %d, invalid id: %s" % (i, id))
@@ -504,7 +504,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                 action = 'update'
         elif inum:
             if internal:  # for internal person, inum contains plone username
-                brains = api.content.find(portal_type='person', mail_type=inum)
+                brains = api.content.find(portal_type='person', userid=inum)
                 if len(brains) == 1:
                     obj = brains[0].getObject()
                     action = 'update'
@@ -583,7 +583,7 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
                     continue
                 if doit:
                     obj.userid = inum
-                    obj.reindexObject(idxs=['mail_type'])
+                    obj.reindexObject(idxs=['userid'])
             elif doit and IInternalNumberBehavior.providedBy(obj):
                 obj.internal_number = inum
                 obj.reindexObject(idxs=['internal_number', 'SearchableText'])
@@ -616,9 +616,9 @@ def import_contacts(self, dochange='', ownorg='', only='ORGS|PERS|HP'):
             fax = safe_unicode(check_phone(digit(data[15]), i, 'PERS', data[19]))
             upa = data[7] and int(data[7]) or ''
             zipc = safe_unicode(is_zip(data[11], i, 'HP', data[19]))
-        except AssertionError, ex:
+        except AssertionError as ex:
             errors.append("!! HP: problem line %d: %s" % (i, safe_encode(ex.message)))
-        except Exception, ex:
+        except Exception as ex:
             errors.append("!! HP: problem line %d, '%s': %s" % (i, '|'.join(data), safe_encode(ex.message)))
         if not id or id in hps:
             errors.append("!! HP: problem line %d, invalid id: %s" % (i, id))
