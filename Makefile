@@ -124,6 +124,12 @@ video-doc:  ## Runs `video-doc.robot`
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/video-doc.robot
 	rm geckodriver*.log
 
+.PHONY: gui-test
+gui-test:  ## Runs `dmsmail.robot` (opt='-t "* response"')
+	# can be run by example with: make gui-test opt='-t "* response"' or opt='-i "RUN1"'  (or -e to exclude)
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/dmsmail.robot
+	rm geckodriver*.log
+
 .PHONY: perf-test
 perf-test:  ## Runs performance tests
 	# can be run by example with: make perf-test opt='-t test_'
