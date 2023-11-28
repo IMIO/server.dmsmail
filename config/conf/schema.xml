@@ -195,6 +195,7 @@
     <field name="state_group"           type="string" indexed="true" stored="true" />
     <field name="total_comments"        type="string" indexed="true" stored="true" />
     <field name="treating_groups"       type="string" indexed="true" stored="true" />
+    <field name="userid"                type="string" indexed="true" stored="true" />
 
     <copyField source="Title" dest="default"/>
     <copyField source="Description" dest="default"/>
