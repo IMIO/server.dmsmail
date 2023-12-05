@@ -48,7 +48,7 @@ def get_organizations(self, obj=False):
     return '\n'.join(['%s;%s' % (t[0], t[1]) for t in terms])
 
 
-def import_principals(self, add_user='', create_file='', ungroup='', dochange=''):
+def import_principals(self, add_user='', create_file='', ungroup='', ldap='', dochange=''):
     """
         Import principals from the file 'Extensions/principals.csv' containing
         OrgId;OrgTitle;Userid;Fullname;email;Éditeur;Lecteur;Créateur CS;N+;Tel;Label;ImHandle
@@ -66,6 +66,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
     out.append("-> add_user=1 : add missing users. Default 0")
     out.append("-> create_file=1 : create principals_gen.csv and exit. Default 0")
     out.append("-> ungroup=1 : remove from group if role column is empty. Default 0")
+    out.append("-> ldap=1 : users are in ldap. Default 0")
     out.append("-> dochange=1 : apply changes. Default 0")
     out.append("")
     cf = False
@@ -74,19 +75,24 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
     doit = False
     if dochange == '1':
         doit = True
+    is_ldap = False
+    if ldap == '1':
+        is_ldap = True
 
-    users = get_user_from_criteria(portal, email='@')
+    users = get_user_from_criteria(portal, email='')
     userids = {}
     emails = {}
     # {'description': u'Scanner', 'title': u'Scanner', 'principal_type': 'user', 'userid': 'scanner',
     #  'email': 'test@macommune.be', 'pluginid': 'mutable_properties', 'login': 'scanner', 'id': 'scanner'}
     for dic in users:
-        userids[dic['userid']] = dic['email']
-        uids = emails.setdefault(dic['email'], [])
-        uids.append(dic['userid'])
+        userid = is_ldap and dic['userid'].lower() or dic['userid']
+        email = dic['email'] and dic['email'].lower() or ''
+        userids[userid] = email
+        uids = emails.setdefault(email, [])
+        uids.append(userid)
     for eml in emails:
         if len(emails[eml]) > 1:
-            out.append("!! same email '{}' for multiples users: {}".format(eml, ', '.join(emails[eml])))
+            out.append("!! same email '{}' for multiple existing users: {}".format(eml, ', '.join(emails[eml])))
     orgas = get_organizations(self, obj=True)  # [(uid, title)]
     val_levels = [('n_plus_{}'.format(dic['parameters']['validation_level']), dic['parameters']['function_title'])
                   for dic in get_applied_adaptations()
@@ -119,17 +125,21 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
     msg, rows = system.read_dictcsv(filename, fieldnames=fields, strip_chars=' ', skip_empty=True, skip_lines=1,
                                     **{'delimiter': ';'})
     if msg:  # stop if csv error
-        return msg
+        out.append("Given fields={}".format(','.join(fields)))
+        out.append(msg)
+        return lf.join(out)
     regtool = self.portal_registration
     cu = False
     if add_user == '1':
         cu = True
     for dic in rows:
         ln = dic.pop('_ln')
+        email = dic['eml'].lower()
+        userid = is_ldap and dic['ui'].lower() or dic['ui']
         try:
-            validate_email_address(dic['eml'])
+            validate_email_address(email)
         except Exception:
-            out.append("Line %d: incorrect email value '%s'" % (ln, dic['eml']))
+            out.append("Line %d: incorrect email value '%s'" % (ln, email))
             continue
         if dic['ph']:
             dic['ph'] = filter(type(dic['ph']).isdigit, dic['ph'])
@@ -139,43 +149,43 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
                 out.append("Line %d: incorrect phone value '%s'" % (ln, dic['ph']))
                 continue
         # check userid
-        if not dic['ui']:
+        if not userid:
             out.append("Line %d: userid empty. Skipping line" % ln)
             continue
-        if not re.match(r'[a-zA-Z1-9\-]+$', dic['ui']):
-            out.append("Line %d: userid '%s' is not well formed" % (ln, dic['ui']))
+        if not re.match(r'[a-zA-Z1-9\-\.]+$', userid):
+            out.append("Line %d: userid '%s' is not well formed" % (ln, userid))
             continue
         # check user
-        if dic['ui'] not in userids:
-            emlfound = dic['eml'] in emails
+        if userid not in userids:
+            emlfound = email and email in emails
             if not cu:
-                out.append("Line %d: userid '%s' not found" % (ln, dic['ui']))
+                out.append("Line %d: userid '%s' not found" % (ln, userid))
                 if emlfound:
-                    out.append("Line %d: but email '%s' found on users '%s'" % (ln, dic['eml'], ', '.join(
-                        emails[dic['eml']])))
+                    out.append("Line %d: but email '%s' found on users '%s'" % (ln, email, ', '.join(
+                        emails[email])))
                 continue
             else:
                 try:
-                    out.append("=> Create user '%s': '%s', '%s'" % (dic['ui'], dic['fn'], dic['eml']))
+                    out.append("=> Create user '%s': '%s', '%s'" % (userid, dic['fn'], email))
                     if emlfound:
-                        out.append("Line %d: but email '%s' found on users '%s'" % (ln, dic['eml'], ', '.join(
-                            emails[dic['eml']])))
-                    userids[dic['ui']] = dic['eml']
-                    uids = emails.setdefault(dic['eml'], [])
-                    uids.append(dic['ui'])
+                        out.append("Line %d: but email '%s' found on users '%s'" % (ln, email, ', '.join(
+                            emails[email])))
+                    userids[userid] = email
+                    uids = emails.setdefault(email, [])
+                    uids.append(userid)
                     if doit:
-                        user = api.user.create(username=dic['ui'], email=dic['eml'],
+                        user = api.user.create(username=userid, email=email,
                                                password=regtool.generatePassword(), properties={'fullname': dic['fn']})
                 except Exception as ex:
                     out.append("Line %d, cannot create user: %s" % (ln, safe_encode(ex.message)))
                     continue
-        user = api.user.get(userid=dic['ui'])
+        user = api.user.get(userid=userid)
         # groups
         if user is not None:
             try:
-                groups = [g.id for g in api.group.get_groups(username=dic['ui'])]
+                groups = [g.id for g in api.group.get_groups(username=userid)]
             except Exception as ex:
-                out.append("Line %d, cannot get groups of userid '%s': %s" % (ln, dic['ui'], safe_encode(ex.message)))
+                out.append("Line %d, cannot get groups of userid '%s': %s" % (ln, userid, safe_encode(ex.message)))
                 groups = []
         else:
             groups = []
@@ -205,30 +215,30 @@ def import_principals(self, add_user='', create_file='', ungroup='', dochange=''
                 continue
             # add user in group
             if value and gid not in groups:  # must add and user not in groups
-                out.append("=> Add user '%s' to group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
+                out.append("=> Add user '%s' to group '%s' (%s)" % (userid, gid, dic['ot']))
                 if doit:
                     try:
-                        api.group.add_user(groupname=gid, username=dic['ui'])
+                        api.group.add_user(groupname=gid, username=userid)
                     except Exception as ex:
                         out.append("Line %d, cannot add userid '%s' to group '%s': %s"
-                                   % (ln, dic['ui'], gid, safe_encode(ex.message)))
+                                   % (ln, userid, gid, safe_encode(ex.message)))
             elif ungroup == '1' and not value and gid in groups:  # must remove and user in groups
-                out.append("=> Remove user '%s' from group '%s' (%s)" % (dic['ui'], gid, dic['ot']))
+                out.append("=> Remove user '%s' from group '%s' (%s)" % (userid, gid, dic['ot']))
                 if doit:
                     try:
-                        api.group.remove_user(groupname=gid, username=dic['ui'])
+                        api.group.remove_user(groupname=gid, username=userid)
                     except Exception as ex:
                         out.append("Line %d, cannot remove userid '%s' from group '%s': %s"
-                                   % (ln, dic['ui'], gid, safe_encode(ex.message)))
+                                   % (ln, userid, gid, safe_encode(ex.message)))
 
         if not dic['ph'] and not dic['lb'] and not dic['im']:
             continue
         if not doit or not dic['cs']:
             continue
         # find person
-        res = portal.portal_catalog(userid=dic['ui'], portal_type='person')
+        res = portal.portal_catalog(userid=userid, portal_type='person')
         if not res:
-            out.append("Line %d: person with userid '%s' not found" % (ln, dic['ui']))
+            out.append("Line %d: person with userid '%s' not found" % (ln, userid))
             continue
         # find held position
         brains = api.content.find(context=res[0].getObject(), portal_type='held_position', review_state='active')
