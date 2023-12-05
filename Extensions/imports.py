@@ -152,7 +152,10 @@ def import_principals(self, add_user='', create_file='', ungroup='', ldap='', do
         if not userid:
             out.append("Line %d: userid empty. Skipping line" % ln)
             continue
-        if not re.match(r'[a-zA-Z1-9\-\.]+$', userid):
+        pat = r'[a-zA-Z1-9\-]+$'
+        if is_ldap:
+            pat = r'[a-zA-Z1-9\-\._]+$'
+        if not re.match(pat, userid):
             out.append("Line %d: userid '%s' is not well formed" % (ln, userid))
             continue
         # check user
