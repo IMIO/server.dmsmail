@@ -4,8 +4,16 @@ Changelog
 3.0.55 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Made sure destination file doesnt exist in change_db.sh.
+- Added parts/omelette in helper.py
+- Updated installation files
+- Replaced mail_type index by userid index in Extensions/imports.py
+- Added collective.relationhelpers source
+- Added Makefile gui-test section
+- Added userid field in solr schema
+- Updated changelog
+- Removed useless import in helper.py
+- Improved import_principals
 
 3.0.54 (2023-10-16)
 -------------------
