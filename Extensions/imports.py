@@ -247,7 +247,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', ldap='', do
         brains = api.content.find(context=res[0].getObject(), portal_type='held_position', review_state='active')
         hps = [b.getObject() for b in brains if b.getObject().get_organization().UID() == dic['oi']]
         if not hps or len(hps) > 1:
-            out.append("Line %d: less or more hps '%s'" % (ln, hps))
+            # out.append("Line %d: less or more hps '%s'" % (ln, hps))
             continue
         hp = hps[0]
         # update attribute
