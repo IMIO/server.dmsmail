@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.55 (unreleased)
+3.0.55 (2023-12-06)
 -------------------
 
 - Made sure destination file doesnt exist in change_db.sh.
