@@ -20,6 +20,8 @@ Changelog
 - Updated changelog
 - Removed useless import in helper.py
 - Improved import_principals
+- Upgraded col.eeafaceted.dashboard, col.ckeditortemplates, col.classification.folder, col.dms.mailcontent,
+  dexterity.localroles, dexterity.localrolesfield, imio.helpers, imio.pyutils, imio.zamqp.dms
 
 3.0.54 (2023-10-16)
 -------------------
