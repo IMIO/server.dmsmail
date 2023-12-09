@@ -53,6 +53,17 @@ def script2():
 
 
 def script3():
+    """Install solr, set ports, activating it"""
+    portal = obj  # noqa
+    qi = api.portal.get_tool('portal_quickinstaller')
+    qi.installProduct('collective.solr', forceProfile=True)
+    from imio.dms.mail.utils import update_solr_config
+    update_solr_config()
+    api.portal.set_registry_record('collective.solr.active', True)
+    transaction.commit()
+
+
+def script4():
     portal = obj  # noqa
     full_key = 'collective.solr.port'
     configured_port = api.portal.get_registry_record(full_key, default=None)
@@ -70,7 +81,7 @@ def script3():
     # transaction.commit()
 
 
-def script4():
+def script5():
     portal = obj  # noqa
     verbose('Correcting bad migration %s' % portal.absolute_url_path())
     for wf_name, method in (('incomingmail_workflow', 'wf_conditions'),
@@ -89,8 +100,8 @@ def script4():
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run ports update",
-        "2: clean old dv files", "3: solr reindex", "4: various"]
-scripts = {'1': script1, '2': script2, '3': script3, '4': script4}
+        "2: clean old dv files", "3: solr install", "4: solr reindex", "5: various"]
+scripts = {'1': script1, '2': script2, '3': script3, '4': script4, '5': script5}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
     error("Bad script parameter")
@@ -103,7 +114,7 @@ with api.env.adopt_user(username='admin'):
 # ## OLD scripts ## #
 
 
-def script3_1():
+def script4_1():
     portal = obj  # noqa
     verbose('Activating test site message on %s' % portal.absolute_url_path())
     testmsg = portal.unrestrictedTraverse('messages-config/test-site', default=None)
@@ -118,7 +129,7 @@ def script3_1():
         error("No test site message found")
 
 
-def script4_1():
+def script5_1():
     portal = obj  # noqa
     verbose('Setting documentgenerator config on %s' % portal.absolute_url_path())
     from collective.documentgenerator.config import set_oo_port, set_uno_path
@@ -127,7 +138,7 @@ def script4_1():
     transaction.commit()
 
 
-def script4_2():
+def script5_2():
     portal = obj  # noqa
     verbose('Change searched types on %s' % portal.absolute_url_path())
     from imio.dms.mail.setuphandlers import changeSearchedTypes
@@ -135,7 +146,7 @@ def script4_2():
     transaction.commit()
 
 
-def script4_3():
+def script5_3():
     portal = obj  # noqa
     verbose('Add transforms on %s' % portal.absolute_url_path())
     from imio.dms.mail.setuphandlers import add_transforms
@@ -145,7 +156,7 @@ def script4_3():
     transaction.commit()
 
 
-def script4_4():
+def script5_4():
     portal = obj  # noqa
     verbose('Correct templates odt_file contentType on %s' % portal.absolute_url_path())
     from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
@@ -175,7 +186,7 @@ def script4_4():
         transaction.commit()
 
 
-def script4_5():
+def script5_5():
     portal = obj  # noqa
     verbose('Set imio.dms.mail parameter on %s' % portal.absolute_url_path())
     from imio.migrator.migrator import Migrator
@@ -189,7 +200,7 @@ def script4_5():
     transaction.commit()
 
 
-def script4_6():
+def script5_6():
     portal = obj  # noqa
     verbose('Set imio.dms.mail models on %s' % portal.absolute_url_path())
     from plone import api
@@ -207,7 +218,7 @@ def script4_6():
         transaction.commit()
 
 
-def script4_7():
+def script5_7():
     portal = obj  # noqa
     verbose('Change imio.dms.mail settings on %s' % portal.absolute_url_path())
     from plone import api
@@ -218,7 +229,7 @@ def script4_7():
     transaction.commit()
 
 
-def script4_8():
+def script5_8():
     portal = obj  # noqa
     verbose('Update templates on %s' % portal.absolute_url_path())
     # changing layout
@@ -241,7 +252,7 @@ def script4_8():
     om_folder['d-print'].rename_page_styles = True
 
 
-def script4_9():
+def script5_9():
     portal = obj  # noqa
     verbose('Modify d-print on %s' % portal.absolute_url_path())
     import pkg_resources
@@ -260,7 +271,7 @@ def script4_9():
     transaction.commit()
 
 
-def script4_10():
+def script5_10():
     portal = obj  # noqa
     from datetime import date, datetime, time
     verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % portal.absolute_url_path())
@@ -284,7 +295,7 @@ def script4_10():
     transaction.commit()
 
 
-def script4_11():
+def script5_11():
     portal = obj  # noqa
     verbose('Changing order on all incoming mail collections on %s' % portal.absolute_url_path())
     folder = portal['incoming-mail']['mail-searches']
@@ -296,7 +307,7 @@ def script4_11():
     transaction.commit()
 
 
-def script4_12():
+def script5_12():
     portal = obj  # noqa
     verbose('Activate versioning, change CMFEditions permissions on %s' % portal.absolute_url_path())
     # versioning
@@ -311,7 +322,7 @@ def script4_12():
     transaction.commit()
 
 
-def script4_13():
+def script5_13():
     portal = obj  # noqa
     verbose('Correcting datetime values on %s' % portal.absolute_url_path())
     from plone import api
@@ -343,7 +354,7 @@ def script4_13():
     transaction.commit()
 
 
-def script4_14():
+def script5_14():
     portal = obj  # noqa
     verbose('Changing personnel-folder interfaces on %s' % portal.absolute_url_path())
     from imio.dms.mail.interfaces import IPersonnelContact
@@ -364,7 +375,7 @@ def script4_14():
     transaction.commit()
 
 
-def script4_15():
+def script5_15():
     portal = obj  # noqa
     verbose('Updating workflow on %s' % portal.absolute_url_path())
     # Updating workflow
@@ -380,7 +391,7 @@ def script4_15():
     transaction.commit()
 
 
-def script4_16():
+def script5_16():
     portal = obj  # noqa
     verbose('Updating base on %s' % portal.absolute_url_path())
     from plone import api
@@ -393,7 +404,7 @@ def script4_16():
     transaction.commit()
 
 
-def script4_17():
+def script5_17():
     portal = obj  # noqa
     verbose('Updating dashboards interfaces on %s' % portal.absolute_url_path())
     from imio.dms.mail.interfaces import IIMDashboard
@@ -416,7 +427,7 @@ def script4_17():
     transaction.commit()
 
 
-def script4_18():
+def script5_18():
     portal = obj  # noqa
     verbose('Adding mailing on %s' % portal.absolute_url_path())
     folder = portal['templates']['om']
@@ -430,14 +441,14 @@ def script4_18():
     transaction.commit()
 
 
-def script4_19():
+def script5_19():
     portal = obj  # noqa
     verbose('Correcting ckeditor skin on %s' % portal.absolute_url_path())
     portal.portal_properties.ckeditor_properties.skin = 'moono-lisa'
     transaction.commit()
 
 
-def script4_20():
+def script5_20():
     portal = obj  # noqa
     verbose('Setting imio.dms.mail configuration annotation on %s' % portal.absolute_url_path())
     from collections import OrderedDict
@@ -467,7 +478,7 @@ def script4_20():
     transaction.commit()
 
 
-def script4_21():
+def script5_21():
     portal = obj  # noqa
     verbose('Correcting ftw.labels permissions on %s' % portal.absolute_url_path())
     frontpage = portal['front-page']
@@ -480,7 +491,7 @@ def script4_21():
     transaction.commit()
 
 
-def script4_22():
+def script5_22():
     portal = obj  # noqa
     verbose('Correcting collections on %s' % portal.absolute_url_path())
     # some collections contains in query a list of instances of ZPublisher.HTTPRequest.record. Must be a dict
@@ -499,7 +510,7 @@ def script4_22():
             verbose('This collection has been corrected {}'.format(brain.getPath()))
 
 
-def script4_23():
+def script5_23():
     portal = obj  # noqa
     verbose('Correcting bad steps on %s' % portal.absolute_url_path())
     setup = api.portal.get_tool('portal_setup')
@@ -515,7 +526,7 @@ def script4_23():
     transaction.commit()
 
 
-def script4_24():
+def script5_24():
     portal = obj  # noqa
     verbose('Correcting actionspanel transitions config on %s' % portal.absolute_url_path())
     transaction.commit()
