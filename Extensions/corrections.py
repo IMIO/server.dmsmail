@@ -165,8 +165,9 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     if not isinstance(crit_dic, dict):
         ret.append("Cannot eval criteria as dict")
         return '\n'.join(ret)
-    criterias = {'review_state': {'not': ['closed']}}  # must be a parameter
-    criterias.update(crit_dic)
+    criterias = dict(crit_dic)
+    if 'review_state' not in criterias:
+        criterias['review_state'] = {'not': ['closed']}
     ret.append("criterias=%s\n" % criterias)
     brains = pc(portal_type=typ, **criterias)
     tot = len(brains)
