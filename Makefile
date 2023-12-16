@@ -90,8 +90,8 @@ solr-clear-sync:  ## Solr synchronization (clear + sync)
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 4 clear
 
-.PHONY: various-script
-various-script:  ## Runs `run-scripts.py` 4 plone script that does various things
+.PHONY: update
+update:  ## Runs `run-scripts.py` 5 plone script that updates things
 # Run various script
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 5

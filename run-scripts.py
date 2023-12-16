@@ -83,24 +83,21 @@ def script4():
 
 def script5():
     portal = obj  # noqa
-    verbose('Correcting bad migration %s' % portal.absolute_url_path())
-    for wf_name, method in (('incomingmail_workflow', 'wf_conditions'),
-                            ('outgoingmail_workflow', 'wf_conditions')):
-        wf = portal.portal_workflow[wf_name]
-        for tr_id in wf.transitions:
-            tr = wf.transitions[tr_id]
-            guard = tr.getGuard()
-            cur_expr = guard.getExprText()
-            to_replace = "wfconditions"
-            if to_replace in cur_expr:
-                new_expr = cur_expr.replace(to_replace, '{}'.format(method))
-                if guard.changeFromProperties({'guard_expr': new_expr}):
-                    tr.guard = guard
+    verbose('Updating personnel-folder on %s' % portal.absolute_url_path())
+    from imio.dms.mail.interfaces import IPersonnelFolder
+    from zope.interface import alsoProvides
+    pc = portal.portal_catalog
+    pf = portal['contacts']['personnel-folder']
+    alsoProvides(pf, IPersonnelFolder)
+    pf.layout = 'personnel-listing'
+    # personnel contacts
+    for brain in pc(portal_type=['person'], path='/'.join(pf.getPhysicalPath())):
+        api.content.transition(brain.getObject(), to_state='active')
     transaction.commit()
 
 
 info = ["You can pass following parameters (with the first one always script number):", "1: run ports update",
-        "2: clean old dv files", "3: solr install", "4: solr reindex", "5: various"]
+        "2: clean old dv files", "3: solr install", "4: solr reindex", "5: update"]
 scripts = {'1': script1, '2': script2, '3': script3, '4': script4, '5': script5}
 
 if len(sys.argv) < 4 or sys.argv[3] not in scripts:
@@ -545,4 +542,22 @@ def script5_24():
     wf = pw.getChainForPortalType('ClassificationCategory')
     if wf == ('active_inactive_workflow',):
         pw.setChainForPortalTypes(['ClassificationCategory'], ())
+    transaction.commit()
+
+
+def script5_25():
+    portal = obj  # noqa
+    verbose('Correcting bad migration %s' % portal.absolute_url_path())
+    for wf_name, method in (('incomingmail_workflow', 'wf_conditions'),
+                            ('outgoingmail_workflow', 'wf_conditions')):
+        wf = portal.portal_workflow[wf_name]
+        for tr_id in wf.transitions:
+            tr = wf.transitions[tr_id]
+            guard = tr.getGuard()
+            cur_expr = guard.getExprText()
+            to_replace = "wfconditions"
+            if to_replace in cur_expr:
+                new_expr = cur_expr.replace(to_replace, '{}'.format(method))
+                if guard.changeFromProperties({'guard_expr': new_expr}):
+                    tr.guard = guard
     transaction.commit()
