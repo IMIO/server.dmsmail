@@ -7,7 +7,7 @@ Changelog
 - Nothing changed yet.
 
 
-3.0.55 (2023-12-06)
+3.0.55 (2023-12-16)
 -------------------
 
 - Made sure destination file doesnt exist in change_db.sh.
@@ -22,6 +22,9 @@ Changelog
 - Improved import_principals
 - Upgraded col.eeafaceted.dashboard, col.ckeditortemplates, col.classification.folder, col.dms.mailcontent,
   dexterity.localroles, dexterity.localrolesfield, imio.helpers, imio.pyutils, imio.zamqp.dms
+- Added script to setup solr
+- Removed 30_config_dic
+- Improved do_transition
 
 3.0.54 (2023-10-16)
 -------------------
