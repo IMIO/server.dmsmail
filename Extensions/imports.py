@@ -8,6 +8,7 @@ from imio.dms.mail.Extensions.imports import assert_date
 from imio.dms.mail.Extensions.imports import assert_value_in_list
 from imio.dms.mail.Extensions.imports import change_levels
 from imio.dms.mail.Extensions.imports import sort_by_level
+from imio.helpers.cache import get_plone_groups_for_user
 from imio.helpers.emailer import validate_email_address
 from imio.helpers.security import get_user_from_criteria
 from imio.pyutils import system
@@ -87,7 +88,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', ldap='', do
     for dic in users:
         userid = is_ldap and dic['userid'].lower() or dic['userid']
         email = dic['email'] and dic['email'].lower() or ''
-        userids[userid] = email
+        userids[userid] = (email, dic['description'])
         uids = emails.setdefault(email, [])
         uids.append(userid)
     for eml in emails:
@@ -101,15 +102,40 @@ def import_principals(self, add_user='', create_file='', ungroup='', ldap='', do
     fields = ['oi', 'ot', 'ui', 'fn', 'eml', 'ed', 'le', 'cs', 'ph', 'lb', 'im']
     fieldnames = ['OrgId', 'OrgTitle', 'Userid', 'Nom complet', 'Email', 'Éditeur', 'Lecteur', 'Créateur CS', 'Tél',
                   'Fonction', 'Autre']
+    functions = ['editeur', 'lecteur', 'encodeur']
     for fct, tit in reversed(val_levels):
         fields.insert(5, fct)
         fieldnames.insert(5, tit.encode('utf8'))
+        functions.insert(0, fct)
 
     if cf:
         lines = [";".join(fieldnames)]
-        # TODO improve creation by using existing user group associations
+        groups_users = {}
+        for userid in userids:
+            for gid in get_plone_groups_for_user(user_id=userid):
+                users = groups_users.setdefault(gid, [])
+                users.append(userid)
         for uid, title in orgas:
-            lines.append("{};{};{}".format(uid, title.encode('utf8'), ';' * (len(fields) - 3)))
+            groupids = ['{}_{}'.format(uid, fct) for fct in functions]
+            guserids = set([usr for gid in groupids for usr in groups_users.get(gid, [])])
+            if not guserids:
+                lines.append("{};{};{}".format(uid, title.encode('utf8'), ';' * (len(fields) - 3)))
+            else:
+                for userid in sorted(guserids):
+                    eml, fulln = userids[userid]
+                    cols = [uid, title.encode('utf8'), safe_encode(userid), safe_encode(fulln),
+                            safe_encode(eml)]
+                    for gid in groupids:
+                        if userid in groups_users.get(gid, []):
+                            cols.append('1')
+                        else:
+                            cols.append('')
+                    cols.extend(['', '', ''])
+                    lines.append(';'.join(cols))
+        for userid in userids:
+            eml, fulln = userids[userid]
+            lines.append(";;{};{};{};{}".format(safe_encode(userid), safe_encode(fulln),
+                                                safe_encode(eml), ';' * (len(fields) - 6)))
         if doit:
             gen_file = os.path.join(path, 'principals_gen.csv')
             out.append("Creating file {}".format(gen_file))
@@ -173,7 +199,7 @@ def import_principals(self, add_user='', create_file='', ungroup='', ldap='', do
                     if emlfound:
                         out.append("Line %d: but email '%s' found on users '%s'" % (ln, email, ', '.join(
                             emails[email])))
-                    userids[userid] = email
+                    userids[userid] = (email, dic['fn'])
                     uids = emails.setdefault(email, [])
                     uids.append(userid)
                     if doit:
