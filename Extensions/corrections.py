@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from collective.classification.tree import caching
+from collective.classification.tree.utils import iterate_over_tree
 from collective.contact.plonegroup.utils import get_organizations
 from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
+from imio.helpers.content import safe_encode
 from plone.app.uuid.utils import uuidToObject
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
@@ -427,6 +430,20 @@ def clean_catalog(self):
             del catalog.data[rid]
             del paths[rid]
             catalog._length.change(-1)
+    return '\n'.join(out)
+
+
+def clean_categories(self, change=''):
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    out = []
+    caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", self['tree'].UID())
+    res = iterate_over_tree(self['tree'])
+    for category in reversed(res):
+        log_list(out, "Deleting category '%s - %s'" % (safe_encode(category.identifier), safe_encode(category.title)))
+        if change == '1':
+            api.content.delete(objects=[category], check_linkintegrity=False)
+    caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", self['tree'].UID())
     return '\n'.join(out)
 
 
