@@ -4,8 +4,20 @@ Changelog
 3.0.56 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Improved import_principals method
+- Added imio.annex
+- Added iconifiedcategory as source
+- Added script to count relations
+- Added clean_categories external method
+- Upgraded Twisted to 15.5.0
+- Added script to cook js and css resources
+- Added collective.js.tooltipster as source
+- Used again master products
+- Upgraded actionspanel, appy, documentgenerator, facetednavigation, eeafaceted.z3ctable, fingerpointing, future,
+  iconifiedCategory, imio.helpers, imio.history, imio.migrator, internalnumber, messagesviewlet, pm.locales,
+  pm.wsclient, plonetheme.imioapps, prettylink, tooltipster, wfadaptations, zamqp.core
+- Commented eea.fn version, taken from source
+- Added parts to get correctly appy
 
 3.0.55 (2023-12-16)
 -------------------
