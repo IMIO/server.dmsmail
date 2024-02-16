@@ -37,6 +37,8 @@ Puis Ruby 2.7.6 :
 > rvm install ruby-2.7.6 --with-openssl-dir=$HOME/.rvm/usr
 Pour voir la version de ruby installée :
 > which ruby
+Création d'un lien symbolique pour que docsplit puisse utiliser ruby (si pas de ruby système) :
+> ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
 Enfin, on peut installer les autres dépendances de documentviewer :
 > gem install docsplit
 > apt install graphicsmagick
