@@ -16,8 +16,11 @@ Changelog
 - Upgraded actionspanel, appy, documentgenerator, facetednavigation, eeafaceted.z3ctable, fingerpointing, future,
   iconifiedCategory, imio.helpers, imio.history, imio.migrator, internalnumber, messagesviewlet, pm.locales,
   pm.wsclient, plonetheme.imioapps, prettylink, tooltipster, wfadaptations, zamqp.core
-- Commented eea.fn version, taken from source
+- Commented eea.facetednavigation version, taken from source
 - Added parts to get correctly appy
+- Removed plonegroup branch
+- Upgraded classification.folder
+- Added prod various part to clean unnecessary src directories
 
 3.0.55 (2023-12-16)
 -------------------
