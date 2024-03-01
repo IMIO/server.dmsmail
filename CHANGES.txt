@@ -27,6 +27,7 @@ Changelog
 - Removed plonegroup branch
 - Upgraded classification.folder
 - Added prod various part to clean unnecessary src directories
+- Upgraded classification.tree, dms.basecontent, dms.scanbehavior, plonetheme.imioapps, pyutils
 
 3.0.55 (2023-12-16)
 -------------------
