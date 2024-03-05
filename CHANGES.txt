@@ -28,6 +28,7 @@ Changelog
 - Upgraded classification.folder
 - Added prod various part to clean unnecessary src directories
 - Upgraded classification.tree, dms.basecontent, dms.scanbehavior, plonetheme.imioapps, pyutils
+- Used imio.helpers and imio.migrator sources
 
 3.0.55 (2023-12-16)
 -------------------
