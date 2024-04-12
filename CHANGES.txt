@@ -4,8 +4,13 @@ Changelog
 3.0.57 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added run-catalog-count.py script.
+- Added optional experimental.gracefulblobmissing cfg file
+- Removed useless restapi.cfg. Pinned correctly packages
+- Minimized debug cache size
+- Added reindexIndexes script
+- Upgraded col.clas.folder, col.contact.plonegroup, col.docgen, col.eea.batchactions, col.eea.collectionwidget,
+  col.iconifiedcat, imio.annex, imio.helpers, imio.history, imio.pm.loc, imio.pyutils, plonetheme.imioapps
 
 3.0.56 (2024-02-19)
 -------------------
