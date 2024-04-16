@@ -11,6 +11,9 @@ Changelog
 - Added reindexIndexes script
 - Upgraded col.clas.folder, col.contact.plonegroup, col.docgen, col.eea.batchactions, col.eea.collectionwidget,
   col.iconifiedcat, imio.annex, imio.helpers, imio.history, imio.pm.loc, imio.pyutils, plonetheme.imioapps
+- Added zope.sendmail as source
+- Added send mail test script
+- Used patched Products.CMFEditions
 
 3.0.56 (2024-02-19)
 -------------------
