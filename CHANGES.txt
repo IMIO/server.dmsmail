@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.57 (unreleased)
+3.0.57 (2024-04-16)
 -------------------
 
 - Added run-catalog-count.py script.
