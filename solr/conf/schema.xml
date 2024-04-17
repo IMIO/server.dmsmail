@@ -103,7 +103,7 @@
 
     <!-- Plone Core Fields -->
     <!-- name:allowedRolesAndUsers   type:string stored:true multiValued:true -->
-    <field name="allowedRolesAndUsers"  type="string"   indexed="true"  stored="true"  multiValued="true" />
+    <field name="allowedRolesAndUsers"  type="string"   indexed="true"  stored="false"  multiValued="true" />
     <!-- name:created                type:date stored:true -->
     <field name="created"               type="date"     indexed="true"  stored="true" />
     <!-- name:Creator                type:string stored:true -->
@@ -123,7 +123,7 @@
     <!-- name:getIcon                type:string indexed:false stored:true -->
     <field name="getIcon"               type="string"   indexed="false" stored="true" />
     <!-- name:getId                  type:string indexed:false stored:true -->
-    <field name="getId"                 type="string"   indexed="false" stored="true" />
+    <field name="getId"                 type="string"   indexed="true" stored="true" />
     <!-- name:getRemoteUrl           type:string indexed:false stored:true -->
     <field name="getRemoteUrl"          type="string"   indexed="false" stored="true" />
     <!-- name:is_folderish           type:boolean stored:true -->
@@ -133,7 +133,7 @@
     <!-- name:modified               type:date stored:true -->
     <field name="modified"              type="date"     indexed="true"  stored="true" />
     <!-- name:object_provides        type:string stored:true multiValued:true -->
-    <field name="object_provides"       type="string"   indexed="true"  stored="true"  multiValued="true" />
+    <field name="object_provides"       type="string"   indexed="true"  stored="false"  multiValued="true" />
     <!-- name:path_depth             type:integer indexed:true stored:true -->
     <field name="path_depth"            type="tint"     indexed="true"  stored="true" />
     <!-- name:path_parents           type:string indexed:true stored:true multiValued:true -->
@@ -145,7 +145,7 @@
     <!-- name:review_state           type:string stored:true -->
     <field name="review_state"          type="string"   indexed="true"  stored="true" />
     <!-- name:SearchableText         type:text copyfield:default stored:true -->
-    <field name="SearchableText"        type="text"     indexed="true"  stored="true" />
+    <field name="SearchableText"        type="text"     indexed="true"  stored="false" />
     <!-- name:searchwords            type:string stored:true multiValued:true -->
     <field name="searchwords"           type="string"   indexed="true"  stored="true"  multiValued="true" />
     <!-- name:showinsearch           type:boolean stored:true -->
@@ -170,32 +170,32 @@
     <field name="due_date"              type="date" indexed="true" stored="true" />
     <field name="email"                 type="string" indexed="true" stored="true" />
     <field name="end"                   type="date" indexed="true" stored="true" />
-    <field name="enabled"               type="boolean" indexed="true" stored="true" />
+    <field name="enabled"               type="boolean" indexed="true" stored="false" />
     <field name="external_reference_number" type="string" indexed="true" stored="false" />
-    <field name="get_full_title"        type="string" indexed="true" stored="true" />
-    <field name="getObjPositionInParent" type="string" indexed="true" stored="true" />
-    <field name="getRawRelatedItems"    type="string" indexed="true" stored="true" />
+    <field name="get_full_title"        type="string" indexed="false" stored="true" />
+    <field name="getObjPositionInParent" type="string" indexed="true" stored="false" />
+    <field name="getRawRelatedItems"    type="string" indexed="true" stored="false" multiValued="true"/>
     <field name="in_out_date"           type="date" indexed="true" stored="true" />
-    <field name="in_reply_to"           type="string" indexed="true" stored="true" />
+    <field name="in_reply_to"           type="string" indexed="true" stored="false" />
     <field name="internal_reference_no" type="string" indexed="true" stored="true" />
     <field name="internal_reference_number" type="string" indexed="true" stored="true" />
-    <field name="is_default_page"       type="boolean" indexed="true" stored="true" />
-    <field name="labels"                type="string" indexed="true" stored="true" multiValued="true" />
-    <field name="mail_date"             type="date" indexed="true" stored="true" />
+    <field name="is_default_page"       type="boolean" indexed="true" stored="false" />
+    <field name="labels"                type="string" indexed="true" stored="false" multiValued="true" />
+    <field name="mail_date"             type="date" indexed="true" stored="false" />
     <field name="mail_type"             type="string" indexed="true" stored="true" />
     <field name="markers"               type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="meta_type"             type="string" indexed="true" stored="true" />
-    <field name="organization_type"     type="string" indexed="true" stored="true" />
+    <field name="organization_type"     type="string" indexed="true" stored="false" />
     <field name="recipient_groups"      type="string" indexed="true" stored="true" multiValued="true" />
     <field name="recipients_index"      type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="scan_id"               type="string" indexed="true" stored="true" />
     <field name="sender_index"          type="string" indexed="true" stored="true" multiValued="true" />
     <field name="signed"                type="boolean" indexed="true" stored="true" />
     <field name="start"                 type="date" indexed="true" stored="true" />
-    <field name="state_group"           type="string" indexed="true" stored="true" />
+    <field name="state_group"           type="string" indexed="true" stored="false" />
     <field name="total_comments"        type="string" indexed="true" stored="true" />
-    <field name="treating_groups"       type="string" indexed="true" stored="true" />
-    <field name="userid"                type="string" indexed="true" stored="true" />
+    <field name="treating_groups"       type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="userid"                type="string" indexed="true" stored="false" />
     <field name="yesno_value"           type="string" indexed="true" stored="false" />
 
     <copyField source="Title" dest="default"/>
