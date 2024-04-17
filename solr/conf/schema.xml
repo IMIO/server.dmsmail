@@ -196,6 +196,7 @@
     <field name="total_comments"        type="string" indexed="true" stored="true" />
     <field name="treating_groups"       type="string" indexed="true" stored="true" />
     <field name="userid"                type="string" indexed="true" stored="true" />
+    <field name="yesno_value"           type="string" indexed="true" stored="false" />
 
     <copyField source="Title" dest="default"/>
     <copyField source="Description" dest="default"/>
