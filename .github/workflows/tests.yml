@@ -39,14 +39,14 @@ jobs:
           sudo apt-get install -qq -y libreoffice libreoffice-script-provider-python
           sudo apt-get autoremove -qq -y
           sudo apt-get autoclean -qq -y
-          mkdir -p buildout-cache/{eggs,downloads}
+          mkdir -p download-cache/{eggs,downloads}
           pip install -r requirements.txt
       - name: Cache eggs
         uses: actions/cache@v2
         env:
           cache-name: cache-eggs
         with:
-          path: ~/buildout-cache/eggs
+          path: ~/download-cache/eggs
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.PLONE_VERSION }}
           restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.PLONE_VERSION }}
       - name: buildout
