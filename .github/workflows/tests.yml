@@ -52,7 +52,8 @@ jobs:
       - name: buildout
         run: |
           pip install -r requirements.txt coverage==5.3.1
-          buildout -N
+          buildout -c test-ci.cfg annotate
+          buildout -c test-ci.cfg
       - name: test
         run: |
           bin/testme
