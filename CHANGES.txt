@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.58 (unreleased)
+3.0.58 (2024-06-11)
 -------------------
 
 - Upgraded collective.dms.batchimport.
