@@ -4,8 +4,11 @@ Changelog
 3.0.58 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded collective.dms.batchimport.
+- Upgraded col.behavior.internalnumber, col.classification.tree, col.contact.plonegroup, col.eeafaceted.z3ctable,
+  imio.actionspanel, imio.pyutils, plonetheme.imioapps
+- Removed imio.helpers from auto-checkout
+- Switched imio.migrator to master
 
 3.0.57 (2024-04-16)
 -------------------
