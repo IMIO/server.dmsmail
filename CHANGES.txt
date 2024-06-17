@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.59 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 3.0.58 (2024-06-11)
 -------------------
 
@@ -9,6 +15,7 @@ Changelog
   imio.actionspanel, imio.pyutils, plonetheme.imioapps
 - Removed imio.helpers from auto-checkout
 - Switched imio.migrator to master
+- Upgraded imio.helpers
 
 3.0.57 (2024-04-16)
 -------------------
