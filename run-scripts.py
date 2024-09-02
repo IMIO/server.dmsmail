@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
 from imio.dms.mail.utils import dv_clean
+from imio.helpers.security import setup_logger
 from imio.pyutils.system import error
 from imio.pyutils.system import verbose
-from imio.helpers.security import setup_logger
-import transaction
 from plone import api
+
+import os
+import sys
+import transaction
+
 
 # Parameters check
 if len(sys.argv) < 3 or not sys.argv[2].endswith('run-scripts.py'):
@@ -129,7 +130,8 @@ def script4_1():
 def script5_1():
     portal = obj  # noqa
     verbose('Setting documentgenerator config on %s' % portal.absolute_url_path())
-    from collective.documentgenerator.config import set_oo_port, set_uno_path
+    from collective.documentgenerator.config import set_oo_port
+    from collective.documentgenerator.config import set_uno_path
     set_oo_port()
     set_uno_path()
     transaction.commit()
@@ -157,10 +159,11 @@ def script5_4():
     portal = obj  # noqa
     verbose('Correct templates odt_file contentType on %s' % portal.absolute_url_path())
     from collective.documentgenerator.content.pod_template import POD_TEMPLATE_TYPES
-    import hmac
     from hashlib import sha1 as sha
-    from zope.component import getUtility
     from plone.keyring.interfaces import IKeyManager
+    from zope.component import getUtility
+
+    import hmac
     manager = getUtility(IKeyManager)
     ring = manager[u"_system"]
     template_types = POD_TEMPLATE_TYPES.keys() + ['DashboardPODTemplate']
@@ -252,9 +255,10 @@ def script5_8():
 def script5_9():
     portal = obj  # noqa
     verbose('Modify d-print on %s' % portal.absolute_url_path())
-    import pkg_resources
     from imio.helpers.content import create_NamedBlob
     from zope.lifecycleevent import modified
+
+    import pkg_resources
     dprint = portal.templates.om.get('d-print', None)
     if dprint.has_been_modified():
         error('Beware: d-print has been modified !')
@@ -270,7 +274,9 @@ def script5_9():
 
 def script5_10():
     portal = obj  # noqa
-    from datetime import date, datetime, time
+    from datetime import date
+    from datetime import datetime
+    from datetime import time
     verbose('Replace outgoing date, reindex organization_type, change sort key on %s' % portal.absolute_url_path())
     default_time = time(10, 0)
     for brain in portal.portal_catalog(portal_type='dmsoutgoingmail'):
@@ -322,8 +328,8 @@ def script5_12():
 def script5_13():
     portal = obj  # noqa
     verbose('Correcting datetime values on %s' % portal.absolute_url_path())
-    from plone import api
     from datetime import timedelta
+    from plone import api
     pc = portal.portal_catalog
     # incoming mails
     for typ, attr in (('dmsincomingmail', 'reception_date'), ('dmsoutgoingmail', 'outgoing_date')):
@@ -354,10 +360,11 @@ def script5_13():
 def script5_14():
     portal = obj  # noqa
     verbose('Changing personnel-folder interfaces on %s' % portal.absolute_url_path())
-    from imio.dms.mail.interfaces import IPersonnelContact
     from collective.contact.plonegroup.interfaces import IPloneGroupContact
-    from zope.interface import alsoProvides, noLongerProvides
+    from imio.dms.mail.interfaces import IPersonnelContact
     from imio.helpers.cache import invalidate_cachekey_volatile_for
+    from zope.interface import alsoProvides
+    from zope.interface import noLongerProvides
     pc = portal.portal_catalog
     pf = portal['contacts']['personnel-folder']
     # personnel contacts
@@ -392,6 +399,7 @@ def script5_16():
     portal = obj  # noqa
     verbose('Updating base on %s' % portal.absolute_url_path())
     from plone import api
+
     # base model
     pc = portal.portal_catalog
     for brain in pc(id='base', portal_type='ConfigurablePODTemplate'):
