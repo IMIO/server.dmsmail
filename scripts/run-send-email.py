@@ -41,7 +41,13 @@ ceci est un mail de test.
 Bien à vous."""
 msg = create_html_email(body)
 mailhost = get_mail_host(check=False)
-sender = ns.sender and ns.sender or mailhost.smtp_uid
+sender = ns.sender
+if not sender:
+    sender = mailhost.smtp_uid
+if not sender:
+    sender = portal.email_from_address
+if not sender:
+    stop('No sender defined', logger=logger)
 subject = ns.subject and ns.subject or u'Mail de test'
 ret, error = send_email(msg, subject, sender, ns.recipients, mcc=ns.ccs, mbcc=ns.bccs, immediate=ns.immediate)
 if ret:
