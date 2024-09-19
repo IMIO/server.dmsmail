@@ -4,8 +4,12 @@ Changelog
 3.0.59 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Improved scripts/run-send-email.py.
+- isorted and pep8
+- Removed imio.migrator from auto-checkout
+- Upgraded zc.buildout to 3.1.0 to find correctly recent tar.gz with underscore
+- Upgraded col.behavior.talcondition, col.classification.folder, col.classification.tree, col.dms.mailcontent,
+  col.eeafaceted.z3ctable, imio.helpers, imio.migrator, imio.pyutils
 
 3.0.58 (2024-06-11)
 -------------------
