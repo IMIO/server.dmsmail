@@ -118,14 +118,14 @@ robot-server:  ## Starts robot server
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
 
 .PHONY: doc
-doc:  ## Runs `doc.robot`
+doc:  ## Runs `doc.robot` (opt='-i "RUN1"')
 	# can be run by example with: make doc opt='-t "Contacts *"' or make doc opt='-i "RUN1"'  (or -e to exclude)
 	# env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -l NONE -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 	rm geckodriver*.log
 
 .PHONY: video-doc
-video-doc:  ## Runs `video-doc.robot`
+video-doc:  ## Runs `video-doc.robot` (opt='-t "Contacts *"')
 	# can be run by example with: env version=3.0.56 make video-doc opt='-t "Contacts *"' or opt='-i "RUN01"'
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/video-doc.robot
 	rm geckodriver*.log
@@ -137,7 +137,7 @@ gui-test:  ## Runs `dmsmail.robot` (opt='-t "* response"')
 	rm geckodriver*.log
 
 .PHONY: perf-test
-perf-test:  ## Runs performance tests
+perf-test:  ## Runs performance tests (opt='-t test_')
 	# can be run by example with: make perf-test opt='-t test_'
 	bin/testme --test-file-pattern=ptest_ ${opt}
 
