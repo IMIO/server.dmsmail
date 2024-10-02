@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.59 (unreleased)
+3.0.59 (2024-10-02)
 -------------------
 
 - Improved scripts/run-send-email.py.
