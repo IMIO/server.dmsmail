@@ -11,6 +11,7 @@ Changelog
 - Upgraded col.behavior.talcondition, col.classification.folder, col.classification.tree, col.dms.mailcontent,
   col.eeafaceted.z3ctable, imio.helpers, imio.migrator, imio.pyutils
 - Upgraded appy to correct bug with last LO versions
+- Added possible options in Makefile help
 
 3.0.58 (2024-06-11)
 -------------------
