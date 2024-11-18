@@ -4,32 +4,12 @@ Your real username must replace in our commands the string "username".
 Each command, specified by the symbol ">", can be executed
  (without the symbol >).
 
-First we become root
-> sudo -s
-
 We install the necessary libraries
-> apt install curl 
-> apt install g++
-> apt install gcc
-> apt install make
-> apt install cmake
-> apt install build-essential
-> apt install libreadline6-dev
-> apt install zlib1g-dev (support zlib)
-> apt install libbz2-dev
-> apt install libjpeg62-dev
-> apt install subversion
-> apt install git
-> apt install libpq-dev
-> apt install libxml2-dev
-> apt install libxslt1-dev
-> apt install libssl-dev
-> apt install pkg-config
-> apt install graphviz graphviz-dev
-> apt install odt2txt
+> sudo apt install curl g++ gcc make cmake build-essential libreadline6-dev zlib1g-dev libbz2-dev libjpeg62-dev subversion git libpq-dev libxml2-dev libxslt1-dev libssl-dev pkg-config graphviz graphviz-dev odt2txt
 
 For documentviewer, we need Ruby 2.7.6, wich asks for RVM (Ruby Version Manager) :
-> apt install gnupg2
+> sudo apt install gnupg2
+> gpg2 --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 > curl -sSL https://get.rvm.io | bash -s stable
 > source ~/.rvm/scripts/rvm
 Then Ruby 2.7.6 :
@@ -38,7 +18,7 @@ Then Ruby 2.7.6 :
 See installed Ruby version :
 > which ruby
 Let's use a symbolic link so docsplit can find ruby (if no ruby is already present) :
-> ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
+> sudo ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
 Then other documentviewer dependancies :
 > gem install docsplit
 > apt install graphicsmagick
@@ -60,9 +40,6 @@ We work in the folder /srv
 We change the owner of the folder to avoid continue working as root
 > chown -R username:username .
 
-We leave the user root.
-> exit
-
 We create a directory in /srv/ which will host all our code repositories. Then clone the server.dmsmail repo :
 > mkdir src
 > cd /srv/src
@@ -81,6 +58,7 @@ Install Pyenv and configure it :
 > echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
 > echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 > echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+> source ~/.bashrc
 > pyenv install 2.7.18
 > pyenv local 2.7.18
 

@@ -4,32 +4,12 @@ Le nom de votre utilisateur est remplacé dans nos commandes par "username".
 Chaque commande, précisée ci-dessous après le symbole ">", peut être exécutée
  (sans taper le symbole >).
 
-On passe d'abord en root
-> sudo -s
-
-Considérant une nouvelle installation d'Ubuntu propre, certaines librairies doivent être isntallées au préalable
-> apt install curl 
-> apt install g++
-> apt install gcc
-> apt install make
-> apt install cmake
-> apt install build-essential
-> apt install libreadline6-dev
-> apt install zlib1g-dev (support zlib)
-> apt install libbz2-dev
-> apt install libjpeg62-dev
-> apt install subversion
-> apt install git
-> apt install libpq-dev
-> apt install libxml2-dev
-> apt install libxslt1-dev
-> apt install libssl-dev
-> apt install pkg-config
-> apt install graphviz graphviz-dev
-> apt install odt2txt
+Considérant une nouvelle installation d'Ubuntu propre, certaines librairies doivent être installées au préalable
+> sudo apt install curl g++ gcc make cmake build-essential libreadline6-dev zlib1g-dev libbz2-dev libjpeg62-dev subversion git libpq-dev libxml2-dev libxslt1-dev libssl-dev pkg-config graphviz graphviz-dev odt2txt
 
 Pour documentviewer, nous avons besoin de Ruby 2.7.6, ce qui requiert RVM (Ruby Version Manager) :
-> apt install gnupg2
+> sudo apt install gnupg2
+> gpg2 --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 > curl -sSL https://get.rvm.io | bash -s stable
 > source ~/.rvm/scripts/rvm
 Puis Ruby 2.7.6 :
@@ -38,7 +18,7 @@ Puis Ruby 2.7.6 :
 Pour voir la version de ruby installée :
 > which ruby
 Création d'un lien symbolique pour que docsplit puisse utiliser ruby (si pas de ruby système) :
-> ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
+> sudo ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
 Enfin, on peut installer les autres dépendances de documentviewer :
 > gem install docsplit
 > apt install graphicsmagick
@@ -60,9 +40,6 @@ On va travailler dans le dossier /srv
 On se met propriétaire du dossier pour ne plus devoir travailler en root
 > chown -R username:username .
 
-On quitte l'utilisateur root.
-> exit
-
 Dans /srv/, on crée un dossier qui contiendra nos répertoires de code, puis on clone le répertoire server.dmsmail via git :
 > mkdir src
 > cd /srv/src
@@ -81,6 +58,7 @@ Installer Pyenv et le configurer :
 > echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
 > echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 > echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+> source ~/.bashrc
 > pyenv install 2.7.18
 > pyenv local 2.7.18
 
