@@ -4,8 +4,10 @@ Changelog
 3.0.60 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added imio.fpaudit product.
+- fix(install_guide): cleaned up and improve install process
+- Added run-rebuild-relations.py script
+- Upgraded col.classification.tree, col.dms.mailcontent, col.documentgenerator, col.eeafaceted.batchactions, imio.helpers
 
 3.0.59 (2024-10-02)
 -------------------
