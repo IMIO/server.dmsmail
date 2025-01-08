@@ -107,7 +107,7 @@ if os.path.exists(csv_file):
         files_infos[fn] = csv_line
 
 csvfp = open(csv_file, 'w')
-writer = csv.DictWriter(csvfp, fieldnames=fieldnames)
+writer = csv.DictWriter(csvfp, fieldnames=fieldnames, dialect="excel")
 writer.writeheader()
 
 for fil, mod_t, prefix, filename in files_t:
@@ -128,7 +128,7 @@ for fil, mod_t, prefix, filename in files_t:
             mail = email.message_from_file(f_p)
         f_i["from"] = mail.get("from")
         f_i["to"] = mail.get("to")
-        f_i["subject"] = decode_header_value(mail.get("subject"))
+        f_i["subject"] = decode_header_value(mail.get("subject")).encode("utf-8")
     elif "_ln" in f_i:
         del f_i["_ln"]
 
