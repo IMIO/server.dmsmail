@@ -96,10 +96,10 @@ def decode_header_value(header_value):
 
 
 files_infos = {}
-fieldnames = ["fn", "prefix", "from", "to", "subject", "date"]
+fieldnames = ["date", "fn", "prefix", "from", "to", "subject"]
 
 if os.path.exists(csv_file):
-    error, csv_lines = read_dictcsv(csv_file, fieldnames=fieldnames, skip_lines=1, ln_key="_ln")
+    error, csv_lines = read_dictcsv(csv_file, fieldnames=fieldnames, skip_lines=1, ln_key="")
     if error:
         stop("Error reading csv file '{}' : {}".format(csv_file, error), logger=logger)
     for csv_line in csv_lines:
@@ -129,12 +129,10 @@ for fil, mod_t, prefix, filename in files_t:
         f_i["from"] = mail.get("from")
         f_i["to"] = mail.get("to")
         f_i["subject"] = decode_header_value(mail.get("subject")).encode("utf-8")
-    elif "_ln" in f_i:
-        del f_i["_ln"]
 
 # write infos to csv
 logger.info("Writing infos to '{}'".format(csv_file))
-for fn in files_infos:
+for fn in sorted(files_infos.keys()):
     infos = files_infos[fn]
     infos["fn"] = fn
     writer.writerow(infos)
