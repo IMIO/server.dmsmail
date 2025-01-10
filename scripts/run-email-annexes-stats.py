@@ -6,6 +6,7 @@ from urlparse import urljoin
 
 import csv
 import logging
+import os
 import tempfile
 
 
@@ -56,18 +57,19 @@ for brain in brains:
         if appendix.portal_type != 'dmsappendixfile':
             continue
         stats['appendix_count'] += 1
-        stats['total_size'] += appendix.file.getSize()
+        size = appendix.file.getSize() // 1024
+        stats['total_size'] += size
         results.append({
             "email_title": safe_encode(email.Title()),
             "filename": safe_encode(appendix.file.filename),
-            "extension": safe_encode(appendix.file.filename.split('.')[-1]),
-            "size": appendix.file.getSize(),
+            "extension": safe_encode(os.path.splitext(appendix.file.filename)[-1]),
+            "size (kB)": size,
             "url": urljoin(appendix.absolute_url(), "/view"),
         })
 
 if results:
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv') as temp_file:
-        w = csv.DictWriter(temp_file, ["email_title", "filename", "extension", "size", "url"])
+        w = csv.DictWriter(temp_file, ["email_title", "filename", "extension", "size (kB)", "url"])
         w.writeheader()
         w.writerows(results)
 
@@ -76,10 +78,10 @@ if results:
     logger.info('Email count: {}'.format(stats['email_count']))
     logger.info('Appendix count: {}'.format(stats['appendix_count']))
     logger.info('Average number of appendixes per email: {}'.format(stats['appendix_count'] / stats['email_count']))
-    logger.info('Average sum of appendixes size per email: {}'.format(stats['total_size'] / stats['email_count']))
-    logger.info('Average size of appendix: {}'.format(stats['total_size'] / stats['appendix_count']))
+    logger.info('Average sum of appendixes size per email: {} kB'.format(stats['total_size'] / stats['email_count']))
+    logger.info('Average size of appendix: {} kB'.format(stats['total_size'] / stats['appendix_count']))
     try:
-        logger.info('Standard deviation of appendix size: {:.2f}'.format(stddev([r['size'] for r in results])))
+        logger.info('Standard deviation of appendix size: {:.2f}'.format(stddev([r['size (kB)'] for r in results])))
     except ValueError:
         logger.info('Too few samples to compute standard deviation')
     logger.info('Detailed CSV file created at {}'.format(temp_file_path))
