@@ -78,11 +78,12 @@ if results:
 
     logger.info('Email count: {}'.format(stats['email_count']))
     logger.info('Appendix count: {}'.format(stats['appendix_count']))
-    logger.info('Average number of appendixes per email: {}'.format(stats['appendix_count'] / stats['email_count']))
-    logger.info('Average sum of appendixes size per email: {} kB'.format(stats['total_size'] / stats['email_count']))
+    logger.info('Average number of appendixes per email: {:.1f}'.format(float(stats['appendix_count'])
+                                                                        / stats['email_count']))
     logger.info('Average size of appendix: {} kB'.format(stats['total_size'] / stats['appendix_count']))
+    # logger.info('Average size of appendix per email: {} kB'.format(stats['total_size'] / stats['email_count']))
     try:
-        logger.info('Standard deviation of appendix size: {:.2f}'.format(stddev([r['size (kB)'] for r in results])))
+        logger.info('Standard deviation of appendix size: {} kb'.format(stddev([r['size (kB)'] for r in results])))
     except ValueError:
         logger.info('Too few samples to compute standard deviation')
     logger.info('Detailed CSV file created at {}'.format(temp_file_path))
