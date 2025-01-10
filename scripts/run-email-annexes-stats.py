@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from imio.helpers.security import setup_logger
+# from imio.helpers.xhtml import object_link
 from imio.pyutils.utils import safe_encode
-from urlparse import urljoin
 
 import csv
 import logging
@@ -64,7 +64,8 @@ for brain in brains:
             "filename": safe_encode(appendix.file.filename),
             "extension": safe_encode(os.path.splitext(appendix.file.filename)[-1]),
             "size (kB)": size,
-            "url": urljoin(appendix.absolute_url(), "/view"),
+            # "url": object_link(appendix)
+            "url": "{}/{}".format(portal.absolute_url(), "/view")
         })
 
 if results:
