@@ -55,10 +55,7 @@ def valid_date(s):
 
 
 parser = argparse.ArgumentParser(description="Run mailqueue handling.")
-parser.add_argument("--from", dest="f_date", type=valid_date, help="From date ({})".format(dt_format))
-# parser.add_argument('-i', '--immediate', action='store_true', dest='immediate', help='Send immediately')
-# parser.add_argument('-r', '--recipient', dest='recipients', action='append', default=[],
-#                     help='Recipient')
+parser.add_argument("--from", dest="f_date", type=valid_date, help="From date ({})".format(dt_format.replace("%", "")))
 ns = parser.parse_args()
 # mailhost = get_mail_host(check=False)
 
