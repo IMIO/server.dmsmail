@@ -22,24 +22,27 @@ import sys
 # import transaction
 
 
-if 'app' not in locals() or 'obj' not in locals():
+if "app" not in locals() or "obj" not in locals():
     stop("This script must be run via 'bin/instance -Oxxx run' !")
 
-logger = logging.getLogger('run-mailqueue')
+logger = logging.getLogger("run-mailqueue")
 portal = obj  # noqa
 setup_logger()
-mq_dir = os.path.join(BLDT_DIR, 'mailqueue')
-new_dir = os.path.join(mq_dir, 'new')
-bck_dir = os.path.join(mq_dir, 'backup')
-file_pat = r'^\.(rejected|sending)-(.+)'
-csv_file = os.path.join(mq_dir, 'mails.csv')
+mq_dir = os.path.join(BLDT_DIR, "mailqueue")
+new_dir = os.path.join(mq_dir, "new")
+bck_dir = os.path.join(mq_dir, "backup")
+file_pat = r"^\.(rejected|sending)-(.+)"
+csv_file = os.path.join(mq_dir, "mails.csv")
 dt_format = "%Y-%m-%d,%H:%M"
 
 # Parameters check
 args = sys.argv
-if len(args) < 3 or args[1] != '-c' or not args[2].endswith('run-mailqueue.py'):
-    stop("Arguments are not formatted as needed. Has the script been run via 'instance run'? "
-         "Args are '{}'".format(args), logger=logger)
+if len(args) < 3 or args[1] != "-c" or not args[2].endswith("run-mailqueue.py"):
+    stop(
+        "Arguments are not formatted as needed. Has the script been run via 'instance run'? "
+        "Args are '{}'".format(args),
+        logger=logger,
+    )
 args.pop(1)  # remove -c
 args.pop(1)  # remove script name
 
@@ -51,8 +54,8 @@ def valid_date(s):
         raise argparse.ArgumentTypeError("Not a valid date with format '{}' : '{}'.".format(dt_format, s))
 
 
-parser = argparse.ArgumentParser(description='Run mailqueue handling.')
-parser.add_argument('-f', '--from', dest='f_date', type=valid_date, help='From date ({})'.format(dt_format))
+parser = argparse.ArgumentParser(description="Run mailqueue handling.")
+parser.add_argument("--from", dest="f_date", type=valid_date, help="From date ({})".format(dt_format))
 # parser.add_argument('-i', '--immediate', action='store_true', dest='immediate', help='Send immediately')
 # parser.add_argument('-r', '--recipient', dest='recipients', action='append', default=[],
 #                     help='Recipient')
@@ -78,8 +81,8 @@ for fil in files:
         else:
             prefix = match.group(1)
             filename = match.group(2)
-    parts = filename.split('.')
-    time_dt = datetime.fromtimestamp(float('.'.join(parts[0:2])))
+    parts = filename.split(".")
+    time_dt = datetime.fromtimestamp(float(".".join(parts[0:2])))
     files_t.append((fil, time_dt, prefix, filename))
 
 files_t.sort(key=itemgetter(1))
@@ -92,7 +95,7 @@ def decode_header_value(header_value):
         if isinstance(value, bytes) and encoding:
             value = value.decode(encoding)
         result.append(value)
-    return ''.join(result)
+    return "".join(result)
 
 
 files_infos = {}
@@ -106,7 +109,7 @@ if os.path.exists(csv_file):
         fn = csv_line.pop("fn")
         files_infos[fn] = csv_line
 
-csvfp = open(csv_file, 'w')
+csvfp = open(csv_file, "w")
 writer = csv.DictWriter(csvfp, fieldnames=fieldnames, dialect="excel")
 writer.writeheader()
 
