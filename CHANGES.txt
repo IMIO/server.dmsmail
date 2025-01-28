@@ -8,6 +8,8 @@ Changelog
 - fix(install_guide): cleaned up and improve install process
 - Added run-rebuild-relations.py script
 - Upgraded col.classification.tree, col.dms.mailcontent, col.documentgenerator, col.eeafaceted.batchactions, imio.helpers
+- Added script to handle mailqueue
+- Added run script to list all annexes from incoming emails in a CSV file
 
 3.0.59 (2024-10-02)
 -------------------
