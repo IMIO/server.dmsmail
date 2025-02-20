@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.0.61 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 3.0.60 (2025-02-20)
 -------------------
 
@@ -14,6 +20,7 @@ Changelog
 - Added run script to list all annexes from incoming emails in a CSV file
 - Upgraded col.classification.folder
 - Upgraded col.contact.core
+- Upgraded imio.zamqp.dms and used it as src
 
 3.0.59 (2024-10-02)
 -------------------
