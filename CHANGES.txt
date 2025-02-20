@@ -13,6 +13,7 @@ Changelog
 - Added script to handle mailqueue
 - Added run script to list all annexes from incoming emails in a CSV file
 - Upgraded col.classification.folder
+- Upgraded col.contact.core
 
 3.0.59 (2024-10-02)
 -------------------
