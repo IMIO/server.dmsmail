@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.60 (unreleased)
+3.0.60 (2025-02-20)
 -------------------
 
 - Added imio.fpaudit product.
