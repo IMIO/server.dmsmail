@@ -21,6 +21,7 @@ Changelog
 - Upgraded col.classification.folder
 - Upgraded col.contact.core
 - Upgraded imio.zamqp.dms and used it as src
+- Upgraded col.contact.core, col.eeafaceted.batchactions, imio.fpaudit
 
 3.0.59 (2024-10-02)
 -------------------
