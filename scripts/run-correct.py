@@ -21,10 +21,11 @@ if not routing:
     logger.error("No routing found in registry")
     sys.exit(1)
 dic0 = routing[0]
-if dic0[u"user_value"] == u"_empty_":
-    dic0[u"user_value"] = u"_transferer_"
-    dic0[u"tal_condition_2"] = u"python: assigned_user and 'encodeurs' in modules['imio.dms.mail.utils']." \
-        u"current_user_groups_ids(userid=assigned_user)"
+if dic0[u"tal_condition_2"]:
+    dic0[u"user_value"] = u"_empty_"
+    dic0[u"tal_condition_1"] = u"python: agent_id and 'encodeurs' in modules['imio.dms.mail.utils']." \
+        u"current_user_groups_ids(userid=agent_id)"
+    dic0[u"tal_condition_2"] = u""
     logger.info("Corrected routing")
     api.portal.set_registry_record(routing_key, routing)
     transaction.commit()
