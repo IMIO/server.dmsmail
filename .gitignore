@@ -49,3 +49,4 @@ src/
 update-admin-password.*
 var/
 .vscode/
+lib64
