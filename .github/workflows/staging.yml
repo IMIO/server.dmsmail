@@ -1,0 +1,39 @@
+name: Publish and deploy staging image
+on:
+  push:
+    branches:
+      - plone6
+    tags:
+      - '!**'
+env:
+  IMAGE_NAME: 'docs/server/mutual'
+  REGISTRY_URL: ${{ secrets.HARBOR_URL }}
+
+jobs:
+  build-push:
+    runs-on: gha-runners-docs
+    if: contains(github.event.head_commit.message, 'Back to development:') == false && contains(github.event.head_commit.message, 'Preparing release') == false
+    steps:
+      - name: Build push and notify
+        uses: IMIO/gha/build-push-notify@v4
+        with:
+          IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+          IMAGE_TAGS: |
+            ${{ secrets.HARBOR_URL }}/${{ vars.IMAGE_NAME }}:staging
+            ${{ secrets.HARBOR_URL }}/${{ vars.IMAGE_NAME }}:staging-${{ github.run_number }}
+          REGISTRY_URL: ${{ env.REGISTRY_URL}}
+          REGISTRY_USERNAME: ${{ secrets.DOCS_HARBOR_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCS_HARBOR_PASSWORD }}
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.DOCS_MATTERMOST_WEBHOOK_URL }}
+  # deploy:
+  #   runs-on: gha-runners-docs
+  #   needs: build-push
+  #   steps:
+  #     - name: Deploy to staging and notify
+  #       uses: IMIO/gha/rundeck-notify@v3.9.3
+  #       with:
+  #         RUNDECK_URL: ${{ secrets.RUNDECK_URL }}
+  #         RUNDECK_TOKEN: ${{ secrets.DOCS_RUNDECK_TOKEN }}
+  #         RUNDECK_JOB_ID: ${{ secrets.RUNDECK_DEPLOY_STAGING_JOB_ID }}
+  #         RUNDECK_PARAMETERS: '-X POST'
+  #         MATTERMOST_WEBHOOK_URL: ${{ secrets.DOCS_MATTERMOST_WEBHOOK_URL }}
