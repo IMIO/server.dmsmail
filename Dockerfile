@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   gcc \
   git \
+  graphviz \
+  graphviz-dev \
   libbz2-dev \
   libc6-dev \
   libffi-dev \
