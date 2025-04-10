@@ -2,8 +2,8 @@ FROM harbor.imio.be/common/plone-base:6.1.1 AS builder
 
 LABEL maintainer="iMio <devops@imio.be>"
 ENV PIP=25.0.1 \
-  ZC_BUILDOUT=4.1.4 \
-  SETUPTOOLS=75.8.2 \
+  ZC_BUILDOUT=4.1.7 \
+  SETUPTOOLS=78.1.0 \
   WHEEL=0.45.1 \
   PLONE_MAJOR=6.1 \
   PLONE_VERSION=6.1.1
@@ -43,8 +43,8 @@ RUN su -c "buildout -c prod.cfg -t 30 -N" -s /bin/sh imio
 
 FROM harbor.imio.be/common/plone-base:6.1.1
 ENV PIP=25.0.1 \
-  ZC_BUILDOUT=4.1.4 \
-  SETUPTOOLS=75.8.2 \
+  ZC_BUILDOUT=4.1.7 \
+  SETUPTOOLS=78.1.0 \
   WHEEL=0.45.1 \
   PLONE_MAJOR=6.1 \
   PLONE_VERSION=6.1.1 \
