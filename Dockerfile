@@ -38,7 +38,7 @@ WORKDIR /plone
 COPY --chown=imio *.cfg /plone/
 COPY --chown=imio scripts /plone/scripts
 
-RUN mkdir /plone/bin
+RUN mkdir /plone/bin && chown imio:imio /plone/bin
 RUN ln -s /usr/bin/pip3 /plone/bin/pip
 
 RUN su -c "buildout -c prod.cfg -t 30 -N" -s /bin/sh imio
