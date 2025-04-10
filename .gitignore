@@ -50,3 +50,4 @@ update-admin-password.*
 var/
 .vscode/
 lib64
+download-cache/
