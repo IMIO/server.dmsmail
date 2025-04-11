@@ -15,15 +15,10 @@ all: run
 help:
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-.PHONY: bootstrap
-bootstrap:
-	virtualenv-2.7 .
-	./bin/python bootstrap.py
-
 .PHONY: setup
 setup:  ## Setups environment
-	# if command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; elif command -v virtualenv-2.7; then virtualenv-2.7 . ;fi
-	if command -v virtualenv-2.7; then virtualenv-2.7 . ; elif command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; fi
+	# if command -v virtualenv-2.7; then virtualenv-2.7 . ; elif command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; fi
+	virtualenv .
 	./bin/pip install --upgrade pip
 	./bin/pip install -r requirements.txt
 
@@ -31,9 +26,10 @@ setup:  ## Setups environment
 buildout:  ## Runs setup and buildout
 	rm -f .installed.cfg .mr.developer.cfg
 	if ! test -f bin/buildout;then make setup;fi
-	if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
-	if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
-	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
+	# if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
+	# if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
+	# if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
+	bin/buildout -v
 	git checkout .gitignore
 
 .PHONY: copy
