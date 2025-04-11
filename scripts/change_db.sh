@@ -36,11 +36,11 @@ echo "NEW=$NEW"
 
 for path in var/filestorage/Data.fs var/blobstorage dt_csv_dir dt_files_dir data-transfer.cfg
 do
-  if [ -e "$path" ]; then
+  if [ -e "$path" ] || [ -L "$path" ]; then
     cmd=(mv $path $path.$CUR)
     execute_cmd 1 "${cmd[@]}"
   fi
-  if [ -e "$path.$NEW" ]; then
+  if [ -e "$path.$NEW" ] || [ -L "$path.$NEW" ]; then
     cmd=(mv $path.$NEW $path)
     execute_cmd 0 "${cmd[@]}"
     WRITE_NEW=1
