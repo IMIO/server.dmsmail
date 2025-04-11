@@ -15,47 +15,22 @@ all: run
 help:
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-.PHONY: bootstrap
-bootstrap:
-	virtualenv-2.7 .
-	./bin/python bootstrap.py
-
 .PHONY: setup
 setup:  ## Setups environment
-	# if command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; elif command -v virtualenv-2.7; then virtualenv-2.7 . ;fi
-	if command -v virtualenv-2.7; then virtualenv-2.7 . ; elif command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; fi
+	# if command -v virtualenv-2.7; then virtualenv-2.7 . ; elif command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; fi
+	virtualenv .
 	./bin/pip install --upgrade pip
 	./bin/pip install -r requirements.txt
-	@if grep -q "esign.cfg" buildout.cfg && test -f /home/zope/esign.cfg && ! test -f esign.cfg; then \
-		cp /home/zope/esign.cfg esign.cfg; \
-		echo "esign.cfg copied from /home/zope/"; \
-	fi
-	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ] && command -v supervisorctl >/dev/null 2>&1; then \
-		sed -i 's/#    dev-zeo.cfg/    dev-zeo.cfg/' buildout-main.cfg; \
-		echo "dev-zeo.cfg uncommented in buildout-main.cfg"; \
-	fi
 
 .PHONY: buildout
 buildout:  ## Runs setup and buildout
 	rm -f .installed.cfg .mr.developer.cfg
 	if ! test -f bin/buildout;then make setup;fi
-# 	if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
-# 	if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
-	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
+	# if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
+	# if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
+	# if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
+	bin/buildout -v
 	git checkout .gitignore
-	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ] && command -v supervisorctl >/dev/null 2>&1; then \
-		sed -i 's/^        # from Extensions.demo import disable_resources_debug_mode$$/        from Extensions.demo import disable_resources_debug_mode/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
-		sed -i 's/^        # disable_resources_debug_mode(site)$$/        disable_resources_debug_mode(site)/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
-		echo "Extensions.demo lines uncommented in subscribers.py"; \
-	fi
-	 @$(MAKE) patch-copy-data
-
-.PHONY: patch-copy-data
-patch-copy-data:  ## Patches copy-data.sh when blobmissing is activated
-	@if grep -q "^[^#]*blobmissing\.cfg" buildout.cfg && test -f copy-data.sh; then \
-        sed -i '/^echo "Copying $${SOURCE_HOST}:$${SOURCE_PATH} filestorage:"/,/^((code+=$$?))$$/s/^/#/' copy-data.sh; \
-        echo "filestorage copy section commented in copy-data.sh"; \
-    fi
 
 .PHONY: copy
 copy: copy-data.sh  ## Runs `copy-data.sh`
@@ -95,17 +70,10 @@ dv_clean:  ## Cleans old dv files
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 2
 
-.PHONY: solr-compose
-solr-compose:  ## Start solr container (foreground)
-	@if [ -d solr ] && [ "$$(stat -c %a solr)" != "777" ]; then \
-		sudo chmod -R 777 solr; \
-	fi
-	docker compose up solr
-
 .PHONY: solr-setup
 solr-setup:  ## Solr setup
 	@echo "plone: $(plone)"
-	make instance-patch
+	bin/solr-start && sleep 60
 	bin/$(instance) -O$(plone) run run-scripts.py 3
 
 .PHONY: solr-sync
@@ -146,16 +114,11 @@ robot-server:  ## Starts robot server
 	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot-server -v imio.dms.mail.testing.DMSMAIL_ROBOT_TESTING
 
 .PHONY: doc
-# robotframework 3.2.2 warns on the deprecated syntax still used by selenium2screenshots: filtered out
-doc: SHELL=/bin/bash
 doc:  ## Runs `doc.robot` (opt='-i "RUN1"')
 	# can be run by example with: make doc opt='-t "Contacts *"' or make doc opt='-i "RUN1"'  (or -e to exclude)
-	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 PYTHONUNBUFFERED=1 $(headless) bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot 2> >(grep -v "is deprecated" >&2)
+	# env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -l NONE -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
 	rm geckodriver*.log
-
-.PHONY: doch
-doch:  ## Runs `doc.robot` headless (opt='-i "RUN1"')
-	$(MAKE) doc headless=MOZ_HEADLESS=1 opt='$(opt)'
 
 .PHONY: video-doc
 video-doc:  ## Runs `video-doc.robot` (opt='-t "Contacts *"')
