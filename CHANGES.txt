@@ -4,8 +4,11 @@ Changelog
 3.0.61 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Improved script change_db.sh to handle broken links.
+- Added script to correct directly DMS-1090
+- Upgraded col.behavior.talcondition, col.contact.plonegroup, imio.fpaudit, imio.pm.locales, imio.zamqp.dms,
+  plonetheme.imioapps
+- Upgraded col.eeafaceted.batchactions, imio.pm.wsclient
 
 3.0.60 (2025-02-20)
 -------------------
