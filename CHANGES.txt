@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.61 (unreleased)
+3.0.61 (2025-05-09)
 -------------------
 
 - Improved script change_db.sh to handle broken links.
