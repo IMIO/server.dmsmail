@@ -17,6 +17,7 @@ Changelog
 - Upgraded col.eeafaceted.batchactions, imio.pm.wsclient
 - Added run script to get stats on document viewer usage
 - Upgraded imio.dms.soap2pm
+- Upgraded imio.zamqp.dms
 
 3.0.60 (2025-02-20)
 -------------------
