@@ -18,6 +18,7 @@ Changelog
 - Added run script to get stats on document viewer usage
 - Upgraded imio.dms.soap2pm
 - Upgraded imio.zamqp.dms
+- Set default oo values in case oo is not part of port.cfg in production
 
 3.0.60 (2025-02-20)
 -------------------
