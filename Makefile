@@ -29,8 +29,8 @@ buildout:  ## Runs setup and buildout
 	# if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
 	# if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
 	# if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
-	bin/buildout -v
-	git checkout .gitignore
+	bin/buildout
+# 	git checkout .gitignore
 
 .PHONY: copy
 copy: copy-data.sh  ## Runs `copy-data.sh`
