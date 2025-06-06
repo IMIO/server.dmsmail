@@ -49,7 +49,7 @@ if [[ $START == *"$1"* ]]; then
 	fi
 else
 	if [[ $COMMANDS == *"$1"* ]]; then
-		exec bin/instance "$@"
+		exec bin/instance1 "$@"
 	fi
 	exec "$@"
 fi

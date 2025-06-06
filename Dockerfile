@@ -1,15 +1,13 @@
 FROM harbor.imio.be/common/plone-base:6.1.1 AS builder
 
 LABEL maintainer="iMio <devops@imio.be>"
-ENV PIP=25.0.1 \
-  ZC_BUILDOUT=4.1.7 \
-  SETUPTOOLS=78.1.0 \
-  WHEEL=0.45.1 \
+ENV WHEEL=0.45.1 \
   PLONE_MAJOR=6.1 \
   PLONE_VERSION=6.1.1
 
 # hadolint ignore=DL3008
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
   build-essential \
   gcc \
   git \
@@ -19,8 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libc6-dev \
   libffi-dev \
   libjpeg62-dev \
-  libopenjp2-7-dev \
   libmemcached-dev \
+  libopenjp2-7-dev \
   libpcre3-dev \
   libpq-dev \
   libreadline-dev \
@@ -30,8 +28,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-dev \
   python3-pip \
   wget \
-  zlib1g-dev \
-  && pip3 install --no-cache-dir pip==$PIP setuptools==$SETUPTOOLS zc.buildout==$ZC_BUILDOUT py-spy --break-system-packages
+  zlib1g-dev
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir --break-system-packages -r /tmp/requirements.txt
 
 WORKDIR /plone
 
@@ -46,8 +46,6 @@ RUN su -c "buildout -c docker.cfg -t 30 -N" -s /bin/sh imio
 
 FROM harbor.imio.be/common/plone-base:6.1.1
 ENV PIP=25.0.1 \
-  ZC_BUILDOUT=4.1.7 \
-  SETUPTOOLS=78.1.0 \
   WHEEL=0.45.1 \
   PLONE_MAJOR=6.1 \
   PLONE_VERSION=6.1.1 \
@@ -60,7 +58,8 @@ VOLUME /data/blobstorage
 WORKDIR /plone
 
 # hadolint ignore=DL3008
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
   libjpeg62 \
   libmemcached11 \
   libopenjp2-7 \
@@ -75,16 +74,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   wv \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
 RUN curl -L https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb > /tmp/dumb-init.deb && dpkg -i /tmp/dumb-init.deb && rm /tmp/dumb-init.deb
-COPY --from=builder /usr/local/bin/py-spy /usr/local/bin/py-spy
-COPY --chown=imio --from=builder /plone .
+# COPY --from=builder /usr/local/bin/py-spy /usr/local/bin/py-spy
+COPY --from=builder --chown=imio /plone .
 COPY --from=builder /usr/local/lib/python3.12/dist-packages /usr/local/lib/python3.12/dist-packages
+COPY --chown=imio zope_add_zeo.conf zope_add_async.conf zeo_add.conf zeo_async.conf /plone/
 COPY --chown=imio docker-initialize.py docker-entrypoint.sh /
 
 USER imio
 EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=10s --start-period=20s --retries=5 \
-  CMD wget -q http://127.0.0.1:8080/ok -O - | grep OK || exit 1
+  CMD wget -q http://127.0.0.1:8081/ok -O - | grep OK || exit 1
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["console"]
