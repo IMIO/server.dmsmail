@@ -1,5 +1,6 @@
 active
 bin/
+CACHEDIR.TAG
 checkversion*.*
 copy-data.sh
 .coverage
