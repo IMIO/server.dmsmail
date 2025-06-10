@@ -206,6 +206,11 @@ jobs:
       - name: Install Coveralls
         run: |
           pip3 install -U "coveralls>=3.0.0" "coverage<5" --no-cache-dir
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 120
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to Coveralls
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
