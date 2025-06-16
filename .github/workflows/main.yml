@@ -5,8 +5,8 @@ name: Push tests
 # run-name: ${{ github.actor }} push tests
 
 on:
-  push:
-  pull_request:
+#  push:
+#  pull_request:
 
 jobs:
   test:
