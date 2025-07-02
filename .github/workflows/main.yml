@@ -8,6 +8,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -102,3 +106,108 @@ jobs:
       - name: test
         run: |
           bin/testme
+  coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: 2.7.18
+            plone: 4.3
+    services:
+      libreoffice:
+        image: harbor.imio.be/library/libreoffice:7.3
+        ports:
+          - 2002:2002
+        volumes:
+          - /tmp:/tmp
+          - /var/tmp:/var/tmp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Env
+        run: |
+          # Install libreoffice and other dependencies
+          mkdir -p -m 777 /tmp/appy/
+          sudo add-apt-repository ppa:libreoffice/ppa -y
+          sudo apt update -qq -y
+          sudo apt-get install -qq -y libreoffice libreoffice-script-provider-python g++ gcc make cmake build-essential libreadline6-dev zlib1g-dev libbz2-dev libjpeg62-dev subversion git libpq-dev libxml2-dev libxslt1-dev libssl-dev pkg-config graphviz graphviz-dev odt2txt
+
+          # Set up buildout cache directories
+          mkdir -p -m 777 /home/runner/.buildout
+          touch /home/runner/.buildout/default.cfg
+          echo "[buildout]" > /home/runner/.buildout/default.cfg
+          echo "eggs-directory = /home/runner/buildout-cache/eggs" >> /home/runner/.buildout/default.cfg
+          echo "download-cache = /home/runner/buildout-cache/downloads" >> /home/runner/.buildout/default.cfg
+          echo "extends-cache = /home/runner/buildout-cache/extends" >> /home/runner/.buildout/default.cfg
+          mkdir -p /home/runner/buildout-cache/{eggs,downloads,extends}
+      - name: Set up pyenv and Python
+        uses: "gabrielfalcao/pyenv-action@v18"
+        with:
+          default: "${{ matrix.python }}"
+      - name: Setup Python env
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade virtualenv
+          virtualenv .
+          bin/pip install --upgrade pip
+          bin/pip install -r requirements.txt
+      - name: Setup Zint
+        run: |
+          sudo apt install -qq -y libpng-dev
+          wget https://sourceforge.net/projects/zint/files/zint/2.9.1/zint-2.9.1-src.tar.gz
+          tar -xvf zint-2.9.1-src.tar.gz
+          cd zint-2.9.1-src
+          mkdir build
+          cd build
+          sudo cmake ..
+          sudo make install
+      - name: Setup Docsplit
+        run: |
+          sudo apt install -qq -y gnupg2
+          gpg2 --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+          curl -sSL https://get.rvm.io | bash -s stable
+          source $HOME/.rvm/scripts/rvm
+
+          # Puis Ruby 2.7.6 :
+          rvm pkg install openssl
+          rvm install ruby-2.7.6 --with-openssl-dir=$HOME/.rvm/usr
+
+          # Pour voir la version de ruby installée :
+          which ruby
+
+          # Création d'un lien symbolique pour que docsplit puisse utiliser ruby (si pas de ruby système) :
+          sudo ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
+          sudo rm /usr/bin/ruby
+          sudo ln -s ruby2.7 /usr/bin/ruby
+
+          # Enfin, on peut installer les autres dépendances de documentviewer :
+          gem install docsplit
+          echo "$HOME/.rvm/gems/ruby-2.7.6/gems/docsplit-0.7.6/bin" >> $GITHUB_PATH
+          sudo apt install -qq -y graphicsmagick wv poppler-utils
+      - name: Cache eggs
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-eggs
+        with:
+          path: /home/runner/buildout-cache/eggs
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ matrix.python }}-${{ matrix.plone }}
+      - name: buildout
+        run: |
+          bin/buildout annotate
+          bin/buildout
+      - name: test
+        run: |
+          bin/coverageme
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+      - name: Install Coveralls
+        run: |
+          pip3 install -U "coveralls>=3.0.0" "coverage<5" --no-cache-dir
+      - name: Publish to Coveralls
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          coveralls --service=github
