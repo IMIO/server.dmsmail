@@ -8,6 +8,7 @@ ignore =
     E121
     # Missing whitespace around arithmetic operator
     E226
+    E203
     # Multiple statements on one line
     E704
     # Line break occurred before a binary operator
