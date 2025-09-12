@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
+from imio.dms.mail.utils import add_mail_files_to_session
 from imio.dms.mail.utils import change_approval_user_status
 from imio.dms.mail.utils import get_approval_annot
 from plone import api
+from Products.CMFPlone.utils import safe_unicode
 
 
-def approve_file(self, mail=None):
+def approve_file(self, mail=None, userid=None):
     """
         Approve the current file.
     """
     afile = self
-    # get current user
-    user = api.user.get_current()
-    userid = user.getId()
-    # TEMPORARY for tests
-    # userid = "dirg"
+    if userid is None:
+        user = api.user.get_current()
+        userid = user.getId()
     approval = get_approval_annot(mail)
-    c_a = approval["approval"]
-    import ipdb; ipdb.set_trace()
+    c_a = approval["approval"]  # current approval
     """
-    {'approval': 1,
-     'files': {'48b13604e05843e4ae747e168af83ae5': {1: {'status': 'w', 'users': ['dirg']}, 2: {'status': 'w', 'users': ['bourgmestre']}}},
-     'numbers': {1: {'status': 'w', 'users': ['dirg']}, 2: {'status': 'w', 'users': ['bourgmestre']}},
+    {'approval': None,
+     'files': {'48b13604e05843e4ae747e168af83ae5': {1: {'status': 'w'}, 2: {'status': 'w'}}},
+     'numbers': {1: {'status': 'w', 'signer': ('dirg', 'dirg@macommune.be', u'Maxime DG', 1), 'users': ['dirg']}, 2: {'status': 'w', 'signer': ('bourgmestre', 'bourgmestre@macommune.be', u'Paul BM', 2), 'users': ['bourgmestre']}},
      'users': {'bourgmestre': {'status': 'w', 'order': 2, 'name': u'Monsieur Paul BM'}, 'dirg': {'status': 'w', 'order': 1, 'name': u'Monsieur Maxime DG'}}}
     """  # noqa
     # checks
@@ -49,24 +48,41 @@ def approve_file(self, mail=None):
     f_uid = afile.UID()
     if f_uid not in approval["files"]:
         api.portal.show_message(
-            message=u"The file is not in the list of files to approve.",
+            message=u"The file '{}' is not in the list of files to approve.".format(safe_unicode(afile.Title())),
             request=self.REQUEST,
             type="warning",
         )
         return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
     if approval["files"][f_uid][c_a]["status"] == "a":
         api.portal.show_message(
-            message=u"The file has already been approved by {}.".format(
-                approval["files"][f_uid][c_a].get("approving", "?")),
+            message=u"The file '{}' has already been approved by {}.".format(
+                safe_unicode(afile.Title()),
+                approval["files"][f_uid][c_a].get("approved_by", "?")),
             request=self.REQUEST,
             type="warning",
         )
         return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
     # "awaiting" (w), "pending" (p), "approved" (a)
     # approve
-    approval["files"][f_uid][c_a]["approving"] = userid
+    approval["files"][f_uid][c_a]["approved_by"] = userid
+    approval["files"][f_uid][c_a]["status"] = "a"
+    """
+    {'approval': None,
+     'files': {'48b13604e05843e4ae747e168af83ae5': {1: {'status': 'w'}, 2: {'status': 'w'}}},
+     'numbers': {1: {'status': 'w', 'signer': ('dirg', 'dirg@macommune.be', u'Maxime DG', 1), 'users': ['dirg']}, 2: {'status': 'w', 'signer': ('bourgmestre', 'bourgmestre@macommune.be', u'Paul BM', 2), 'users': ['bourgmestre']}},
+     'users': {'bourgmestre': {'status': 'w', 'order': 2, 'name': u'Monsieur Paul BM'}, 'dirg': {'status': 'w', 'order': 1, 'name': u'Monsieur Maxime DG'}}}
+     """  # noqa
+    yet_to_approve = [fuid for fuid in approval["files"] if approval["files"][fuid][c_a]["status"] != "a"]
+    if yet_to_approve:
+        api.portal.show_message(
+            message=u"The file '{}' has been approved by {}. However, there is/are yet {} files to apprrove in this "
+                    u"mail.".format(safe_unicode(afile.Title()), userid, len(yet_to_approve)),
+            request=self.REQUEST,
+            type="info",
+        )
+        return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
     change_approval_user_status(approval, c_a, "a", userid=userid)
-    message = u"The file has been approved by {}. ".format(userid)
+    message = u"The file '{}' has been approved by {}. ".format(safe_unicode(afile.Title()), userid)
     max_number = max(approval["numbers"].keys())
     if c_a < max_number:
         approval["approval"] += 1
@@ -75,16 +91,32 @@ def approve_file(self, mail=None):
         message += u"Next approval number is {}.".format(approval["approval"])
         api.portal.show_message(message=message, request=self.REQUEST, type="info")
     else:
-        message += u"All approvals have been done."
+        message += u"All approvals have been done for this file."
         api.portal.show_message(message=message, request=self.REQUEST, type="info")
-        # TO BE CONTINUED
+        # we create a signing session if needed
+        if mail.esign:
+            with api.env.adopt_roles(["Manager"]):
+                ret, msg = add_mail_files_to_session(mail, approval=approval)
+                if not ret:
+                    api.portal.show_message(
+                        message=u"There was an error while creating the signing session: {}".format(msg),
+                        request=self.REQUEST,
+                        type="error",
+                    )
+                else:
+                    api.portal.show_message(
+                        message=u"A signing session has been created: {}".format(msg),
+                        request=self.REQUEST,
+                        type="info",
+                    )
+    return None
+    # return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
 
-    return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
 
-
-def approve_files(self):
+def approve_files(self, userid=None):
     """
         Approve all files in the current context.
     """
     for fil in self.get_files_to_sign():
-        approve_file(fil, mail=self)
+        approve_file(fil, mail=self, userid=userid)
+    return self.REQUEST.RESPONSE.redirect(self.absolute_url())
