@@ -88,9 +88,12 @@ def approve_file(self, mail=None, userid=None):
         approval["approval"] += 1
         change_approval_user_status(approval, approval["approval"], "p")
         mail.portal_catalog.reindexObject(mail, idxs=("approvings",), update_metadata=0)
+        mail.reindexObjectSecurity()  # to update local roles from adapter
         message += u"Next approval number is {}.".format(approval["approval"])
         api.portal.show_message(message=message, request=self.REQUEST, type="info")
     else:
+        approval["approval"] = 99  # all approved
+        mail.portal_catalog.reindexObject(mail, idxs=("approvings",), update_metadata=0)
         message += u"All approvals have been done for this file."
         api.portal.show_message(message=message, request=self.REQUEST, type="info")
         # we create a signing session if needed
