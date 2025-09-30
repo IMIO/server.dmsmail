@@ -17,10 +17,13 @@ def approve_file(self, mail=None, userid=None):
     approval = get_approval_annot(mail)
     c_a = approval["approval"]  # current approval
     """
-    {'approval': None,
-     'files': {'48b13604e05843e4ae747e168af83ae5': {1: {'status': 'w'}, 2: {'status': 'w'}}},
-     'numbers': {1: {'status': 'w', 'signer': ('dirg', 'dirg@macommune.be', u'Maxime DG', 1), 'users': ['dirg']}, 2: {'status': 'w', 'signer': ('bourgmestre', 'bourgmestre@macommune.be', u'Paul BM', 2), 'users': ['bourgmestre']}},
-     'users': {'bourgmestre': {'status': 'w', 'order': 2, 'name': u'Monsieur Paul BM'}, 'dirg': {'status': 'w', 'order': 1, 'name': u'Monsieur Maxime DG'}}}
+    {
+     'approval': 1,
+     'files': {'4115fb4c265647ca82d85285504973b8': {1: {'status': 'p'}, 2: {'status': 'w'}}}, 
+     'numbers': {1: {'status': 'p', 'signer': ('dirg', 'stephan.geulette@imio.be', u'Maxime DG', u'Directeur G\xe9n\xe9ral'), 'users': ['dirg']}, 2: {'status': 'w', 'signer': ('bourgmestre', 'stephan.geulette+s2@imio.be', u'Paul BM', u'Bourgmestre'), 'users': ['bourgmestre', 'chef']}},
+     'session_id': None,
+     'users': {'bourgmestre': {'status': 'w', 'editor': False, 'name': u'Monsieur Paul BM', 'order': 2}, 'chef': {'status': 'w', 'editor': False, 'name': u'Monsieur Michel Chef', 'order': 2}, 'dirg': {'status': 'w', 'editor': True, 'name': u'Monsieur Maxime DG', 'order': 1}},
+    }
     """  # noqa
     # checks
     if not c_a:
@@ -67,11 +70,14 @@ def approve_file(self, mail=None, userid=None):
     approval["files"][f_uid][c_a]["approved_by"] = userid
     approval["files"][f_uid][c_a]["status"] = "a"
     """
-    {'approval': None,
-     'files': {'48b13604e05843e4ae747e168af83ae5': {1: {'status': 'w'}, 2: {'status': 'w'}}},
-     'numbers': {1: {'status': 'w', 'signer': ('dirg', 'dirg@macommune.be', u'Maxime DG', 1), 'users': ['dirg']}, 2: {'status': 'w', 'signer': ('bourgmestre', 'bourgmestre@macommune.be', u'Paul BM', 2), 'users': ['bourgmestre']}},
-     'users': {'bourgmestre': {'status': 'w', 'order': 2, 'name': u'Monsieur Paul BM'}, 'dirg': {'status': 'w', 'order': 1, 'name': u'Monsieur Maxime DG'}}}
-     """  # noqa
+    {
+     'approval': 1,
+     'files': {'4115fb4c265647ca82d85285504973b8': {1: {'status': 'p'}, 2: {'status': 'w'}}}, 
+     'numbers': {1: {'status': 'p', 'signer': ('dirg', 'stephan.geulette@imio.be', u'Maxime DG', u'Directeur G\xe9n\xe9ral'), 'users': ['dirg']}, 2: {'status': 'w', 'signer': ('bourgmestre', 'stephan.geulette+s2@imio.be', u'Paul BM', u'Bourgmestre'), 'users': ['bourgmestre', 'chef']}},
+     'session_id': None,
+     'users': {'bourgmestre': {'status': 'w', 'editor': False, 'name': u'Monsieur Paul BM', 'order': 2}, 'chef': {'status': 'w', 'editor': False, 'name': u'Monsieur Michel Chef', 'order': 2}, 'dirg': {'status': 'w', 'editor': True, 'name': u'Monsieur Maxime DG', 'order': 1}},
+    }
+    """  # noqa
     yet_to_approve = [fuid for fuid in approval["files"] if approval["files"][fuid][c_a]["status"] != "a"]
     if yet_to_approve:
         api.portal.show_message(
