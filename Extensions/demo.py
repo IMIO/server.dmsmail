@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+from imio.dms.mail import _
 from imio.dms.mail.utils import add_mail_files_to_session
 from imio.dms.mail.utils import change_approval_user_status
 from imio.dms.mail.utils import get_approval_annot
+from imio.esign.utils import get_session_annotation
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
 
@@ -40,14 +43,6 @@ def approve_file(self, mail=None, userid=None):
             type="warning",
         )
         return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
-    # TODO is this useful ?
-    if approval["users"][userid]["status"] != "w":
-        api.portal.show_message(
-            message=u"Current user {} has already approved the file.".format(userid),
-            request=self.REQUEST,
-            type="warning",
-        )
-        return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
     f_uid = afile.UID()
     if f_uid not in approval["files"]:
         api.portal.show_message(
@@ -68,6 +63,7 @@ def approve_file(self, mail=None, userid=None):
     # "awaiting" (w), "pending" (p), "approved" (a)
     # approve
     approval["files"][f_uid][c_a]["approved_by"] = userid
+    approval["files"][f_uid][c_a]["approved_on"] = datetime.now()
     approval["files"][f_uid][c_a]["status"] = "a"
     """
     {
@@ -129,3 +125,36 @@ def approve_files(self, userid=None):
     for fil in self.get_files_to_sign():
         approve_file(fil, mail=self, userid=userid)
     return self.REQUEST.RESPONSE.redirect(self.absolute_url())
+
+
+def print_session_annotation(self):
+    """
+        Print the session annotation for debug.
+    """
+    annot = get_session_annotation()
+    return str(annot)
+
+
+def add_to_session(self):
+    """
+        Add the current file to the esign session.
+    """
+    if self.portal_type != "dmsoutgoingmail":
+        return
+    mail = self
+    ret, msg = add_mail_files_to_session(mail, approval=get_approval_annot(mail))
+    if not ret:
+        api.portal.show_message(
+            message=_(u"There was an error while creating the signing session: ${msg} !",
+                      mapping={"msg": msg}),
+            request=mail.REQUEST,
+            type="error",
+        )
+    else:
+        api.portal.show_message(
+            message=_(u"A signing session has been created: ${msg}.",
+                      mapping={"msg": msg}),
+            request=mail.REQUEST,
+            type="info",
+        )
+    return self.REQUEST.RESPONSE.redirect(mail.absolute_url())
