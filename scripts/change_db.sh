@@ -34,7 +34,8 @@ execute_cmd () {
 }
 echo "NEW=$NEW"
 
-for path in var/filestorage/Data.fs var/blobstorage dt_csv_dir dt_files_dir data-transfer.cfg
+#for path in var/filestorage/Data.fs var/blobstorage dt_csv_dir dt_files_dir data-transfer.cfg
+for path in var/filestorage/Data.fs var/blobstorage dt_csv_dir dt_files_dir
 do
   if [ -e "$path" ] || [ -L "$path" ]; then
     cmd=(mv $path $path.$CUR)
