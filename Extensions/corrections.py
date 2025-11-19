@@ -81,11 +81,11 @@ def list_all_relations(self):
     return '\n'.join(out)
 
 
-def check_intid(self, intid=""):
-    """
-        Check intid of current context and display relations on it.
+def object_relations(self, intid=""):
+    """Check intid of current context and display relations on it.
 
-        :param intid: Optional intid to check. If provided, will check this intid instead of context's intid.
+    :param self: context
+    :param intid: Optional intid to check. If provided, will check this intid instead of context's intid.
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
@@ -253,11 +253,15 @@ def rebuild_relationfield(self, fieldname='', target_uid='', target_intid='', ch
     """
         Rebuild a specific relation on the current context.
 
+        :param self: context
         :param fieldname: Name of the relation field
         :param target_uid: UID of the target object (ignored if target_intid is provided)
         :param target_intid: intid of the target object (takes precedence over target_uid)
         :param change: must be '1' to apply changes
     """
+    # Script written after an error in zc.relation.catalog, in `_remove`, on `data[1].remove(relToken)`
+    # The script doesn't resolve anything
+    # Solution is: `if relToken in data[1]:`
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
 
@@ -335,7 +339,9 @@ def rebuild_relationfield(self, fieldname='', target_uid='', target_intid='', ch
         # Check if relation already exists
         try:
             idx = [getattr(rel, 'to_id', None) for rel in existing_relations if hasattr(rel, 'to_id')].index(to_id)
-            out.append("<p><strong>WARNING: Relation already exists in the list, we will replace it</strong></p>")
+            out.append("<p><strong>WARNING: Relation already exists in the list, we will replace it</strong> - "
+                       "Actual target object of this relation: %s</p>" %
+                       object_link(existing_relations[idx].to_object))
         except ValueError:
             idx = None
         if change == '1':
@@ -349,10 +355,11 @@ def rebuild_relationfield(self, fieldname='', target_uid='', target_intid='', ch
 
     elif isinstance(field, (Relation, RelationChoice)):
         out.append("<p>Setting relation...</p>")
-        # existing_relation = getattr(self, fieldname, None)
-        # if existing_relation and hasattr(existing_relation, 'to_id') and existing_relation.to_id == to_id:
-        #     out.append("<p><strong>WARNING: Relation already exists</strong></p>")
-        # else:
+        existing_relation = getattr(self, fieldname, None)
+        if existing_relation and hasattr(existing_relation, 'to_object'):
+            out.append("<p><strong>WARNING: Relation already exists</strong> - "
+                       "Actual target object of this relation: %s</p>" %
+                       object_link(existing_relation.to_object))
         if change == '1':
             setattr(self, fieldname, relation)
             out.append("<p>Relation set</p>")
