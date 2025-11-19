@@ -6,15 +6,13 @@ from collective.contact.plonegroup.utils import get_organizations
 from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
 from imio.helpers.content import safe_encode
-from plone.app.uuid.utils import uuidToObject
 from plone import api
+from plone.app.uuid.utils import uuidToObject
 from Products.CMFPlone.utils import safe_unicode
 from Products.CPUtils.Extensions.utils import check_zope_admin
 from Products.CPUtils.Extensions.utils import log_list
 from Products.CPUtils.Extensions.utils import object_link
 from zope.annotation.interfaces import IAnnotations
-
-import os
 
 
 def correct_ref(self, change=''):
@@ -34,7 +32,7 @@ def correct_ref(self, change=''):
             obj = brain.getObject()
             # with default config value
             (begin, nb) = prev_ref.split('/')
-            new_ref = '%s/%d' % (begin, int(nb)+1)
+            new_ref = '%s/%d' % (begin, int(nb) + 1)
             # for cpas mons
             # nb = prev_ref
             # new_ref = '%03d' % (int(nb) + 1)
@@ -72,13 +70,181 @@ def relation_infos(rel):
 def list_all_relations(self):
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
-    from zope.component import queryUtility
     from zc.relation.interfaces import ICatalog  # noqa
+    from zope.component import queryUtility
     catalog = queryUtility(ICatalog)
     out = []
     rels = list(catalog.findRelations())
     for rel in rels:
         out.append(str(relation_infos(rel)))
+    return '\n'.join(out)
+
+
+def check_intid(self, intid=""):
+    """
+        Check intid of current context and display relations on it.
+
+        :param intid: Optional intid to check. If provided, will check this intid instead of context's intid.
+    """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    from zc.relation.interfaces import ICatalog
+    from zope.app.intid.interfaces import IIntIds
+    from zope.component import getUtility
+
+    intids = getUtility(IIntIds)
+    rels_catalog = getUtility(ICatalog)
+
+    # Determine which intid to use
+    if intid:
+        try:
+            obj_intid = int(intid)
+            out = ['<h2>Check intid: %s (provided as parameter)</h2>' % obj_intid]
+            # Try to get object from provided intid
+            obj_from_intid = intids.queryObject(obj_intid, None)
+            if obj_from_intid is None:
+                out.append("<p><strong>ERROR: Cannot retrieve object from intid %s!</strong></p>" % obj_intid)
+                out.append("<p>The intid exists in catalog but object is not found.</p>")
+            else:
+                # Check if it's a RelationValue object
+                from z3c.relationfield.relation import RelationValue
+                if isinstance(obj_from_intid, RelationValue):
+                    out.append("<p><strong>This intid corresponds to a RelationValue object</strong></p>")
+                    out.append("<p>Relation information:</p>")
+                    out.append("<ul>")
+                    out.append("<li>from_id: %s</li>" % obj_from_intid.from_id)
+                    out.append("<li>to_id: %s</li>" % obj_from_intid.to_id)
+                    if obj_from_intid.from_object:
+                        try:
+                            out.append("<li>from_object: %s</li>" % object_link(obj_from_intid.from_object))
+                        except Exception:
+                            out.append("<li>from_object: (cannot display link)</li>")
+                    if obj_from_intid.to_object:
+                        try:
+                            out.append("<li>to_object: %s</li>" % object_link(obj_from_intid.to_object))
+                        except Exception:
+                            out.append("<li>to_object: (cannot display link)</li>")
+                    out.append("<li>from_path: %s</li>" %
+                               (obj_from_intid.from_path if hasattr(obj_from_intid, 'from_path') else 'N/A'))
+                    out.append("<li>to_path: %s</li>" %
+                               (obj_from_intid.to_path if hasattr(obj_from_intid, 'to_path') else 'N/A'))
+                    out.append("<li>from_attribute: %s</li>" %
+                               (obj_from_intid.from_attribute if hasattr(obj_from_intid, 'from_attribute') else 'N/A'))
+                    out.append("<li>isBroken: %s</li>" % obj_from_intid.isBroken())
+                    out.append("</ul>")
+                    # For RelationValue, we won't search for relations on it
+                    return '\n'.join(out)
+                else:
+                    out.append("<p>Object found: %s</p>" % object_link(obj_from_intid))
+                    out.append("<p>Object path: %s</p>" % '/'.join(obj_from_intid.getPhysicalPath()))
+        except (ValueError, TypeError) as e:
+            return "<p><strong>ERROR: Invalid intid parameter '%s': %s</strong></p>" % (intid, e)
+    else:
+        out = ['<h2>Check intid for context: %s</h2>' % object_link(self)]
+        # Check intid of current context
+        obj_intid = intids.queryId(self, None)
+        if obj_intid is None:
+            out.append("<p><strong>Context has NO intid!</strong></p>")
+        else:
+            out.append("<p>Context intid: <strong>%s</strong></p>" % obj_intid)
+
+            # Check if we can get object back from intid
+            obj_from_intid = intids.queryObject(obj_intid, None)
+            if obj_from_intid is None:
+                out.append("<p><strong>ERROR: Cannot retrieve object from intid %s!</strong></p>" % obj_intid)
+            elif obj_from_intid != self:
+                out.append("<p><strong>WARNING: Retrieved object differs from context!</strong></p>")
+
+    out.append("<h3>Relations where context is source (from_object):</h3>")
+    relations_from = list(rels_catalog.findRelations({'from_id': obj_intid})) if obj_intid else []
+    if not relations_from:
+        out.append("<p>No relations found</p>")
+    else:
+        for rel in relations_from:
+            out.append("<div style='margin-left: 20px; margin-bottom: 10px;'>")
+            out.append("<strong>Relation:</strong>")
+            out.append("<ul>")
+            # Check relation intid itself
+            rel_intid = intids.queryId(rel, None)
+            if rel_intid is None:
+                out.append("<li><strong style='color:red;'>Relation intid: MISSING!</strong></li>")
+            else:
+                # Check bidirectional coherence
+                rel_from_intid = intids.queryObject(rel_intid, None)
+                coherence_status = ""
+                if rel_from_intid is None:
+                    coherence_status = " <strong style='color:red;'>(ERROR: id=>obj returns None!)</strong>"
+                elif rel_from_intid != rel:
+                    coherence_status = (" <strong style='color:orange;'>(WARNING: id=>"
+                                        "obj returns different object!)</strong>")
+                else:
+                    coherence_status = " <strong style='color:green;'>(OK: bidirectional check passed)</strong>"
+                out.append("<li>Relation intid: %s%s</li>" % (rel_intid, coherence_status))
+            out.append("<li>from_id: %s %s</li>" % (
+                rel.from_id,
+                "(OK)" if intids.queryObject(rel.from_id, False) else "<strong style='color:red;'>(MISSING!)</strong>"
+            ))
+            if rel.from_object:
+                out.append("<li>from_object: %s</li>" % object_link(rel.from_object))
+            out.append("<li>from_path: %s</li>" % (rel.from_path if hasattr(rel, 'from_path') else 'N/A'))
+            out.append("<li>from_attribute: %s</li>" %
+                       (rel.from_attribute if hasattr(rel, 'from_attribute') else 'N/A'))
+            out.append("<li>to_id: %s %s</li>" % (
+                rel.to_id,
+                "(OK)" if intids.queryObject(rel.to_id, False) else "<strong style='color:red;'>(MISSING!)</strong>"
+            ))
+            if rel.to_object:
+                out.append("<li>to_object: %s</li>" % object_link(rel.to_object))
+            out.append("<li>to_path: %s</li>" % (rel.to_path if hasattr(rel, 'to_path') else 'N/A'))
+            out.append("<li>isBroken: %s</li>" % rel.isBroken())
+            out.append("</ul>")
+            out.append("</div>")
+
+    out.append("<h3>Relations where context is target (to_object):</h3>")
+    relations_to = list(rels_catalog.findRelations({'to_id': obj_intid})) if obj_intid else []
+    if not relations_to:
+        out.append("<p>No relations found</p>")
+    else:
+        for rel in relations_to:
+            out.append("<div style='margin-left: 20px; margin-bottom: 10px;'>")
+            out.append("<strong>Relation:</strong>")
+            out.append("<ul>")
+            # Check relation intid itself
+            rel_intid = intids.queryId(rel, None)
+            if rel_intid is None:
+                out.append("<li><strong style='color:red;'>Relation intid: MISSING!</strong></li>")
+            else:
+                # Check bidirectional coherence
+                rel_from_intid = intids.queryObject(rel_intid, None)
+                coherence_status = ""
+                if rel_from_intid is None:
+                    coherence_status = " <strong style='color:red;'>(ERROR: id=>obj returns None!)</strong>"
+                elif rel_from_intid != rel:
+                    coherence_status = (" <strong style='color:orange;'>(WARNING: id=>"
+                                        "obj returns different object!)</strong>")
+                else:
+                    coherence_status = " <strong style='color:green;'>(OK: bidirectional check passed)</strong>"
+                out.append("<li>Relation intid: %s%s</li>" % (rel_intid, coherence_status))
+            out.append("<li>from_id: %s %s</li>" % (
+                rel.from_id,
+                "(OK)" if intids.queryObject(rel.from_id, False) else "<strong style='color:red;'>(MISSING!)</strong>"
+            ))
+            if rel.from_object:
+                out.append("<li>from_object: %s</li>" % object_link(rel.from_object))
+            out.append("<li>from_path: %s</li>" % (rel.from_path if hasattr(rel, 'from_path') else 'N/A'))
+            out.append("<li>from_attribute: %s</li>" %
+                       (rel.from_attribute if hasattr(rel, 'from_attribute') else 'N/A'))
+            out.append("<li>to_id: %s %s</li>" % (
+                rel.to_id,
+                "(OK)" if intids.queryObject(rel.to_id, False) else "<strong style='color:red;'>(MISSING!)</strong>"
+            ))
+            if rel.to_object:
+                out.append("<li>to_object: %s</li>" % object_link(rel.to_object))
+            out.append("<li>to_path: %s</li>" % (rel.to_path if hasattr(rel, 'to_path') else 'N/A'))
+            out.append("<li>isBroken: %s</li>" % rel.isBroken())
+            out.append("</ul>")
+            out.append("</div>")
+
     return '\n'.join(out)
 
 
@@ -118,8 +284,8 @@ def add_md5(self, change=''):
     """ Add md5 value if none """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
-    from plone import api
     from imio.dms.mail.setuphandlers import list_templates
+    from plone import api
     from Products.CMFPlone.utils import base_hasattr
     templates_list = [(tup[1], tup[2]) for tup in list_templates()]
     portal = api.portal.getSite()
@@ -151,8 +317,8 @@ def do_transition(self, typ='dmsincomingmail', transition='close_manager', crite
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
+    from DateTime import DateTime  # noqa
     from Products.CMFCore.WorkflowCore import WorkflowException
-    from DateTime import DateTime
     pc = self.portal_catalog
     pw = self.portal_workflow
     ret = ["Can be run like this: \n* script_name?criteria={'created': {'query': (DateTime('2022-04-01 00:00:01'), "
@@ -204,7 +370,6 @@ def set_state(self, typ='dmsincomingmail', state='closed', criteria="{}", limit=
     """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
-    from Products.CMFCore.WorkflowCore import WorkflowException
     from DateTime import DateTime
     pc = self.portal_catalog
     pw = self.portal_workflow
@@ -260,8 +425,8 @@ def users_to_group(self, source='editeur,validateur', dest='encodeur', change=''
     except Exception as msg:
         return "Source parameter isn't correct: %s" % (msg)
     ret.append('<h2>Add users to %s groups</h2>' % (dest))
-    from plone import api
     from collective.contact.plonegroup.config import ORGANIZATIONS_REGISTRY
+    from plone import api
     orgs = api.portal.get_registry_record(ORGANIZATIONS_REGISTRY)
     for org in orgs:
         try:
@@ -301,8 +466,9 @@ def correct_internal_reference(self, toreplace='', by='', request="{'portal_type
         return "!! toreplace param cannot be empty"
     if not request:
         return "!! request param cannot be empty"
-    import re
     from Products.CMFPlone.utils import safe_unicode
+
+    import re
     try:
         p_o = re.compile(toreplace)
     except Exception as msg:
@@ -361,8 +527,8 @@ def various2(self):
     """ various check script """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
-    from imio.dms.mail.interfaces import IActionsPanelFolder
     from collective.querynextprev.interfaces import INextPrevNotNavigable
+    from imio.dms.mail.interfaces import IActionsPanelFolder
     from zope.interface import alsoProvides
     portal = self
     pc = portal.portal_catalog
@@ -381,7 +547,7 @@ def various3(self):
     """ various check script """
     if not check_zope_admin():
         return "You must be a zope manager to run this script"
-    from plone import api
+    from plone import api  # noqa
     pc = self.portal_catalog
     for brain in pc(portal_type='dmsincoming_email', sort_on='created', sort_order='descending'):
         nb = int(brain.internal_reference_number[1:])
