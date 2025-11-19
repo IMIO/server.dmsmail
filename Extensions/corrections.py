@@ -3,6 +3,7 @@
 from collective.classification.tree import caching
 from collective.classification.tree.utils import iterate_over_tree
 from collective.contact.plonegroup.utils import get_organizations
+from collective.relationhelpers.api import get_field_and_schema_for_fieldname
 from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
 from imio.helpers.content import safe_encode
@@ -244,6 +245,136 @@ def check_intid(self, intid=""):
             out.append("<li>isBroken: %s</li>" % rel.isBroken())
             out.append("</ul>")
             out.append("</div>")
+
+    return '\n'.join(out)
+
+
+def rebuild_relationfield(self, fieldname='', target_uid='', target_intid='', change=''):
+    """
+        Rebuild a specific relation on the current context.
+
+        :param fieldname: Name of the relation field
+        :param target_uid: UID of the target object (ignored if target_intid is provided)
+        :param target_intid: intid of the target object (takes precedence over target_uid)
+        :param change: must be '1' to apply changes
+    """
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+
+    if not fieldname:
+        return "<p><strong>ERROR: fieldname parameter is required</strong></p>"
+
+    if not target_uid and not target_intid:
+        return "<p><strong>ERROR: either target_uid or target_intid parameter is required</strong></p>"
+
+    from plone.app.relationfield.event import update_behavior_relations
+    from plone.dexterity.interfaces import IDexterityContent
+    from z3c.relationfield import RelationValue
+    from z3c.relationfield.event import updateRelations
+    from z3c.relationfield.schema import Relation
+    from z3c.relationfield.schema import RelationChoice
+    from z3c.relationfield.schema import RelationList
+    from zope.app.intid.interfaces import IIntIds
+    from zope.component import getUtility
+
+    out = ['<h2>Rebuild relation on context: %s</h2>' % object_link(self)]
+    if change != '1':
+        out.append("<p><strong style='color:orange;'>DRY RUN MODE - No changes will be applied</strong></p>")
+    # Check source object
+    if not IDexterityContent.providedBy(self):
+        return "<p><strong>ERROR: Context is not dexterity content</strong></p>"
+
+    intids = getUtility(IIntIds)
+
+    if target_intid:
+        try:
+            to_id = int(target_intid)
+        except (ValueError, TypeError) as e:
+            return "<p><strong>ERROR: Invalid target_intid parameter '%s': %s</strong></p>" % (target_intid, e)
+        out.append("<p>Using provided target_intid: <strong>%s</strong></p>" % to_id)
+
+        target_obj = intids.queryObject(to_id, None)
+        if target_obj is None:
+            out.append("<p><strong>WARNING: Cannot retrieve object from intid %s!</strong></p>" % to_id)
+            return '\n'.join(out)
+        else:
+            if isinstance(target_obj, RelationValue):
+                out.append("<p><strong>WARNING: Target intid corresponds to a RelationValue</strong></p>")
+                return '\n'.join(out)
+            else:
+                out.append("<p>Target object: %s</p>" % object_link(target_obj))
+    else:
+        target_obj = uuidToObject(target_uid)
+        if not target_obj:
+            return "<p><strong>ERROR: Target object with UID %s not found</strong></p>" % target_uid
+        if not IDexterityContent.providedBy(target_obj):
+            return "<p><strong>ERROR: Target object is not dexterity content</strong></p>"
+        out.append("<p>Target object: %s</p>" % object_link(target_obj))
+
+        # Get intid of target
+        try:
+            to_id = intids.getId(target_obj)
+        except KeyError:
+            return "<p><strong>ERROR: Target object has no intid</strong></p>"
+        out.append("<p>Target intid: %s</p>" % to_id)
+
+    # Get field
+    out.append("<p>Field name: <strong>%s</strong></p>" % fieldname)
+    field_and_schema = get_field_and_schema_for_fieldname(fieldname, self.portal_type)
+    if field_and_schema is None:
+        return "<p><strong>ERROR: Field '%s' not found on %s</strong></p>" % (fieldname, self.portal_type)
+    field = field_and_schema[0]
+    out.append("<p>Field type: %s</p>" % field.__class__.__name__)
+
+    # Create relation
+    relation = RelationValue(to_id)
+
+    if isinstance(field, RelationList):
+        out.append("<p>Adding relation to RelationList...</p>")
+        existing_relations = getattr(self, fieldname, [])
+        # Check if relation already exists
+        try:
+            idx = [getattr(rel, 'to_id', None) for rel in existing_relations if hasattr(rel, 'to_id')].index(to_id)
+            out.append("<p><strong>WARNING: Relation already exists in the list, we will replace it</strong></p>")
+        except ValueError:
+            idx = None
+        if change == '1':
+            if idx is not None:
+                existing_relations.pop(idx)
+            existing_relations.append(relation)
+            setattr(self, fieldname, existing_relations)
+            out.append("<p>Relation added to list</p>")
+        else:
+            out.append("<p>Relation would be added to list (DRY RUN)</p>")
+
+    elif isinstance(field, (Relation, RelationChoice)):
+        out.append("<p>Setting relation...</p>")
+        # existing_relation = getattr(self, fieldname, None)
+        # if existing_relation and hasattr(existing_relation, 'to_id') and existing_relation.to_id == to_id:
+        #     out.append("<p><strong>WARNING: Relation already exists</strong></p>")
+        # else:
+        if change == '1':
+            setattr(self, fieldname, relation)
+            out.append("<p>Relation set</p>")
+        else:
+            out.append("<p>Relation would be set (DRY RUN)</p>")
+
+    else:
+        return "<p><strong>ERROR: Field is not a RelationChoice or RelationList</strong></p>"
+
+    # Update relations in catalog
+    if change == '1':
+        out.append("<p>Updating relations in catalog...</p>")
+        try:
+            updateRelations(self, None)
+            update_behavior_relations(self, None)
+            out.append("<p><strong style='color:green;'>Relations updated successfully!</strong></p>")
+        except Exception as e:
+            out.append("<p><strong style='color:red;'>ERROR updating relations: %s</strong></p>" % str(e))
+            import traceback
+            out.append("<pre>%s</pre>" % traceback.format_exc())
+    else:
+        out.append("<p>Relations would be updated in catalog (DRY RUN)</p>")
 
     return '\n'.join(out)
 
