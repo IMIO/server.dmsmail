@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Copy missing blobs from another site via RestAPI. Useful when site has been copied without blobs for test."""
 from imio.helpers.security import setup_logger
 from imio.pyutils.system import stop
 from plone.namedfile.file import NamedBlobFile
