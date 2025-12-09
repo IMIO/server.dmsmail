@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -24,7 +24,7 @@ jobs:
             plone: 4.3
     services:
       libreoffice:
-        image: harbor.imio.be/library/libreoffice:7.3
+        image: harbor.imio.be/library/libreoffice:25.2
         ports:
           - 2002:2002
         volumes:
@@ -108,7 +108,7 @@ jobs:
         run: |
           bin/testme
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -117,7 +117,7 @@ jobs:
             plone: 4.3
     services:
       libreoffice:
-        image: harbor.imio.be/library/libreoffice:7.3
+        image: harbor.imio.be/library/libreoffice:25.2
         ports:
           - 2002:2002
         volumes:
