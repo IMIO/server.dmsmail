@@ -26,15 +26,28 @@ setup:  ## Setups environment
 	if command -v virtualenv-2.7; then virtualenv-2.7 . ; elif command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; fi
 	./bin/pip install --upgrade pip
 	./bin/pip install -r requirements.txt
+	@if grep -q "esign.cfg" buildout.cfg && test -f /home/zope/esign.cfg && ! test -f esign.cfg; then \
+		cp /home/zope/esign.cfg esign.cfg; \
+		echo "esign.cfg copied from /home/zope/"; \
+	fi
+	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ] && command -v supervisorctl >/dev/null 2>&1; then \
+		sed -i 's/#    dev-zeo.cfg/    dev-zeo.cfg/' buildout-main.cfg; \
+		echo "dev-zeo.cfg uncommented in buildout-main.cfg"; \
+	fi
 
 .PHONY: buildout
 buildout:  ## Runs setup and buildout
 	rm -f .installed.cfg .mr.developer.cfg
 	if ! test -f bin/buildout;then make setup;fi
-	if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
-	if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
+# 	if ! test -d /srv/cache/download/dist; then mkdir /srv/cache/download/dist || true; fi
+# 	if ! test -f /srv/cache/download/dist/appy-1.0.15.tar.gz; then scp -o 'StrictHostKeyChecking no' docs001:/srv/cache/download/dist/appy-1.0.15.tar.gz /srv/cache/download/dist/ || true; fi
 	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
 	git checkout .gitignore
+	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ] && command -v supervisorctl >/dev/null 2>&1; then \
+		sed -i 's/^    # from Extensions.demo import disable_resources_debug_mode$/    from Extensions.demo import disable_resources_debug_mode/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
+		sed -i 's/^    # disable_resources_debug_mode(site)$/    disable_resources_debug_mode(site)/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
+		echo "Extensions.demo lines uncommented in subscribers.py"; \
+	fi
 
 .PHONY: copy
 copy: copy-data.sh  ## Runs `copy-data.sh`
