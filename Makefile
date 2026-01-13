@@ -48,6 +48,14 @@ buildout:  ## Runs setup and buildout
 		sed -i 's/^        # disable_resources_debug_mode(site)$$/        disable_resources_debug_mode(site)/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
 		echo "Extensions.demo lines uncommented in subscribers.py"; \
 	fi
+	 @$(MAKE) patch-copy-data
+
+.PHONY: patch-copy-data
+patch-copy-data:  ## Patches copy-data.sh when blobmissing is activated
+	@if grep -q "^[^#]*blobmissing\.cfg" buildout.cfg && test -f copy-data.sh; then \
+        sed -i '/^echo "Copying $${SOURCE_HOST}:$${SOURCE_PATH} filestorage:"/,/^((code+=$$?))$$/s/^/#/' copy-data.sh; \
+        echo "filestorage copy section commented in copy-data.sh"; \
+    fi
 
 .PHONY: copy
 copy: copy-data.sh  ## Runs `copy-data.sh`
