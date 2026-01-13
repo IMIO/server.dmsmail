@@ -44,8 +44,8 @@ buildout:  ## Runs setup and buildout
 	if ! test -f var/filestorage/Data.fs;then make standard-config; else bin/buildout -v;fi
 	git checkout .gitignore
 	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ] && command -v supervisorctl >/dev/null 2>&1; then \
-		sed -i 's/^    # from Extensions.demo import disable_resources_debug_mode$/    from Extensions.demo import disable_resources_debug_mode/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
-		sed -i 's/^    # disable_resources_debug_mode(site)$/    disable_resources_debug_mode(site)/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
+		sed -i 's/^        # from Extensions.demo import disable_resources_debug_mode$$/        from Extensions.demo import disable_resources_debug_mode/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
+		sed -i 's/^        # disable_resources_debug_mode(site)$$/        disable_resources_debug_mode(site)/' src/imio.dms.mail/imio/dms/mail/subscribers.py; \
 		echo "Extensions.demo lines uncommented in subscribers.py"; \
 	fi
 
