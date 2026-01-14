@@ -74,6 +74,13 @@ dv_clean:  ## Cleans old dv files
 	@echo "plone: $(plone)"
 	bin/$(instance) -O$(plone) run run-scripts.py 2
 
+.PHONY: solr
+solr: ## Start solr container (foreground)
+	@if [ -d solr ] && [ "$$(stat -c %a solr)" != "777" ]; then \
+		sudo chmod -R 777 solr; \
+	fi
+	docker compose up solr
+
 .PHONY: solr-setup
 solr-setup:  ## Solr setup
 	@echo "plone: $(plone)"
