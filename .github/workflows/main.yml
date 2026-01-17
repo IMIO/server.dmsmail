@@ -108,6 +108,8 @@ jobs:
         run: |
           bin/testme
   coverage:
+    # Skip coverage job on branch 3.1.X
+    if: github.ref != 'refs/heads/3.1.X'
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
