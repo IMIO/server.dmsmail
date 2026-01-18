@@ -1,6 +1,18 @@
 Changelog
 =========
 
+3.1.0b1 (2026-01-18)
+--------------------
+
+- Use imio.dms.mail tag 3.1.x
+  [sgeulette]
+- Added approbation and esign features
+  [sgeulette,cadam]
+- Added read mode.
+  [chris-adam, sgeulette]
+- Added signed state in om workflow.
+  [sgeulette]
+
 3.0-1 (2021-04-22)
 ------------------
 
