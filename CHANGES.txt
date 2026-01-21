@@ -1,11 +1,13 @@
 Changelog
 =========
 
-3.1.0b2 (unreleased)
+3.1.0b2 (2026-01-21)
 --------------------
 
-- Nothing changed yet.
-
+- Added SSO variables
+  [chris-adam]
+- Upgraded products to generate download barcode when esignature is present
+  [chris-adam]
 
 3.1.0b1 (2026-01-18)
 --------------------
