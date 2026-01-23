@@ -4,8 +4,8 @@ Changelog
 3.1.0b3 (unreleased)
 --------------------
 
-- Nothing changed yet.
-
+- Used imio.helpers from sources and upgraded some versions.
+  [sgeulette]
 
 3.1.0b2 (2026-01-21)
 --------------------
