@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.0b3 (unreleased)
+3.1.0b3 (2026-01-23)
 --------------------
 
 - Used imio.helpers from sources and upgraded some versions.
