@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.0b4 (unreleased)
+3.1.0b5 (2026-02-05)
 --------------------
 
 - Upgraded col.dms.basecontent, imio.dms.mail and imio.esign.
