@@ -4,8 +4,8 @@ Changelog
 3.1.0b4 (unreleased)
 --------------------
 
-- Nothing changed yet.
-
+- Upgraded col.dms.basecontent, imio.dms.mail and imio.esign.
+  [sgeulette]
 
 3.1.0b3 (2026-01-23)
 --------------------
