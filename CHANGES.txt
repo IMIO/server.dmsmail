@@ -4,8 +4,8 @@ Changelog
 3.1.0b7 (unreleased)
 --------------------
 
-- Nothing changed yet.
-
+- Upgraded imio.dms.mail and plonetheme.imioapps.
+  [sgeulette]
 
 3.1.0b6 (2026-02-05)
 --------------------
