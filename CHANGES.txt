@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.0b8 (unreleased)
+3.1.0b8 (2026-02-10)
 --------------------
 
 - Upgraded imio.dms.mail and imio.esign to improve UI.
