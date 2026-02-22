@@ -630,6 +630,32 @@ def correct_internal_reference(self, toreplace='', by='', request="{'portal_type
     return '\n'.join(out)
 
 
+def correct_mail_type(self, toreplace="", by="", portal_type=["dmsoutgoingmail"], change=""):
+    """ Replace something in portal_type of mails"""
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    if not toreplace:
+        return "!! toreplace param cannot be empty"
+    if not by:
+        return "!! by param cannot be empty"
+    out = ['<h2>Replace "%s" by "%s" mail_type on %s<h2>' % (toreplace, by, portal_type)]
+    if change != "1":
+        out.append("<p><strong style='color:orange;'>DRY RUN MODE - No changes will be applied</strong></p>")
+    count = 0
+    out.append("<p>")
+    for brain in self.portal_catalog(portal_type=portal_type):
+        if brain.mail_type != toreplace:
+            continue
+        count += 1
+        obj = brain.getObject()
+        out.append("%s<br />" % object_link(obj))
+        if change == "1":
+            obj.mail_type = by
+            obj.reindexObject(idxs=["mail_type"])
+    out.append("</p><p>Total: %d objects %s</p>" % (count, change == "1" and "updated" or "to update"))
+    return '\n'.join(out)
+
+
 def various(self):
     """ various check script """
     if not check_zope_admin():
