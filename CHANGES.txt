@@ -4,8 +4,17 @@ Changelog
 3.1.0b9 (unreleased)
 --------------------
 
-- Nothing changed yet.
-
+- Updated collective.solr branch
+  [chris-adam]
+- Added API_ROOT_URL var and pinned some packages
+  [sgeulette]
+- Added generate_pdf in demo.py
+  [sgeulette]
+- Added corrections.correct_mail_type function
+  [sgeulette]
+- Upgraded col.contact.plonegroup, col.dms.basecontent, col.documentgenerator, col.eeafaceted.collectionwidget,
+  col.eeafaceted.dashboard, imio.zamqp.core, imio.zamqp.dms, plonetheme.imioapps
+  [sgeulette]
 
 3.1.0b8 (2026-02-10)
 --------------------
