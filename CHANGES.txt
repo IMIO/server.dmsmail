@@ -13,7 +13,7 @@ Changelog
 - Added corrections.correct_mail_type function
   [sgeulette]
 - Upgraded col.contact.plonegroup, col.dms.basecontent, col.documentgenerator, col.eeafaceted.collectionwidget,
-  col.eeafaceted.dashboard, imio.zamqp.core, imio.zamqp.dms, plonetheme.imioapps
+  col.eeafaceted.dashboard, imio.dms.mail, imio.pm.wsclient, imio.zamqp.core, imio.zamqp.dms, plonetheme.imioapps
   [sgeulette]
 
 3.1.0b8 (2026-02-10)
@@ -66,23 +66,466 @@ Changelog
 - Added signed state in om workflow.
   [sgeulette]
 
-3.0-1 (2021-04-22)
+3.0.61 (2025-05-09)
+-------------------
+
+- Improved script change_db.sh to handle broken links.
+- Added script to correct directly DMS-1090
+- Upgraded col.behavior.talcondition, col.contact.plonegroup, imio.fpaudit, imio.pm.locales, imio.zamqp.dms,
+  plonetheme.imioapps
+- Upgraded col.eeafaceted.batchactions, imio.pm.wsclient
+- Added run script to get stats on document viewer usage
+- Upgraded imio.dms.soap2pm
+- Upgraded imio.zamqp.dms
+- Set default oo values in case oo is not part of port.cfg in production
+
+3.0.60 (2025-02-20)
+-------------------
+
+- Added imio.fpaudit product.
+- fix(install_guide): cleaned up and improve install process
+- Added run-rebuild-relations.py script
+- Upgraded col.classification.tree, col.dms.mailcontent, col.documentgenerator, col.eeafaceted.batchactions, imio.helpers
+- Upgraded appy, col.contact.plonegroup, col.eeafaceted.batchactions, col.iconifiedcategory, col.recipe.omelette, imio.actionspanel,
+  imio.annex, imio.helpers, imio.history, imio.pm.locales, imio.pm.wsclient, plonetheme.imioapps, zc.buildout
+- Added script to handle mailqueue
+- Added run script to list all annexes from incoming emails in a CSV file
+- Upgraded col.classification.folder
+- Upgraded col.contact.core
+- Upgraded imio.zamqp.dms and used it as src
+- Upgraded col.contact.core, col.eeafaceted.batchactions, imio.fpaudit
+- Added correction script
+- Upgraded imio.helpers
+
+3.0.59 (2024-10-02)
+-------------------
+
+- Improved scripts/run-send-email.py.
+- isorted and pep8
+- Removed imio.migrator from auto-checkout
+- Upgraded zc.buildout to 3.1.0 to find correctly recent tar.gz with underscore
+- Upgraded col.behavior.talcondition, col.classification.folder, col.classification.tree, col.dms.mailcontent,
+  col.eeafaceted.z3ctable, imio.helpers, imio.migrator, imio.pyutils
+- Upgraded appy to correct bug with last LO versions
+- Added possible options in Makefile help
+
+3.0.58 (2024-06-11)
+-------------------
+
+- Upgraded collective.dms.batchimport.
+- Upgraded col.behavior.internalnumber, col.classification.tree, col.contact.plonegroup, col.eeafaceted.z3ctable,
+  imio.actionspanel, imio.pyutils, plonetheme.imioapps
+- Removed imio.helpers from auto-checkout
+- Switched imio.migrator to master
+- Upgraded imio.helpers
+
+3.0.57 (2024-04-16)
+-------------------
+
+- Added run-catalog-count.py script.
+- Added optional experimental.gracefulblobmissing cfg file
+- Removed useless restapi.cfg. Pinned correctly packages
+- Minimized debug cache size
+- Added reindexIndexes script
+- Upgraded col.clas.folder, col.contact.plonegroup, col.docgen, col.eea.batchactions, col.eea.collectionwidget,
+  col.iconifiedcat, imio.annex, imio.helpers, imio.history, imio.pm.loc, imio.pyutils, plonetheme.imioapps
+- Added zope.sendmail as source
+- Added send mail test script
+- Used patched Products.CMFEditions
+
+3.0.56 (2024-02-19)
+-------------------
+
+- Improved import_principals method
+- Added imio.annex
+- Added iconifiedcategory as source
+- Added script to count relations
+- Added clean_categories external method
+- Upgraded Twisted to 15.5.0
+- Added script to cook js and css resources
+- Added collective.js.tooltipster as source
+- Used again master products
+- Upgraded actionspanel, appy, documentgenerator, facetednavigation, eeafaceted.z3ctable, fingerpointing, future,
+  iconifiedCategory, imio.helpers, imio.history, imio.migrator, internalnumber, messagesviewlet, pm.locales,
+  pm.wsclient, plonetheme.imioapps, prettylink, tooltipster, wfadaptations, zamqp.core
+- Commented eea.facetednavigation version, taken from source
+- Added parts to get correctly appy
+- Removed plonegroup branch
+- Upgraded classification.folder
+- Added prod various part to clean unnecessary src directories
+- Upgraded classification.tree, dms.basecontent, dms.scanbehavior, plonetheme.imioapps, pyutils
+- Used imio.helpers and imio.migrator sources
+
+3.0.55 (2023-12-16)
+-------------------
+
+- Made sure destination file doesnt exist in change_db.sh.
+- Added parts/omelette in helper.py
+- Updated installation files
+- Replaced mail_type index by userid index in Extensions/imports.py
+- Added collective.relationhelpers source
+- Added Makefile gui-test section
+- Added userid field in solr schema
+- Updated changelog
+- Removed useless import in helper.py
+- Improved import_principals
+- Upgraded col.eeafaceted.dashboard, col.ckeditortemplates, col.classification.folder, col.dms.mailcontent,
+  dexterity.localroles, dexterity.localrolesfield, imio.helpers, imio.pyutils, imio.zamqp.dms
+- Added script to setup solr
+- Removed 30_config_dic
+- Improved do_transition
+
+3.0.54 (2023-10-16)
+-------------------
+
+- Correction in appy egg copy command
+
+3.0.53 (2023-10-12)
+-------------------
+
+- Added appy egg copy command in Makefile.
+- Upgraded six
+
+3.0.52 (2023-09-28)
+-------------------
+
+- Added transmo.iadocs in tests
+- Set ENV variable when running tests
+- Correctly removed async in no-async.cfg
+- Upgraded imio.helpers, imio.pyutils
+
+3.0.51 (2023-09-13)
+-------------------
+
+- Upgraded contact.core, dms.mailcontent.
+
+3.0.50 (2023-09-11)
+-------------------
+
+- Updated tech doc, including data transfer.
+- Moved ipzope from dev to test, so it will be available in production
+- Upgraded classification.folder, contact.core, dms.mailcontent, dms.scanbehavior, documentgenerator, eea.batchactions,
+  eea.collectionwidget, eea.z3ctable, imio.actionspanel, imio.helpers, imio.history, imio.migrator, imio.pm.wsclient,
+  imio.prettylink, plonetheme.imioapps
+- Used corrective facetednavigation fork and dashboard
+- Upgraded classification products that will be downloadable
+
+3.0.49 (2023-07-26)
+-------------------
+
+- Upgraded pyutils.
+- Upgraded setup versions
+
+3.0.48 (2023-07-20)
+-------------------
+
+- Used own plone.formwidget.datetime.
+- Upgraded classification.folder, classification.tree, contact.core, dms.mailcontent, dms.scanbehavior, col.task, imio.helpers
+- Upgraded contact.plonegroup, documentgenerator, eea.batchactions, pm.locales
+
+3.0.47 (2023-07-07)
+-------------------
+
+- Added cfg files to remove async or amqp if needed.
+- Added script to reindex security
+- Upgraded imio.dashboard, imio.helpers, imio.zamqp.dms, plonetheme.imioapps
+
+3.0.46 (2023-06-22)
+-------------------
+
+- Upgraded imio.dms.mail, imio.transmogrifier.iadocs.
+
+3.0.45 (2023-06-21)
+-------------------
+
+- Added script to copy webservice file to a local directory, following a given files list.
+- Added script to search in documents on ws server
+- Added script to change of db easierly
+- Added script to change pm ws password
+- Upgraded appy, beh.internalnumber, beh.talcondition, compoundcriterion, eeafaceted.z3ctable, imio.helpers,
+  plonetheme.imioapps
+
+3.0.44 (2023-05-30)
+-------------------
+
+- Used transmogrify.dexterity fork.
+
+3.0.43 (2023-05-12)
+-------------------
+
+- Upgraded dms.basecontent, imio.helpers, imio.policy, imio.pyutils.
+
+3.0.42 (2023-04-03)
+-------------------
+
+- Corrected collective.z3cform.select2 selector.
+
+3.0.41 (2023-03-31)
+-------------------
+
+- Used solr new variables
+- Updated Makefile
+
+3.0.40 (2023-03-30)
+-------------------
+
+- Added mailqueue dir.
+- Used select2 widget in place of chosen (upgrade classification.folder, classification.tree, dms.basecontent)
+- Upgraded plonegroup, task, actionspanel, imio.helpers, imio.history, pyutils, plonetheme.imioapps, eeafaceted.z3ctable
+- Corrected duplicated sources
+
+3.0.39 (2023-02-13)
+-------------------
+
+- Improved tech doc.
+- Improved run scripts.
+- Added script to clear and rebuild catalog with dmsfiles at the end and batchly.
+- Upgraded compoundcriterion, messagesviewlet, actionspanel, imio.helpers, imio.zamqp.dms, plonetheme, wsclient
+
+3.0.38 (2022-12-12)
+-------------------
+
+- Corrected typo in Makefile
+- Upgraded appy, c.dms.mailcontent, c.documentgenerator, c.eeafaceted.dashboard, i.dashboard, i.migrator, i.pyutils,
+  plonetheme.imioapps. Migration improvements, setup correction, added methods.
+
+3.0.37 (2022-12-09)
+-------------------
+
+- Improved run-del-files to work in BATCH mode
+- Made solr clear following parameter. Added `make solr-clear-sync`
+- Modified `copy-data.sh` before use
+
+3.0.36 (2022-11-05)
+-------------------
+
+- Added exception handling in run-del-files script
+- Added script to delete all mails
+- Upgraded c.dms.basecontent, c.dms.mailcontent, c.wfadaptations, imio.helpers, imio.zamqp.core
+
+3.0.35 (2022-09-22)
+-------------------
+
+- Used corrected old version of Products.LDAPUserFolder
+- Added script to get ldap bad userids
+- Added 30_config.dic file copy in Makefile
+
+3.0.34 (2022-09-16)
+-------------------
+
+- Added script to delete document viewer annotations.
+- Added script to delete all files
+- Modified 30_config.dic file
+- Upgraded imio.pyutils and imio.dataexchange.core
+
+3.0.33 (2022-09-07)
+-------------------
+
+- Removed decorate_acl_methods from instance-debug to avoid ZODB.POSException.ConflictError in migration
+- Set pack gc to False, so we avoid problem with multiple dbs (async)
+
+3.0.32 (2022-09-01)
+-------------------
+
+- Upgraded imiO.helpers.
+- Updated Makefile to use virtualenv-2.7 first
+
+3.0.31 (2022-08-23)
+-------------------
+
+- Upgraded contact.duplicated, contact.plonegroup, dms.mailcontent, task, imio.helpers, pyutils, zamqp.dms
+- Some dev changes
+
+3.0.30 (2022-07-01)
+-------------------
+
+- Upgraded plonegroup, basecontent, dx.localroles, imio.helpers, pyutils
+- Switched to imio.dms.mail 3.0 branch
+
+3.0.29 (2022-06-24)
+-------------------
+
+- Added correction script
+- Downgraded pycountry
+- Added external method to set state
+- Added decorate_acl_methods env variable
+- Upgraded z3c.table, imio.helpers, col.contact.core, col.contact.plonegroup, col.contact.widget,
+  col.dms.basecontent, col.task, imio.history, plonetheme.imioapps, col.documentgenerator,
+  col.eeafaceted.z3ctable, imio.prettylink, appy
+- Defined plone-path on all instances
+
+3.0.28 (2022-05-21)
+-------------------
+
+- Upgraded products.
+
+3.0.27 (2022-05-13)
+-------------------
+
+- Let plone-path be accessible in instance
+- Upgraded c.task, imio.helpers, c.eeafaceted.z3ctable
+
+3.0.26 (2022-05-06)
+-------------------
+
+- Upgraded plonegroup, imio.helpers, documentgenerator, batchactions.
+
+3.0.25 (2022-04-25)
+-------------------
+
+- Upgraded imio.zamqp.dms
+
+3.0.24 (2022-04-22)
+-------------------
+
+- Upgraded batchimport and imioapps
+- Upgraded Twisted version
+
+3.0.23 (2022-03-25)
+-------------------
+
+- Added script to correct ClassificationCategory workflow
+- Upgraded imio.helpers, collective.dms.mailcontent
+
+3.0.22 (2022-03-18)
+-------------------
+
+- Added script to copy solr
+- Added script to correct actionspanel transitions config
+- Upgraded collective.dms.mailcontent, imio.helpers, imio.zamqp.dms
+
+3.0.21 (2022-02-21)
+-------------------
+
+- Added run-mailtypes.py
+- Upgraded tooltipster, actionspanel, col.eea.collectionwidget, col.eea.dashboard
+
+3.0.20 (2022-02-10)
+-------------------
+
+- Corrected solr schema error avoiding start failure
+- Added section to sync solr (after migration)
+- Upgraded products: task, plonegroup, mailcontent, pyutils, batchactions
+
+3.0.19 (2022-02-03)
+-------------------
+
+- Changed Makefile to call standard_config.py
+- Updated default migration config
+
+3.0.18 (2022-01-22)
+-------------------
+
+- Corrected 30_config.dic
+
+3.0.17 (2022-01-21)
+-------------------
+
+- Upgraded imio.pyutils
+- Added config file 30_config.dic
+
+3.0.16 (2022-01-15)
+-------------------
+
+- Corrected git fetch url.
+- Upgraded packages
+
+3.0.15 (2021-12-10)
+-------------------
+
+- Upgraded collective.dms.mailcontent
+
+3.0.14 (2021-12-06)
+-------------------
+
+- Added solr schema fields for new indexes
+- Upgraded some products
+
+3.0.13 (2021-11-24)
+-------------------
+
+- Updated tech doc
+- Moved preview images to imio.dms.mail
+- Upgraded imio.zamqp.dms
+
+3.0.12 (2021-11-15)
+-------------------
+
+- Added instance-patch section in Makefile
+- Modified dv_clean call to use configuration settings
+- Modified dv_clean to reuse previously set blobs
+- Upgraded imio.pyutils
+- Updated tech doc
+- Corrected dev amqp part
+- Upgraded appy, imio.actionspanel, imio.helpers, imio.migrator, imio.zamqp.dms, plonetheme.imioapps, collective.documentgenerator, phonenumbers
+
+3.0.11 (2021-10-21)
+-------------------
+
+- Added Products.cron4plone in instance1. Removed cron4plone.cfg and specific ports.
+  [sgeulette]
+
+3.0.10 (2021-10-20)
+-------------------
+
+- Can use easierly Products.PrintingMailHost in prod (on demo site).
+- Added help section in Makefile
+- Pinned collective.js.tooltipster
+- Upgraded collective.contact.plonegroup, imio.helpers
+
+3.0.9 (2021-09-10)
 ------------------
 
-- Use imio.dms.mail tag 3.0.
-  [sgeulette]
-- Added Products.PloneHotfix20210518
-  [sgeulette]
-- Added cron4plone zope config
-  [sgeulette]
-- Set pack gc to False, so we avoid problem with multiple dbs (async)
-  [sgeulette]
-- Added scripts directory
-  [sgeulette]
-- Added mailqueue dir
-  [sgeulette]
-- Added no-amqp.cfg and no-async.cfg
-  [sgeulette]
+- Corrected Makefile, so virtualenv can run on all servers
+
+3.0.8 (2021-08-31)
+------------------
+
+- Merged DMS-402 branch (classification)
+- Released and upgraded packages
+
+3.0.7 (2021-06-24)
+------------------
+
+- Improved principals
+- Used port.cfg zodb-cache-size value
+- Added perf-test run
+- Downgraded eea.facetednavigation
+
+3.0.6 (2021-06-04)
+------------------
+
+- Improved import_principals
+- Upgraded various products
+
+3.0.5 (2021-05-05)
+------------------
+
+- Upgraded collective.contact.plonegroup
+
+3.0.4 (2021-04-30)
+------------------
+
+- Upgraded imio.helpers
+
+3.0.3 (2021-04-29)
+------------------
+
+- Improved Makefile
+- Upgraded imio.pyutils
+- Improved `import_principals`
+
+3.0.2 (2021-04-26)
+------------------
+
+- `import_principals`: use emailer validator and use real line from csv reader
+- Upgraded imio.dms.soap2pm
+- Upgraded imio.actionspanel
+
+3.0.1 (2021-04-22)
+------------------
+
+- First 3.0 prod release with imio.dms.mail set on master
 
 2.3-1 (2020-10-08)
 ------------------
