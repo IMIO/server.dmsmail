@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.0b10 (unreleased)
+3.1.0rc1 (2026-03-19)
 ---------------------
 
 - Upgraded col.dms.basecontent, col.iconifiedcategory, imio.dms.mail, imio.esign, imio.zamqp.dms, plonetheme.imioapps.
