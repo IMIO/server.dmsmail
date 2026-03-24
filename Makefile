@@ -105,7 +105,7 @@ solr-compose:  ## Start solr container (foreground)
 .PHONY: solr-setup
 solr-setup:  ## Solr setup
 	@echo "plone: $(plone)"
-	bin/solr-start && sleep 60
+	make instance-patch
 	bin/$(instance) -O$(plone) run run-scripts.py 3
 
 .PHONY: solr-sync
