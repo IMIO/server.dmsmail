@@ -4,8 +4,15 @@ Changelog
 3.1.0rc2 (unreleased)
 ---------------------
 
-- Nothing changed yet.
-
+- Added script to replace portal type and class.
+  [sgeulette]
+- Do not start solr locally
+  [sgeulette]
+- Updated solr schema fields
+  [sgeulette]
+- Upgraded col.contact.core, col.dms.basecontent, col.documentgenerator, imio.esign, imio.fpaudit, imio.helpers,
+  imio.pyutils, imio.zamqp.core, imio.zamq.dms, pdbp, plonetheme.imioapps
+  [sgeulette]
 
 3.1.0rc1 (2026-03-19)
 ---------------------
