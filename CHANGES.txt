@@ -4,8 +4,10 @@ Changelog
 3.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Added default public-url, so a migration can be done without puppet site part.
+  [sgeulette]
+- Upgraded imio.esign, plonetheme.imioapps
+  [sgeulette]
 
 3.1.0 (2026-03-26)
 ------------------
