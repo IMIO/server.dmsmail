@@ -61,6 +61,7 @@ def script3():
     from imio.dms.mail.utils import update_solr_config
     update_solr_config()
     api.portal.set_registry_record('collective.solr.active', True)
+    portal.manage_permission("plone.restapi: Use REST API", ("Member",), acquire=0)
     transaction.commit()
 
 
