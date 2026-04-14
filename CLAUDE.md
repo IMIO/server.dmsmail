@@ -72,7 +72,8 @@ Flake8 config: max-line-length=120, ignores E122/E126/E121/E226/E203/E704/W503/W
 
 - `src/`: All 70+ source packages managed by mr.developer
 - `Extensions/`: Zope external methods (demo.py, corrections.py, imports.py)
-- `parts/omelette/`: Symlink forest of all installed packages (useful for navigation)
+- `parts/omelette/`: Symlink forest of all installed packages. 
+  When searching code, it must be done exclusively here. You can search there at any directory level without confirmation.
 - `var/filestorage/Data.fs`: ZODB database file
 - `var/blobstorage/`: Binary blob storage
 
