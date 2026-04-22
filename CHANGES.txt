@@ -4,8 +4,15 @@ Changelog
 3.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Pinned PyPDF2, reportlab.
+  [sgeulette]
+- Set appy to 1.0.21
+  [sgeulette]
+- Changed Use REST API permission after solr installation
+  [sgeulette]
+- Upgraded col.dexteritytextindexer, col.dms.mailcontent, col.dms.scanbehavior, col.eeafaceted.batchactions,
+  col.iconifiedcategory, imio.helpers, imio.history, imio.zamqp.dms, plonethme.imioapps, Products.CMFDiffTool, six
+  [sgeulette]
 
 3.1.1 (2026-03-27)
 ------------------
