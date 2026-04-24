@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.2 (unreleased)
+3.1.2 (2026-04-24)
 ------------------
 
 - Pinned PyPDF2, reportlab.
@@ -12,6 +12,8 @@ Changelog
   [sgeulette]
 - Upgraded col.dexteritytextindexer, col.dms.mailcontent, col.dms.scanbehavior, col.eeafaceted.batchactions,
   col.iconifiedcategory, imio.helpers, imio.history, imio.zamqp.dms, plonethme.imioapps, Products.CMFDiffTool, six
+  [sgeulette]
+- Updated solr schema with scan_id column removal
   [sgeulette]
 
 3.1.1 (2026-03-27)
