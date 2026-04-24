@@ -189,7 +189,7 @@
     <field name="organization_type"     type="string" indexed="true" stored="false" />
     <field name="recipient_groups"      type="string" indexed="true" stored="true" multiValued="true" />
     <field name="recipients_index"      type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="scan_id"               type="string" indexed="true" stored="true" />
+    <field name="scan_id"               type="string" indexed="true" stored="false" />
     <field name="sender_index"          type="string" indexed="true" stored="true" multiValued="true" />
     <field name="signed"                type="boolean" indexed="true" stored="true" />
     <field name="start"                 type="date" indexed="true" stored="true" />
