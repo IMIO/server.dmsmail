@@ -4,8 +4,10 @@ Changelog
 3.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Improved `scripts/run-reindex-security.py` with batching.
+  [sgeulette]
+- Upgraded imio.esign and imio.helpers
+  [sgeulette]
 
 3.1.2 (2026-04-24)
 ------------------
