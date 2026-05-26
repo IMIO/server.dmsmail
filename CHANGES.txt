@@ -1,6 +1,72 @@
 Changelog
 =========
 
+3.1.4 (unreleased)
+------------------
+
+- collective.behavior.talcondition 1.1.2
+
+    - Added parameter `return_bool=False` to `utils.evaluateExpressionFor` and
+      `utils._evaluateExpression` to ensure that returned result will always be
+      a bool (`True` or `False`).
+      [gbastien]
+
+- collective.contact.core 1.43.3
+
+    - Added edit icon on all contact basefields views.
+      [sgeulette]
+
+- collective.documentviewer 3.0.4
+
+    - blacked and isorted code
+      [sgeulette]
+
+    - Added zoom parameter when initializing the viewer. So it can be widened.
+      [sgeulette]
+
+- collective.js.datatables 4.1.3
+
+    - On Plone 4 ensure that javascript is inserted after jquery
+      [mpeeters]
+
+- imio.dms.mail 3.1.4
+
+    - Added "rename_title" action on dms files.
+      [chris-adam, sgeulette]
+
+    - Added hp usages validators on modification and deletion.
+      [chris-adam]
+
+    - Added Signer/Approving icon on personnel listing table.
+      [chris-adam, sgeulette]
+
+    - Added send_modes field on incoming (e)mails.
+      [chris-adam]
+
+- imio.esign 1.0b9
+
+    - Added session info size on quick look.
+      [chris-adam, sgeulette]
+
+    - Added "Open Paraphéo" button on sessions listing view.
+      [chris-adam]
+
+- imio.helpers 1.3.16
+
+    - Improved `path.is_test_url`.
+      [sgeulette]
+
+- imio.pm.locales 4.2.33.2
+
+    - Added translations for new value `labels_config_update_labels_access_cache` used in
+      `MeetingConfig.labelsConfig.update_local_roles`.
+      [gbastien]
+
+- imio.prettylink 1.25
+
+    - Use `zc.buildout=3.4`.
+      [gbastien]
+
 3.0-1 (2021-04-22)
 ------------------
 
