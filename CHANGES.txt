@@ -1,175 +1,150 @@
 Changelog
 =========
 
-3.0-1 (2021-04-22)
+3.1.4 (unreleased)
 ------------------
 
-- Use imio.dms.mail tag 3.0.
-  [sgeulette]
-- Added Products.PloneHotfix20210518
-  [sgeulette]
-- Added cron4plone zope config
-  [sgeulette]
-- Set pack gc to False, so we avoid problem with multiple dbs (async)
-  [sgeulette]
-- Added scripts directory
-  [sgeulette]
-- Added mailqueue dir
-  [sgeulette]
-- Added no-amqp.cfg and no-async.cfg
-  [sgeulette]
+- Upgraded collective.classification.folder 1.3.0
+    - Do not reindex ClassificationFolderSort when deleting.
+      [sgeulette]
+    - Do not display html in size warning
+      [chris-adam]
+- Upgraded collective.contact.core 1.43.3
+    - Added edit icon on all contact basefields views.
+      [sgeulette]
+- Upgraded imio.dms.mail 3.1.4
+    - Added "rename_title" action on dms files.
+      [chris-adam, sgeulette]
+    - Added hp usages validators on modification and deletion.
+      [chris-adam]
+    - Added Signer/Approving icon on personnel listing table.
+      [chris-adam, sgeulette]
+    - Added send_modes field on incoming (e)mails.
+      [chris-adam, sgeulette]
+    - Improved download barcode (type, size).
+      [sgeulette, chris-adam]
+- Upgraded imio.helpers 1.3.16
+    - Improved `path.is_test_url`.
+      [sgeulette]
+    - Added resize option to `barcode.generate_barcode`
+      [sgeulette]
+- Upgraded plonetheme.imioapps 2.64
+    - PARAF-445: Add style for the 'draft_full' state.
+      [sgeulette]
+    - Use help cursor for `question-circle icon` in  `@@parapheo` quick look column.
+      [gbastien]
 
-2.3-1 (2020-10-08)
+3.1.3 (2026-05-08)
 ------------------
 
-- Use imio.dms.mail tag 2.3.
+- Improved `scripts/run-reindex-security.py` with batching.
   [sgeulette]
-- Use Plone 4.3.20
-  [sgeulette]
-- Added soap2pm in base.cfg
-  [sgeulette]
-- Added restapi cfg file
-  [sgeulette]
-- Added ldap cfg file
+- Upgraded imio.esign and imio.helpers
   [sgeulette]
 
-2.2-1 (2019-09-12)
+3.1.2 (2026-04-24)
 ------------------
 
-- Use imio.dms.mail tag 2.2.
+- Pinned PyPDF2, reportlab.
   [sgeulette]
-- Use Plone 4.3.18
+- Set appy to 1.0.21
+  [sgeulette]
+- Changed Use REST API permission after solr installation
+  [sgeulette]
+- Upgraded col.dexteritytextindexer, col.dms.mailcontent, col.dms.scanbehavior, col.eeafaceted.batchactions,
+  col.iconifiedcategory, imio.helpers, imio.history, imio.zamqp.dms, plonethme.imioapps, Products.CMFDiffTool, six
+  [sgeulette]
+- Updated solr schema with scan_id column removal
   [sgeulette]
 
-2.1-1 (2018-08-22)
+3.1.1 (2026-03-27)
 ------------------
 
-- Use imio.dms.mail tag 2.1.
+- Added default public-url, so a migration can be done without puppet site part.
+  [sgeulette]
+- Upgraded imio.esign, plonetheme.imioapps
   [sgeulette]
 
-2.0-1 (2017-06-02)
+3.1.0 (2026-03-26)
 ------------------
 
-- Use imio.dms.mail tag 2.0.
+- Added script to replace portal type and class.
+  [sgeulette]
+- Do not start solr locally
+  [sgeulette]
+- Updated solr schema fields
+  [sgeulette]
+- Upgraded col.contact.core, col.dms.basecontent, col.documentgenerator, imio.esign, imio.fpaudit, imio.helpers,
+  imio.pyutils, imio.zamqp.core, imio.zamq.dms, pdbp, plonetheme.imioapps
   [sgeulette]
 
-1.1-1 (2016-04-19)
-------------------
+3.1.0rc1 (2026-03-19)
+---------------------
 
-- Use imio.dms.mail tag 1.1
-  [sgeulette]
-- Added contacts import script
+- Upgraded col.dms.basecontent, col.iconifiedcategory, imio.dms.mail, imio.esign, imio.zamqp.dms, plonetheme.imioapps.
   [sgeulette]
 
-1.0-1 (2015-11-25)
-------------------
-
-- Use imio.dms.mail tag 1.0
-  [sgeulette]
-- Use last released eggs
-  [sgeulette]
-- Added import principals script
-  [sgeulette]
-
-0.3.1-1 (2015-06-03)
+3.1.0b9 (2026-03-05)
 --------------------
 
-- Use imio.dms.mail tag 0.3.1
+- Updated collective.solr branch
+  [chris-adam]
+- Added API_ROOT_URL var and pinned some packages
   [sgeulette]
-- Use last released eggs
+- Added generate_pdf in demo.py
   [sgeulette]
-- Use imio.actionspanel
+- Added corrections.correct_mail_type function
   [sgeulette]
-- Corrected buildout to use imio.dms.amqp only on specific instance with one thread
-  [sgeulette]
-
-0.3-5 (2015-02-10)
-------------------
-
-- Use imio.helpers.
-  [sgeulette]
-- Use last version of collective.contact.widget
-  [sgeulette]
-- Use develop versions of Products.PasswordStrength, Products.PasswordResetTool, plone.app.locales
+- Upgraded col.contact.plonegroup, col.dms.basecontent, col.documentgenerator, col.eeafaceted.collectionwidget,
+  col.eeafaceted.dashboard, imio.dms.mail, imio.pm.wsclient, imio.zamqp.core, imio.zamqp.dms, plonetheme.imioapps
   [sgeulette]
 
-0.3-4 (2015-01-22)
-------------------
+3.1.0b8 (2026-02-10)
+--------------------
 
-- Use Products.PasswordStrength egg, last version of collective.dms.mailcontent, imio.migrator
+- Upgraded imio.dms.mail and imio.esign to improve UI.
   [sgeulette]
 
-0.3-3 (2014-12-22)
-------------------
+3.1.0b7 (2026-02-09)
+--------------------
 
-- Added communesplone.layout
-  [sgeulette]
-- Added iw.debug in instance-debug
+- Upgraded imio.dms.mail and plonetheme.imioapps.
   [sgeulette]
 
-0.3-2 (2014-12-11)
-------------------
+3.1.0b6 (2026-02-05)
+--------------------
 
-- Added an import script useful for demo site
-  [sgeulette]
-- Added global Extensions in prod
-  [sgeulette]
-- Upgraded collective.contact.core (widget backrefs)
+- Upgraded imio.dms.mail and imio.esign to correct view permissions.
   [sgeulette]
 
-0.3-1 (2014-12-01)
-------------------
+3.1.0b5 (2026-02-05)
+--------------------
 
-- Added amqp config
-  [mpeeters, sgeulette]
-- Use now imio.dms.mail 0.3
-  [sgeulette]
-- Upgraded to plone 4.3.3
-  [sgeulette]
-- Upgraded various eggs
+- Upgraded col.dms.basecontent, imio.dms.mail and imio.esign.
   [sgeulette]
 
-0.2-3 (2014-04-04)
-----------------
+3.1.0b3 (2026-01-23)
+--------------------
 
-- upgraded plone.api, collective.dms.mailcontent, collective.dms.batchcontent [sgeulette]
+- Used imio.helpers from sources and upgraded some versions.
+  [sgeulette]
 
-0.2-2 (2014-03-18)
-----------------
+3.1.0b2 (2026-01-21)
+--------------------
 
-- added ws.cfg to configure webservice if necessary.
-  [stephan]
+- Added SSO variables
+  [chris-adam]
+- Upgraded products to generate download barcode when esignature is present
+  [chris-adam]
 
-0.2-1 (2014-02-13)
-----------------
+3.1.0b1 (2026-01-18)
+--------------------
 
-- pinned for imio.dms.mail 0.2.
-  [stephan]
-
-0.1-4 (2014-01-30)
-----------------
-
-- really use zeoserver in standard in prod
-  [cedric, jfroche]
-
-0.1-3 (2014-01-30)
-----------------
-
-- move standard recipe to base. use zeoserver in standard in prod
-  [cedric, jfroche]
-
-0.1-2 (2014-01-30)
-----------------
-
-- remove unused parts
-  [cedric, jfroche]
-- use policy (imio.dms.policy)
-  [cedric, jfroche]
-- create port.cfg (to be used by puppet)
-  [cedric, jfroche]
-
-0.1-1 (2014-01-30)
-----------------
-
-- Initial release
-  [stephan]
+- Use imio.dms.mail tag 3.1.x
+  [sgeulette]
+- Added approbation and esign features
+  [sgeulette,cadam]
+- Added read mode.
+  [chris-adam, sgeulette]
+- Added signed state in om workflow.
+  [sgeulette]
