@@ -23,6 +23,13 @@ Changelog
       [chris-adam, sgeulette]
     - Improved download barcode (type, size).
       [sgeulette, chris-adam]
+- Upgraded imio.esign 1.0b9
+    - Added session info size on quick look.
+      [chris-adam, sgeulette]
+    - Added "Open Paraphéo" button on sessions listing view.
+      [chris-adam]
+    - Added parameter to define session files number limit
+      [sgeulette]
 - Upgraded imio.helpers 1.3.16
     - Improved `path.is_test_url`.
       [sgeulette]
