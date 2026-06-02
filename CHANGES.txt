@@ -4,7 +4,9 @@ Changelog
 3.1.5 (unreleased)
 ------------------
 
-- Refactored buildout to handle dev by default and kept buildout-main for prod. buildout.cfg is written by puppet with this last one.
+- Refactored buildout to handle dev by default. Puppet writes buildout.cfg to target buildout-main.cfg in production.
+  [sgeulette]
+- Upgraded imio.transmogrifier.iadocs
   [sgeulette]
 
 3.1.4 (2026-05-29)
