@@ -21,8 +21,8 @@ Let's use a symbolic link so docsplit can find ruby (if no ruby is already prese
 > sudo ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
 Then other documentviewer dependancies :
 > gem install docsplit
-> apt install graphicsmagick
-> apt install wv
+> sudo apt install graphicsmagick
+> sudo apt install wv
 
 imio.helpers barcode generation
 > apt install libpng-dev

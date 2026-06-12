@@ -21,8 +21,8 @@ Création d'un lien symbolique pour que docsplit puisse utiliser ruby (si pas de
 > sudo ln -s $HOME/.rvm/rubies/ruby-2.7.6/bin/ruby /usr/bin/ruby2.7
 Enfin, on peut installer les autres dépendances de documentviewer :
 > gem install docsplit
-> apt install graphicsmagick
-> apt install wv
+> sudo apt install graphicsmagick
+> sudo apt install wv
 
 Dépendance d'imio.helpers pour la génération de code-barre
 > apt install libpng-dev
