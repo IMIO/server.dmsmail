@@ -63,9 +63,9 @@ jobs:
       - name: Setup Zint
         run: |
           sudo apt install -qq -y libpng-dev
-          wget https://sourceforge.net/projects/zint/files/zint/2.9.1/zint-2.9.1-src.tar.gz
-          tar -xvf zint-2.9.1-src.tar.gz
-          cd zint-2.9.1-src
+          wget https://sourceforge.net/projects/zint/files/zint/2.10.0/zint-2.10.0-src.tar.gz
+          tar -xvf zint-2.10.0-src.tar.gz
+          cd zint-2.10.0-src
           mkdir build
           cd build
           sudo cmake ..
@@ -158,9 +158,9 @@ jobs:
       - name: Setup Zint
         run: |
           sudo apt install -qq -y libpng-dev
-          wget https://sourceforge.net/projects/zint/files/zint/2.9.1/zint-2.9.1-src.tar.gz
-          tar -xvf zint-2.9.1-src.tar.gz
-          cd zint-2.9.1-src
+          wget https://sourceforge.net/projects/zint/files/zint/2.10.0/zint-2.10.0-src.tar.gz
+          tar -xvf zint-2.10.0-src.tar.gz
+          cd zint-2.10.0-src
           mkdir build
           cd build
           sudo cmake ..

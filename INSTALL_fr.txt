@@ -26,9 +26,9 @@ Enfin, on peut installer les autres dépendances de documentviewer :
 
 Dépendance d'imio.helpers pour la génération de code-barre
 > apt install libpng-dev
-> wget https://sourceforge.net/projects/zint/files/zint/2.9.1/zint-2.9.1-src.tar.gz
-> tar -xvf zint-2.9.1-src.tar.gz
-> cd zint-2.9.1-src
+> wget https://sourceforge.net/projects/zint/files/zint/2.13.0/zint-2.13.0-src.tar.gz
+> tar -xvf zint-2.13.0-src.tar.gz
+> cd zint-2.13.0-src
 > mkdir build
 > cd build
 > cmake ..
@@ -53,7 +53,7 @@ Dépendances de Pyenv qui n'ont pas été installées dans la section précéden
 > sudo apt install libsqlite3-dev llvm libncursesw5-dev xz-utils /
 tk-dev libxmlsec1-dev libffi-dev liblzma-dev libsasl2-dev python3-dev libldap2-dev
 
-Installer Pyenv et le configurer : 
+Installer Pyenv et le configurer :
 > curl https://pyenv.run | bash
 > echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
 > echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
