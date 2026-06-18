@@ -84,6 +84,7 @@ Flake8 config: max-line-length=120, ignores E122/E126/E121/E226/E203/E704/W503/W
 - Site configuration via GenericSetup profiles in `profiles/` directories
 - Event handling through `subscribers.py` and `setuphandlers.py`
 - Data migration uses transmogrifier pipelines
+- Skip translation/locale updates: do not edit `.po`/`.pot` files by hand; `i18ndude` regeneration is run separately
 
 ## CI
 
