@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.5 (unreleased)
+3.1.5 (2026-06-19)
 ------------------
 
 - Refactored buildout to handle dev by default. Puppet writes buildout.cfg to target buildout-main.cfg in production.
