@@ -12,6 +12,53 @@ Changelog
   [sgeulette]
 - Added run script to reload workflow
   [sgeulette]
+- Upgraded collective.behavior.talcondition 1.1.2
+    - Added parameter `return_bool=False` to `utils.evaluateExpressionFor` and `utils._evaluateExpression` to ensure that returned result will always be a bool (`True` or `False`).
+- Upgraded collective.documentgenerator 3.48
+    - Added viewlet on SubTemplate to show its use in merge_templates field.
+    - Added `sub-templates-usage` view listing every sub-template usage.
+    - Use `Compromiser` evaluator.
+    - Added migration to `16` that will make sure existing POD templates are safe.
+    - Added parameter `prepend_pod_title=True` to `DocumentGenerationView._get_filename` so it is especially possible to not preprend pod template title to generated file filename.
+    - Close tag `<label>` correctly in `children_pod_template.pt`.
+- Upgraded collective.iconifiedcategory 0.75
+    - Make the `red not signed` icon less aggressive by using the normal version instead bold.
+- Upgraded dexterity.localroles 2.0.0b1
+    - Added `utils.register_affected_portal_type`and `utils.get_affected_portal_types` to get and store portal types concerned by local roles changes.
+    - Do not update security if request contains DEFER_SECURITY_UPDATE value (skips reindexObjectSecurity).
+    - Corrected tests setup
+    - Corrected json format in related field
+- Upgraded dexterity.localrolesfield 2.0.0b1
+    - Defered security update following request parameter DEFER_SECURITY_UPDATE.
+    - Used custom ZLogHandler.
+    - Improved security of 'related' field by restricting its value to JSON.
+    - Corrected tests setup
+- Upgraded imio.dms.mail 3.1.5
+    - Added temporary sub_templates_usage in Extensions/demo.py.
+    - Added defer_security_update parameter on IMPreManagerValidation wf adaptation
+    - Added "omail_signers_origin" option with 3 modes to define outgoing mail signers.
+    - Removed useless settings descriptions
+    - Refactored ContentCategoryGroup and ContentCategory creation
+    - Fixed approver userid in @@manage-approvals.
+    - Fixed start_approval_process audit log on unapprove_file.
+    - Improved import_sign_examples to handle multiple signers
+    - Do not display ownership fieldset
+    - Removed IScanFields on annex type
+    - Updated incoming mail_types and send_modes examples.
+    - Fixed AttributeError (get_person) raised in is_hp_used_in_signer_rules (PARAF-477).
+    - Allow removal of userid on a person if he's not in any group.
+    - Fixed duplicate transitions on wfa reapply in migration 3.1.
+- Upgraded imio.esign 1.0b10
+    - Fixed session size computation when an annex is deleted.
+    - In `@@session-annotation-info` display `UID` next to link to element.
+    - Display annex description in `@@parapheo` quick look column.
+    - Added red/green icon next to signers to show if not signed or signed.
+- Upgraded imio.zamqp.dms 0.25.0
+    - Added temp dir cleanup
+    - Added test_outgoing_mail.
+    - Used im send_modes field
+- Upgraded plonetheme.imioapps 2.65
+    - PARAF-476: added styles for `span.signer-not-signed`, `span.signer-signed` and `span.signer-refused`.
 
 3.1.4 (2026-05-29)
 ------------------
