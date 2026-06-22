@@ -4,8 +4,8 @@ Changelog
 3.1.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Removed useless files and moved script to scripts.
+  [sgeulette]
 
 3.1.5 (2026-06-19)
 ------------------
@@ -40,7 +40,6 @@ Changelog
     - Improved security of 'related' field by restricting its value to JSON.
     - Corrected tests setup
 - Upgraded imio.dms.mail 3.1.5
-    - Added temporary sub_templates_usage in Extensions/demo.py.
     - Added defer_security_update parameter on IMPreManagerValidation wf adaptation
     - Added "omail_signers_origin" option with 3 modes to define outgoing mail signers.
     - Removed useless settings descriptions
@@ -71,40 +70,25 @@ Changelog
 
 - Upgraded collective.classification.folder 1.3.0
     - Do not reindex ClassificationFolderSort when deleting.
-      [sgeulette]
     - Do not display html in size warning
-      [chris-adam]
 - Upgraded collective.contact.core 1.43.3
     - Added edit icon on all contact basefields views.
-      [sgeulette]
 - Upgraded imio.dms.mail 3.1.4
     - Added "rename_title" action on dms files.
-      [chris-adam, sgeulette]
     - Added hp usages validators on modification and deletion.
-      [chris-adam]
     - Added Signer/Approving icon on personnel listing table.
-      [chris-adam, sgeulette]
     - Added send_modes field on incoming (e)mails.
-      [chris-adam, sgeulette]
     - Improved download barcode (type, size).
-      [sgeulette, chris-adam]
 - Upgraded imio.esign 1.0b9
     - Added session info size on quick look.
-      [chris-adam, sgeulette]
     - Added "Open Paraphéo" button on sessions listing view.
-      [chris-adam]
     - Added parameter to define session files number limit
-      [sgeulette]
 - Upgraded imio.helpers 1.3.16
     - Improved `path.is_test_url`.
-      [sgeulette]
     - Added resize option to `barcode.generate_barcode`
-      [sgeulette]
 - Upgraded plonetheme.imioapps 2.64
     - PARAF-445: Add style for the 'draft_full' state.
-      [sgeulette]
     - Use help cursor for `question-circle icon` in  `@@parapheo` quick look column.
-      [gbastien]
 
 3.1.3 (2026-05-08)
 ------------------
