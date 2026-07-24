@@ -1,0 +1,54 @@
+# Collabora Online dev setup for server.dmsmail
+# =============================================
+#
+# Goal: browse Plone as usual on http://localhost:8081/<site-id> and edit
+# documents with Collabora. No nginx, no /etc/hosts edits.
+#
+# How it works:
+#   - The container runs with network_mode: host, so it shares the host's
+#     network. Collabora binds :9980 directly on the host (browser reaches it
+#     on localhost:9980), and "localhost:8081" INSIDE the container is the
+#     host's Plone. So both the browser AND Collabora's WOPI callback use the
+#     same origin (localhost:8081) -- which is required for Collabora's
+#     postMessage handshake (document resize, Save & Close) to work.
+#   - The instance binds all interfaces (base.cfg http-address = 8081).
+#
+# Plone registry records to set (Site Setup > Configuration Registry), once:
+#   collective.collabora.collabora_server_url = http://localhost:9980
+#       Browser-facing Collabora URL. Same-host-different-port => CORS mode,
+#       which only disables the fullscreen button; editing works.
+#   collective.collabora.plone_server_url     = (leave EMPTY)
+#       Collabora reaches Plone on the same localhost URL the browser uses,
+#       so no backend override and no site-id is needed here.
+#
+# collective.collabora normally refuses a localhost Plone URL (a containerized
+# Collabora would reach itself). With network_mode: host that guard is a false
+# positive, so imio.dms.policy bypasses it when COLLABORA_DEV_MODE is set
+# (dev.cfg instance environment-vars). Production never sets it.
+#
+# network_mode: host is Linux-only. On Docker Desktop (Mac/Windows) use the
+# host.docker.internal variant instead.
+#
+# Run:
+#   docker compose -f docker/docker-compose.yaml up
+#
+# Optional .env: ADMIN_USER, ADMIN_PASS, SSL_TERMINATION (default false).
+# Never commit a .env file.
+#
+# References:
+#   - https://hub.docker.com/r/collabora/code/tags
+#   - https://sdk.collaboraonline.com/docs/installation/CODE_Docker_image.html
+
+services:
+
+  collabora:
+    image: collabora/code:latest
+    restart: no
+    container_name: collabora-server
+    # Shares the host network: Collabora is on localhost:9980 and reaches
+    # Plone on localhost:8081. (ports/extra_hosts are unused with host net.)
+    network_mode: host
+    environment:
+      - username=${ADMIN_USER:-admin}
+      - password=${ADMIN_PASS:-admin}
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=${SSL_TERMINATION:-false}
