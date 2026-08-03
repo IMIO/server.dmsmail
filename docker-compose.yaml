@@ -13,10 +13,12 @@
 #     postMessage handshake (document resize, Save & Close) to work.
 #   - The instance binds all interfaces (base.cfg http-address = 8081).
 #
-# Plone registry records to set (Site Setup > Configuration Registry), once:
+# Plone registry records (Site Setup > Configuration Registry):
 #   collective.collabora.collabora_server_url = http://localhost:9980
-#       Browser-facing Collabora URL. Same-host-different-port => CORS mode,
-#       which only disables the fullscreen button; editing works.
+#       Set for you when the site is created (imio.dms.mail setuphandlers,
+#       collabora_server_url()). Only set it by hand on an older site.
+#       Same-host-different-port => CORS mode, which only disables the
+#       fullscreen button; editing works.
 #   collective.collabora.plone_server_url     = (leave EMPTY)
 #       Collabora reaches Plone on the same localhost URL the browser uses,
 #       so no backend override and no site-id is needed here.
@@ -29,8 +31,8 @@
 # network_mode: host is Linux-only. On Docker Desktop (Mac/Windows) use the
 # host.docker.internal variant instead.
 #
-# Run:
-#   docker compose -f docker/docker-compose.yaml up
+# Run, from the repository root:
+#   docker compose up
 #
 # Optional .env: ADMIN_USER, ADMIN_PASS, SSL_TERMINATION (default false).
 # Never commit a .env file.
