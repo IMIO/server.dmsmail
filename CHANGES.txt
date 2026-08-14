@@ -6,6 +6,65 @@ Changelog
 
 - Removed useless files and moved script to scripts.
   [sgeulette]
+- Upgraded collective.behavior.talcondition 1.1.3
+    - In case an error occurs, output more informations to the log.
+- Upgraded collective.classification.folder 1.3.1
+    - Added a commit_every parameter visible for zope admin to handle intermediate transaction commit.
+    - Made internal_reference_no required on classification folder
+- Upgraded collective.classification.tree 1.3.0
+    - Fixed `ConnectionStateError` in `iterate_over_tree`.
+- Upgraded collective.documentgenerator 3.49
+    - Improved POD context variables to handle Python structures (list, tuple, dict). BREAKING CHANGE: a context variable `1` is now given to the template as the integer `1` and no longer as the string `'1'` (same for `1.5` giving a float and `None` giving `None`). Surround such a value with double quotes (`"1"`) to keep it a string. Invalid Python literal values (plain text, `2026-01-01`, ...) are still kept as a string. (MOD-1077)
+- Upgraded collective.iconifiedcategory 0.76
+    - Use `normal` version (instead `bold`) for icons `grey not to sign` and `red not signed` everywhere.
+    - Fixed icons in `tooltipster` sometimes wrongly displayed next to the element's title.
+    - Use `base_hasattr` and `aq_base` for `getattr` to avoid getting attribute from a parent.
+- Upgraded collective.messagesviewlet 1.0b4
+    - Add Plone 6.1 compatibility by replacing pkg_resources with importlib
+- Upgraded dexterity.localroles 2.0.0b2
+    - Replaced `json.loads` with `ast.literal_eval` (DMS-1218).
+- Upgraded dexterity.localrolesfield 2.0.0b2
+    - Replaced `json.loads` with `ast.literal_eval` (DMS-1218).
+- Upgraded imio.dms.mail 3.1.6
+    - Added icon colum to show if signers are defined on sub/templates.
+    - Applied signer rules when an appendix is added first on an outgoing mail (when template_first mode). If no rule applies, set empty signers value.
+    - Updated `Extensions/demo.py` classification tree cache invalidation to the new `iterate_over_tree_data` cache key (DMS-1216).
+    - Considered seal when checking if a signer is defined on a sub/template.
+    - Converted personnel-folder from z3c.table listing to faceted dashboard.
+    - Fixed JSON quoting in localroles configuration (DMS-1218).
+    - Added sign_request content to handle external documents to be signed.
+    - Redirected to container after an annex is added.
+    - Replaced implements by implementer
+    - Document generation "d-print-to-sign" now takes into account "to_print" attribute of files. (PARAF-220)
+    - Added "d-print-signed" template to bulk print signed files
+    - Removed download barcode paragraph at first generation when not esigned related
+    - Automatically set the "to print" flag on outgoing mail files. (PARAF-220)
+    - Added action RecreateSession.
+    - Set max_objects to 0 for some templates
+    - Removed the default predefined title on annexes categories (DMS-1217).
+    - An annex left without a title now takes the file name (DMS-605).
+- Upgraded imio.esign 1.0.0
+    - Avoided error when deleting site.
+    - Improved ExternalSessionFeedback audit.
+    - When a session status is received as completed, mark each signer as signed.
+    - Added action RecreateSession (PARAF-420).
+    - Handled return code 60: external session deleted
+- Upgraded imio.helpers 1.3.17
+    - Try to avoid being blocked when downloading image in `xhtml.storeImagesLocally` by setting a `User-agent` header.
+    - Added create parameter in `setup.load_type_from_package` and `setup.load_workflow_from_package` to create the type or workflow if it does not exist.
+    - In `vocabularies.get_users_voc` use `@@pas_search` to get users so it will merge user infos from various sources, including `mutable_properties` to workaround `SIZELIMIT_EXCEEDED` when using LDAP.
+- Upgraded imio.pm.locales 4.2.33.3
+    - Added translations for `searchitemsofmygroupswithneededfollowup` and `searchitemsofmygroupswithprovidedfollowup`.
+    - Added translations for `MeetingItem.privacy` new values.
+    - Added translations for new value `labels_config_update_labels_access_cache` used in `MeetingConfig.labelsConfig.update_local_roles`.
+    - Added translations for new fields `ToolPloneMeeting.showExternalLinksSection`, `MeetingConfig.cssTransforms` and `MeetingItem.groupsInChargeNotes`.
+- Upgraded imio.zamqp.dms 0.26.0
+    - Upgraded appy to 1.0.21.
+    - Corrected test
+    - Checked also on scan_id when finding signed file. Improved tests
+    - Fixed omail update when involved in approval.
+    - Updated OutgoingGeneratedMail consumer to handle sign_request
+    - Ignored an incoming email when scan_id already exists
 
 3.1.5 (2026-06-19)
 ------------------
