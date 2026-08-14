@@ -4,8 +4,8 @@ Changelog
 3.1.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Added `scripts/run-solr-count.py`.
+  [sgeulette]
 
 3.1.6 (2026-08-14)
 ------------------
