@@ -10,6 +10,8 @@ Changelog
 
 - Removed useless files and moved script to scripts.
   [sgeulette]
+- Upgraded robot test stack to the last python 2.7 releases (PARAF-166).
+  [chris-adam]
 - Upgraded collective.behavior.talcondition 1.1.3
     - In case an error occurs, output more informations to the log.
 - Upgraded collective.classification.folder 1.3.1
