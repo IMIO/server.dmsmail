@@ -147,11 +147,10 @@ robot-server:  ## Starts robot server
 
 .PHONY: doc
 # robotframework 3.2.2 warns on the deprecated syntax still used by selenium2screenshots: filtered out
-doc: SHELL=/bin/bash -o pipefail
+doc: SHELL=/bin/bash
 doc:  ## Runs `doc.robot` (opt='-i "RUN1"')
 	# can be run by example with: make doc opt='-t "Contacts *"' or make doc opt='-i "RUN1"'  (or -e to exclude)
-	# env ZSERVER_HOST=localhost ZSERVER_PORT=55001 bin/robot -l NONE -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot
-	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 PYTHONUNBUFFERED=1 $(headless) bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot 2>&1 | grep -v "is deprecated"
+	env ZSERVER_HOST=localhost ZSERVER_PORT=55001 PYTHONUNBUFFERED=1 $(headless) bin/robot -r NONE $(opt) src/imio.dms.mail/imio/dms/mail/tests/robot/doc.robot 2> >(grep -v "is deprecated" >&2)
 	rm geckodriver*.log
 
 .PHONY: doch
