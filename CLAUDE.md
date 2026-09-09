@@ -59,6 +59,7 @@ Flake8 config: max-line-length=120, ignores E122/E126/E121/E226/E203/E704/W503/W
 - **collective.documentgenerator**: Document generation via LibreOffice/appy
 - **imio.zamqp.\***: AMQP async processing (RabbitMQ)
 - **imio.esign**: E-signature support
+- **imio.transmogrifier.iadocs**: used to operate data retrieval. Read `docs/imio.transmogrifier.iadocs.md` when working on this package.
 
 ### External Services
 
