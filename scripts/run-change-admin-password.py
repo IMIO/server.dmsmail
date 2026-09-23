@@ -10,7 +10,6 @@ import transaction
 
 
 logger = logging.getLogger("update_zope_admin_password")
-portal = obj  # noqa
 setup_logger()
 setup_app(app)  # noqa
 
