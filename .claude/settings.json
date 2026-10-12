@@ -1,11 +1,2 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(bin/test:*)",
-      "Bash(du:*)",
-      "Bash(gh pr diff:*)",
-      "Bash(gh pr view:*)",
-      "Bash(ls:*)"
-    ]
-  }
 }

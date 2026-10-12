@@ -40,7 +40,7 @@ Flake8 config: max-line-length=120, ignores E122/E126/E121/E226/E203/E704/W503/W
 
 ### Buildout Configuration Chain
 
-`buildout.cfg` → `buildout-main.cfg` → extends `base.cfg` + `port.cfg` + `amqp.cfg` + `dev.cfg` + `test.cfg`
+`buildout.cfg` → `buildout-main-dev.cfg` → extends `base.cfg` + `port.cfg` + `amqp.cfg` + `dev.cfg` + `test.cfg`. `buildout-main.cfg` is the production chain (`base.cfg` + `port.cfg` + `amqp.cfg` + `prod.cfg`).
 
 - **base.cfg**: Core Zope instance definition, ZCML loading, eggs
 - **port.cfg**: All port assignments (instance1=8081, debug=8089, ZEO=8080, LibreOffice=2002, Solr=8983)
@@ -85,7 +85,7 @@ Flake8 config: max-line-length=120, ignores E122/E126/E121/E226/E203/E704/W503/W
 - Site configuration via GenericSetup profiles in `profiles/` directories
 - Event handling through `subscribers.py` and `setuphandlers.py`
 - Data migration uses transmogrifier pipelines
-- Skip translation/locale updates: do not edit `.po`/`.pot` files by hand; `i18ndude` regeneration is run separately
+- imio.dms.mail: skip translation/locale updates (`i18ndude` regeneration is run separately). Other packages: update `.po`/`.pot` with the change, through the package's `update.sh`; in collective.documentgenerator edit them by hand, because its `update.sh` corrupts `setuphandlers.py`
 
 ## CI
 
