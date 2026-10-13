@@ -7,6 +7,7 @@ from collective.relationhelpers.api import get_field_and_schema_for_fieldname
 from imio.dms.mail import CONTACTS_PART_SUFFIX
 from imio.dms.mail import CREATING_GROUP_SUFFIX
 from imio.helpers.content import safe_encode
+from imio.helpers.content import uuidToObject as uuid_to_object
 from plone import api
 from plone.app.uuid.utils import uuidToObject
 from Products.CMFPlone.utils import safe_unicode
@@ -827,3 +828,72 @@ def set_creating_group(self, types='', uid='', change='', force=''):
                 obj.reindexObject(['assigned_group'])
     out.append('Modified {} objects'.format(modified))
     return '\n'.join(out)
+
+
+def set_templates_signing(self, mode='', change=''):
+    """Reset approvings and esign on ConfigurablePODTemplate having a signers config.
+
+    :param self: portal is the best
+    :param mode: 'off' => no approver + esign disabled; 'on' => themself approver + esign enabled
+    :param change: must be to 1 to apply changes
+    :return: messages string
+    """
+    SIGNING_TOKENS = {u'_empty_': u'* None', u'_themself_': u'* Themself', u'_seal_': u'* Seal'}
+
+    def signer_title(uid):
+        """Return the held position full title of a signers line 'signer' value."""
+        if uid in SIGNING_TOKENS:
+            return SIGNING_TOKENS[uid]
+        hp = uuid_to_object(uid, unrestricted=True)
+        return hp is not None and hp.get_full_title(first_index=1) or u'?? unknown uid %s' % uid
+
+    def approvings_titles(uids):
+        """Return the person titles of a signers line 'approvings' value."""
+        titles = []
+        for uid in uids:
+            if uid in SIGNING_TOKENS:
+                titles.append(SIGNING_TOKENS[uid])
+                continue
+            person = uuid_to_object(uid, unrestricted=True)
+            titles.append(person is not None and person.get_title(include_person_title=False)
+                          or u'?? unknown uid %s' % uid)
+        return u', '.join(titles)
+
+    if not check_zope_admin():
+        return "You must be a zope manager to run this script"
+    out = []
+    out.append("Set/unset esign on templates. Possible parameters:")
+    out.append("-> mode=on|off : on => themself approver + esign enabled. off => no approver + esign disabled")
+    out.append("-> change=1 : apply changes. Default 0")
+    out.append("")
+    if mode not in ('off', 'on'):
+        return "\n".join(out)
+    approving = mode == 'on' and u'_themself_' or u'_empty_'
+    esign = (mode == 'on')
+    out = ["<h2>Signing config on templates: mode '%s'</h2>" % mode]
+    if change != '1':
+        out.append("<p><strong style='color:orange;'>DRY RUN MODE - No changes will be applied</strong></p>")
+    count = 0
+    for brain in self.portal_catalog(portal_type='ConfigurablePODTemplate'):
+        obj = brain.getObject()
+        signers = getattr(obj, 'signers', None)
+        if not signers:
+            continue
+        count += 1
+        # a "_empty_" signer cannot be approved by "_themself_" (see validate_signer_approvings)
+        new_signers = [dict(row, approvings=[row['signer'] == u'_empty_' and u'_empty_' or approving])
+                       for row in signers]
+        out.append('%s: esign %s => %s' % (object_link(obj), getattr(obj, 'esign', False), esign))
+        for old, new in zip(signers, new_signers):
+            if old['approvings'] == new['approvings']:
+                continue
+            out.append(safe_encode(u'&nbsp;&nbsp;%d. %s: %s => %s' % (
+                old['number'], signer_title(old['signer']), approvings_titles(old['approvings']),
+                approvings_titles(new['approvings']))))
+        if not esign and getattr(obj, 'seal', False) and any(row['signer'] != u'_empty_' for row in new_signers):
+            out.append('&nbsp;&nbsp;!! seal=True with esign=False: template will be invalid on next edit')
+        if change == '1':
+            obj.signers = new_signers
+            obj.esign = esign
+    out.append('<p>Total: %d templates %s</p>' % (count, change == '1' and 'updated' or 'to update'))
+    return '\n<br />'.join(out)

@@ -2,6 +2,7 @@ active
 bin/
 checkversion*.*
 copy-data.sh
+.claude
 .coverage
 data-transfer.cfg*
 .db-version
@@ -14,6 +15,7 @@ docs/html
 docs/make.bat
 dt_csv_dir*
 dt_files_dir*
+.grok
 htmlcov/
 .idea/
 imports/*
