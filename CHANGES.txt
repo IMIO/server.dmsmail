@@ -4,7 +4,7 @@ Changelog
 3.1.7 (unreleased)
 ------------------
 
-- Added collective.collabora 1.3.1: Collabora edit, to enable per site (DMS-1106, DMS-1243).
+- Added collective.collabora (DMS-1106).
   [chris-adam]
 
 3.1.6 (2026-08-14)
