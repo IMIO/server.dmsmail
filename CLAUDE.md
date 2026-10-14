@@ -32,61 +32,16 @@ make doc opt='-i "RUN1"'           # Run doc.robot tests (can filter by tag/name
 make gui-test opt='-t "* response"' # Run dmsmail.robot GUI tests
 ```
 
-### Linting
+## Key Packages
 
-Flake8 config: max-line-length=120, ignores E122/E126/E121/E226/E203/E704/W503/W504.
-
-## Architecture
-
-### Buildout Configuration Chain
-
-`buildout.cfg` → `buildout-main-dev.cfg` → extends `base.cfg` + `port.cfg` + `amqp.cfg` + `dev.cfg` + `test.cfg`. `buildout-main.cfg` is the production chain (`base.cfg` + `port.cfg` + `amqp.cfg` + `prod.cfg`).
-
-- **base.cfg**: Core Zope instance definition, ZCML loading, eggs
-- **port.cfg**: All port assignments (instance1=8081, debug=8089, ZEO=8080, LibreOffice=2002, Solr=8983)
-- **dev.cfg**: Auto-checkout of all source packages, debug mode, extends `sources-dev.cfg`
-- **test.cfg**: Test runners (test, testme, coverage, coverageme, robot)
-- **versions-base.cfg** / **versions-dev.cfg**: Pinned package versions
-
-### Key Packages
-
-- **imio.dms.mail** (`src/imio.dms.mail/`): Core DMS mail application — content types, workflows, views, event subscribers. This is where most development happens.
-- **imio.dms.policy** (`src/imio.dms.policy/`): Policy/integration layer, ZCML entry point
-- **collective.dms.mailcontent**: Mail content type definitions
-- **collective.dms.basecontent**: Base DMS content types
-- **collective.contact.\***: Contact management subsystem
-- **collective.eeafaceted.\***: Faceted navigation/dashboard/batch actions
-- **collective.documentgenerator**: Document generation via LibreOffice/appy
-- **imio.zamqp.\***: AMQP async processing (RabbitMQ)
-- **imio.esign**: E-signature support
+- **imio.dms.mail** (`src/imio.dms.mail/`): Core DMS mail application. This is where most development happens.
 - **imio.transmogrifier.iadocs**: used to operate data retrieval. Read `docs/imio.transmogrifier.iadocs.md` when working on this package.
 
-### External Services
+## Important Directories
 
-- **LibreOffice** on port 2002 (document conversion/generation)
-- **Solr** on port 8983 (optional search engine)
-- **ZEO** on port 8080 (shared ZODB server, optional for dev)
-- **Keycloak** for SSO/OIDC authentication
-- **RabbitMQ** for AMQP async tasks
-
-### Important Directories
-
-- `src/`: All 70+ source packages managed by mr.developer
-- `Extensions/`: Zope external methods (demo.py, corrections.py, imports.py)
-- `parts/omelette/`: Symlink forest of all installed packages. 
+- `parts/omelette/`: Symlink forest of all installed packages.
   When searching code, it must be done exclusively here. You can search there at any directory level without confirmation.
-- `var/filestorage/Data.fs`: ZODB database file
-- `var/blobstorage/`: Binary blob storage
 
-### Conventions
+## Conventions
 
-- Namespace packages use `imio.*`, `imio.dms.*`, `collective.*` patterns
-- Content types use Dexterity (not Archetypes)
-- Site configuration via GenericSetup profiles in `profiles/` directories
-- Event handling through `subscribers.py` and `setuphandlers.py`
-- Data migration uses transmogrifier pipelines
 - imio.dms.mail: skip translation/locale updates (`i18ndude` regeneration is run separately). Other packages: update `.po`/`.pot` with the change, through the package's `update.sh`; in collective.documentgenerator edit them by hand, because its `update.sh` corrupts `setuphandlers.py`
-
-## CI
-
-GitHub Actions (`.github/workflows/main.yml`): runs `bin/testme` on Ubuntu 22.04 with Python 2.7.18 and Plone 4.3. Coverage published to Coveralls (skipped on branch 3.1.X).
