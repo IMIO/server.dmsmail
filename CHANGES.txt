@@ -4,6 +4,8 @@ Changelog
 3.1.7 (unreleased)
 ------------------
 
+- Documented the upgrade steps in README.txt (DMS-1249).
+  [chris-adam]
 
 3.1.6 (2026-08-14)
 ------------------
