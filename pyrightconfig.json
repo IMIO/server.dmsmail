@@ -1,0 +1,11 @@
+{
+    "include": [
+        "src"
+    ],
+    "extraPaths": [
+        "parts/omelette"
+    ],
+    "pythonPlatform": "Linux",
+    "typeCheckingMode": "basic",
+    "reportMissingModuleSource": "none"
+}
