@@ -43,14 +43,18 @@ brains = pc.unrestrictedSearchResults(portal_type=portal_types, sort_on='created
 pklfile = batch_hashed_filename('dmsmail.run-reindex-security.pkl', (portal_types,))
 batch_keys, batch_config = batch_get_keys(pklfile, loop_length=len(brains), log=True)
 
+count = 0
 for brain in brains:
     key = brain.UID
     if batch_skip_key(key, batch_keys, batch_config):
         continue
     obj = brain.getObject()
+    count += 1
     if args.group_encoder and ensure_set_field(obj, "creating_group", default_creating_group(obj.getOwner())):
         obj.reindexObject(["assigned_group"])
     obj.reindexObjectSecurity()
+    if count % 500 == 0:
+        logger.info("Reindexed: %d", count)
     if batch_handle_key(key, batch_keys, batch_config):
         break
 else:
