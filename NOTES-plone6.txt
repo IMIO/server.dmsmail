@@ -1,0 +1,31 @@
+Plone 6.2 branch (plone6-chris-adam)
+====================================
+
+Based on origin/plone6 (sgeulette, laulaz, bsuttor, rdubois, chris-adam, 2025-04 to 2025-07), rebased on master.
+
+Rebase conflicts
+----------------
+Resolved toward the plone6 side (their Plone 6.1 cfg), then rewritten for Plone 6.2 in one commit:
+- e60144b first step to update sources: base.cfg, buildout.cfg, requirements.txt, sources-dev.cfg, test.cfg,
+  versions-base.cfg
+- edaa173 continue to tests/errors: sources-base.cfg
+- ff6a147 continue to try py3.12 plone6.1: prod.cfg
+- 4ab027a Modified Makefile to work again: Makefile
+- 54a54ef Refactored buildout files: buildout-main.cfg, dev.cfg
+- 4fd2cff Avoided gha test job: .github/workflows/main.yml
+Master's Plone 4.3 changes to these files (pins, sources-dev branches) are not kept: the Plone 6.2 values come
+from imio.dms.policy (branch plone6: checkouts.cfg, test-6.2.cfg). Commits already on master were dropped.
+
+Plone 6.2 layout
+----------------
+- base.cfg: Plone 6.2.2 versions (+ extra, ecosystem), WSGI instance1, zcml imio.dms.policy only, zope.conf
+  locale, product-configs imio.dms.mail, imio.fpaudit, imio.zamqp.core (client_id), beaker.
+- sources.cfg: migration branches of every iA.Docs package (= imio.dms.policy checkouts.cfg + the policy itself
+  + collective.upgrade).
+- versions-base.cfg: releases (as imio.dms.policy test-6.2.cfg) + picked versions.
+- dev.cfg / test.cfg / prod.cfg: no amqp, async, monitor or iw.debug parts.
+- Removed: amqp.cfg, async.txt, no-amqp.cfg, no-async.cfg, zope_add_async.conf, zeo_async.conf, dev-zeo.cfg,
+  buildout-main-dev.cfg, sources-base.cfg, sources-dev.cfg, standard-config.cfg (collective.recipe.plonesite).
+- scripts/create-site.py (make standard-config) creates the site: classic distribution, fr, imio.dms.mail:examples.
+- horse-with-no-namespace is installed with pip (requirements.txt): it doesn't work as a buildout egg.
+- Not reviewed: Dockerfile, docker-*.{sh,py}, .github workflows, solr.cfg, ldap.cfg, run-scripts.py.
