@@ -56,6 +56,7 @@ upgrade:  ## Runs `run-portal-upgrades` plone script (plone upgrade only)
 standard-config:  ## Creates the iA.Docs site 'standard' (site_profile=imio.dms.mail:default for an empty site)
 	if ! test -f bin/instance1;then make buildout;fi
 	mkdir -p var/filestorage var/blobstorage
+	bin/instance1 run standard-config.py
 	bin/instance1 run scripts/create-site.py standard $(site_profile)
 
 .PHONY: run
