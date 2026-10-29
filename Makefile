@@ -7,6 +7,7 @@ instance1_port=$(shell grep instance1-http port.cfg|cut -c 18-)
 copydata=1
 instance=instance-debug
 profile=imio.dms.mail:singles
+site_profile=imio.dms.mail:examples
 commit=0
 
 all: run
@@ -18,8 +19,10 @@ help:
 # if command -v virtualenv-2.7; then virtualenv-2.7 . ; elif command -v python2 >/dev/null && command -v virtualenv; then virtualenv -p python2 . ; fi
 
 .PHONY: setup
-setup:  ## Setups environment
-	virtualenv .
+setup:  ## Setups environment (Python 3.13 from pyenv)
+	if ! test -f .python-version; then pyenv local `pyenv versions --bare |grep "^3.13" |tail -1`; fi
+	`pyenv which python3` -m venv .
+	git checkout .gitignore
 	./bin/pip install --upgrade pip
 	./bin/pip install -r requirements.txt
 
@@ -50,10 +53,10 @@ upgrade:  ## Runs `run-portal-upgrades` plone script (plone upgrade only)
 	@#./bin/upgrade-portals --username admin -A -G profile-imio.dms.mail:default $(plone)
 
 .PHONY: standard-config
-standard-config:  ## Creates a standard plone site
-	if ! test -f bin/buildout;then make setup;fi
-	bin/buildout -vt 5 -c standard-config.cfg
-	git checkout .gitignore
+standard-config:  ## Creates the iA.Docs site 'standard' (site_profile=imio.dms.mail:default for an empty site)
+	if ! test -f bin/instance1;then make buildout;fi
+	mkdir -p var/filestorage var/blobstorage
+	bin/instance1 run scripts/create-site.py standard $(site_profile)
 
 .PHONY: run
 run:  ## Runs `bin/instance1 fg`
