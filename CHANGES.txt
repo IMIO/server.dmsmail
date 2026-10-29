@@ -6,6 +6,8 @@ Changelog
 
 - Documented the upgrade steps in README.txt (DMS-1249).
   [chris-adam]
+- Restored the SSO and API_ROOT_URL environment variables, needed to send esign sessions.
+  [chris-adam]
 
 3.1.6 (2026-08-14)
 ------------------
