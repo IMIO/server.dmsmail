@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser("bin/instance...")
 parser.add_argument("-pt", "--portal-types", help="Comma-separated list of portal types to search (e.g. File,Image)",
                     default="dmsincomingmail,dmsincoming_email")
 parser.add_argument("-ge", "--group-encoder", dest="group_encoder", action="store_true", help="Group encoder set.")
+parser.add_argument("-sg", "--state-group", dest="state_group", action="store_true", help="State group set.")
 
 args = parser.parse_args()
 
@@ -43,6 +44,11 @@ brains = pc.unrestrictedSearchResults(portal_type=portal_types, sort_on='created
 pklfile = batch_hashed_filename('dmsmail.run-reindex-security.pkl', (portal_types,))
 batch_keys, batch_config = batch_get_keys(pklfile, loop_length=len(brains), log=True)
 
+if args.group_encoder:
+    logger.info("=> group encoder / creating_group update with assigned_group reindex")
+if args.state_group:
+    logger.info("=> state_group reindex")
+
 count = 0
 for brain in brains:
     key = brain.UID
@@ -52,6 +58,8 @@ for brain in brains:
     count += 1
     if args.group_encoder and ensure_set_field(obj, "creating_group", default_creating_group(obj.getOwner())):
         obj.reindexObject(["assigned_group"])
+    if args.state_group and obj.portal_type in ("dmsincomingmail", "dmsincoming_email", "dmsoutgoingmail", "task"):
+        obj.reindexObject(["state_group"])
     obj.reindexObjectSecurity()
     if count % 500 == 0:
         logger.info("Reindexed: %d", count)
