@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1.6.1 (unreleased)
+3.1.6.1 (2026-11-11)
 --------------------
 - Upgraded imio.dms.policy to include products-plonehotfix20261110
 - Aligned robotframework pins with master (plone.app.robotframework 1.2.x needs robotframework >= 3.2)
