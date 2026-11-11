@@ -4,8 +4,7 @@ Changelog
 3.0.62 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Upgraded imio.dms.policy to include products-plonehotfix20261110
 
 3.0.61 (2025-05-09)
 -------------------
