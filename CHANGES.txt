@@ -4,8 +4,106 @@ Changelog
 3.1.7 (unreleased)
 ------------------
 
+- Upgraded imio.dms.policy to include products-plonehotfix20261110
+  [sgeulette]
+- Upgraded collective.contact.core 1.44.0
+    - Added `use_type_term_to_search_contact` option to add a one-word translated type term (organization, person, role, post, list) in contacts SearchableText, to filter by type when searching.
+- Upgraded collective.contact.plonegroup 1.57
+    - Fixed `@@display-group-users.group_title(short=True)` when organization title contains text between parentheses.
+- Upgraded collective.documentgenerator 3.50
+    - Removed the duplicated "no value" option of the `style_template` field. (MOD-1080)
+    - Converted sub-templates usage view and viewlet to z3c.table and displayed the merge variable name. (PARAF-512)
+- Upgraded collective.eeafaceted.z3ctable 2.31
+    - Fixed `DateColumn` displaying `EMPTY_DATE` (01/01/1950) when the brain comes from solr.
+- Upgraded collective.iconifiedcategory 0.77
+    - Used `self.request` instead of `self.table.request` in iconified columns `alt` so a column can be used without table (mainly in tests).
+- Upgraded collective.messagesviewlet 1.0b5
+    - Fix messages disappearing (or appearing) up to 2 hours too early when the server isn't in UTC.
+    - `add_message`: default `start` is now computed at call time, in the portal timezone, instead of once at import time.
+- Upgraded dexterity.localrolesfield 2.0.0b3
+    - Deferred objects security reindex in local roles configuration form when `DEFER_SECURITY_UPDATE` env var is set.
+- Upgraded imio.actionspanel 1.71
+    - Added parameter `initiator=None` to `ContentDeletableAdapter.mayDelete`, managed by `events.onObjWillBeRemoved`, containing the originally deleted element when subelements trigger the `mayDelete` mechanism.
+- Upgraded imio.annex 2.28.0
+    - Moved `PMCheckBoxFieldWidget` from `Products.PloneMeeting` to `imio.annex.widgets.checkbox.OrderableCheckBoxFieldWidget` (renamed from `AnnexesCheckBoxFieldWidget`).
+    - Moved `ItemExportPDFForm` from `Products.PloneMeeting` to `imio.annex.browser.views.ExportPDFForm`: needs to be registered as `@@export-pdf-form` by the using applications.
+    - Added `ContainedAnnexesVocabulary` and `ExportPDFElementsVocabulary` in `imio.annex.vocabularies`, with hooks to filter/order the listed annexes and style the term title.
+    - Added `_get_annexes`, `_annex_content`, `_check_element` and `_element_annexes` hooks in `ConcatenateAnnexesBatchActionForm`.
+    - Added test infrastructure (`testing.py` and `tests`).
+    - `OrderableCheckBoxWidget` options get an `odd`/`even` CSS class, recomputed after a drag and drop when the widget is `sortable`.
+    - Set `DownloadAnnexesBatchActionForm.MAX_TOTAL_SIZE` (Zip download) to 250Mb.
+    - Added `DownloadElementsAnnexesBatchActionForm`, a variant of `DownloadAnnexesBatchActionForm` that works on a dashboard of elements containing annexes, with optional storage of annexes by folder in the Zip file.
+- Upgraded imio.dataexchange.core 0.7.0
+    - Added Python 3 support, keeping Python 2 compatibility.
+- Upgraded imio.dms.mail 3.1.7
+    - Added "Export to PDF" actions on dmsoutgoingmail and sign_request, using the imio.annex export form: before signature when neither "esign" nor "seal" is set, after signature otherwise.
+    - Added "Export to PDF" batch actions on outgoing mail and requests dashboards.
+    - Removed "d-print-to-sign" and "d-print-signed" templates from new sites and disabled them in migration: they are replaced by "Export to PDF".
+    - Replaced "doc" file format by "docx" in settings and considered it in "Export to PDF".
+    - Only a pdf appendix file can be set "to print" (IIconifiedPrintable adapter).
+    - Added "odt", "ods" and "odp" documentviewer auto layout file types.
+    - Added items count on the "requests" tab.
+    - Updated robotframework tests to include electronic signature (PARAF-166).
+    - Fixed "ConnectionStateError" crash when rendering datagrid fields in settings through robotframework tests (DMS-434).
+    - Updated the incoming email routing and state set descriptions (DMS-1215).
+    - Added DEFER_SECURITY_UPDATE env var handling in configure_group_encoder settings and wf adaptations
+    - Improved file ordering in eSign session: ged files most recent first, appendices sorted alphabetically.
+    - Fixed the ``@@approvals`` view listing files order (PARAF-510).
+    - Improved "Approb." and "Signed" icons behavior and validation (PARAF-483).
+    - Made the Solr sync keep the changes made on the site during the run: each object is read fresh and sent at once (DMS-1249).
+    - Used DmsCategorizedObjectInfoAdapter on appendix files
+    - Adapted list_last_scan to discriminate incoming mails and emails on the parent type (DMS-1235).
+    - Added signer rules icon on sub-templates usage view. (PARAF-512)
+    - Added consistency to signature use cases
+    - Allowed ``dir_general`` group members to select any treating group on outgoing mail (DMS-823).
+    - Fixed filter collision in dashboard collections (PARAF-546).
+    - Resynced the approval annotation when the signers field is emptied (PARAF-497).
+    - Warned if existing documents have been generated with different signers than the parent ones
+    - Applied signer rules when a dmsommainfile is added manually first (not generated) on an outgoing mail with template_first mode activated. If no rule applies, set empty signers value.
+    - Fixed migration problem causing bad category icon_url (PARAF-547)
+    - Removed a deleted pdf file from the approval annotation even when it is not in an esign session
+    - Set quick upload object_unique_id to True to avoid 'file already exists' error
+    - Fixed duplicated approvers validation in signing rules (PARAF-559).
+    - Fixed signing fields invariant raising a false modification error when stored values are ``None`` (PARAF-563).
+    - Fixed mail type titles in outgoing mail dashboard column (SUP-56039).
+    - Added a batch approval action on outgoing mail and requests "to approve" dashboards, for a signer approving for themself (PARAF-565).
+    - Added the incoming email creating group rules setting, used when the incoming mail group encoder is activated (DMS-1252).
+    - Activated collective.contact.core `use_type_term_to_search_contact` option: a type term (organisation, personne, poste, role, liste) is added in contacts SearchableText to filter by type in contact widgets (DMS-1254).
+- Upgraded imio.esign 1.0.4
+    - Updated `plone.restapi: Use REST API` permission roles.
+    - Do not let `Recreate session` when it is `sent` or `signed`.
+    - Formalised the sent filename generation in `ISignable.get_filename` (PARAF-550).
+    - Added `RecreateSessionView.get_create_session_custom_data` to compute `create_session_custom_data` using first element of old session. Moreover, `Recreate session` action is hidden when session is `to_sign`.
+    - Added a default implementation for the `ISignable` adapter so all relevant methods have a default implementation. Overrides should inherit from it.
+    - More accurate translation for `sent` state `(?)` tooltip.
+    - Add a final `.` at end of help title message displayed when hovering the `Signed/Not signed` icon in the UI.
+    - Improved file ordering in session.
+    - Displayed who refused a session and his comment in the state help tooltip (PARAF-457).
+- Upgraded imio.helpers 1.3.19
+    - Split documentviewer convertible types.
+    - Added `EMPTY_DATE_IN_SOLR` constant.
+    - Refreshed the faceted after a file download in `submitFormHelperOnsuccessDefault` when the response has the `X-Refresh-Faceted` header.
+    - Adapted `date.formatDate` so we use short day format (`2` instead `02`) when `month_name=True`.
+- Upgraded imio.pyutils 1.2.3
+    - Added `utils.is_true_value` to check if a value (like an environment variable) is considered as true.
+- Upgraded plonetheme.imioapps 2.67
+    - Use same icon as `download-annexes-batch-action` for the `download-elements-annexes-batch-action`.
+    - Moved the `imio.annex` orderable checkbox widget (`orderable_checkbox_widget`) CSS from `Products.PloneMeeting` and added odd/even background colors to the options.
+    - Color state of esign session in `orange` when `errored` or `refused` and in `grey` when `finalized`.
 - Documented the upgrade steps in README.txt (DMS-1249).
   [chris-adam]
+- Added Makefile doch section and filtered deprecation warnings
+  [sgeulette]
+- Upgraded robot test stack to the last python 2.7 releases and improved robot deprecation warnings filtering
+  [sgeulette]
+- Added transmogrifier info for claude
+  [sgeulette]
+- Added or updated scripts
+  [sgeulette]
+- Upgraded transmogrify.dexterity
+  [sgeulette]
+- Corrected restapi permission
+  [sgeulette]
 
 3.1.6 (2026-08-14)
 ------------------
