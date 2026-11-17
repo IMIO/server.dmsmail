@@ -27,5 +27,5 @@ Plone 6.2 layout
 - Removed: amqp.cfg, async.txt, no-amqp.cfg, no-async.cfg, zope_add_async.conf, zeo_async.conf, dev-zeo.cfg,
   buildout-main-dev.cfg, sources-base.cfg, sources-dev.cfg, standard-config.cfg (collective.recipe.plonesite).
 - scripts/create-site.py (make standard-config) creates the site: classic distribution, fr, imio.dms.mail:examples.
-- horse-with-no-namespace is installed with pip (requirements.txt): it doesn't work as a buildout egg.
+- No horse-with-no-namespace: every namespace checkout is PEP 420 or pkgutil (batch/ns_portions.py shows none hidden).
 - Not reviewed: Dockerfile, docker-*.{sh,py}, .github workflows, solr.cfg, ldap.cfg, run-scripts.py.
