@@ -22,8 +22,9 @@ Changelog
     - `add_message`: default `start` is now computed at call time, in the portal timezone, instead of once at import time.
 - Upgraded dexterity.localrolesfield 2.0.0b3
     - Deferred objects security reindex in local roles configuration form when `DEFER_SECURITY_UPDATE` env var is set.
-- Upgraded imio.actionspanel 1.71
+- Upgraded imio.actionspanel 1.72
     - Added parameter `initiator=None` to `ContentDeletableAdapter.mayDelete`, managed by `events.onObjWillBeRemoved`, containing the originally deleted element when subelements trigger the `mayDelete` mechanism.
+    - In `triggerTransition`, display the exception message as an `error` portal message instead of a `warning`.
 - Upgraded imio.annex 2.28.0
     - Moved `PMCheckBoxFieldWidget` from `Products.PloneMeeting` to `imio.annex.widgets.checkbox.OrderableCheckBoxFieldWidget` (renamed from `AnnexesCheckBoxFieldWidget`).
     - Moved `ItemExportPDFForm` from `Products.PloneMeeting` to `imio.annex.browser.views.ExportPDFForm`: needs to be registered as `@@export-pdf-form` by the using applications.
@@ -86,10 +87,14 @@ Changelog
     - Adapted `date.formatDate` so we use short day format (`2` instead `02`) when `month_name=True`.
 - Upgraded imio.pyutils 1.2.3
     - Added `utils.is_true_value` to check if a value (like an environment variable) is considered as true.
-- Upgraded plonetheme.imioapps 2.67
+- Upgraded imio.zamqp.dms 0.27.0
+    - Named the incoming email dms file '<scan_id>.pdf' (or '.eml') instead of 'email.pdf' (DMS-1235).
+    - Set the incoming email creating group from the `iemail_creating_group` rules (DMS-1252).
+- Upgraded plonetheme.imioapps 2.68
     - Use same icon as `download-annexes-batch-action` for the `download-elements-annexes-batch-action`.
     - Moved the `imio.annex` orderable checkbox widget (`orderable_checkbox_widget`) CSS from `Products.PloneMeeting` and added odd/even background colors to the options.
     - Color state of esign session in `orange` when `errored` or `refused` and in `grey` when `finalized`.
+    - `plonemeetingskin`: do not add the `backTo` icon to the `backTo_validated_from_waiting_advices` WF action button as it is actually validating the item.
 - Documented the upgrade steps in README.txt (DMS-1249).
   [chris-adam]
 - Added Makefile doch section and filtered deprecation warnings
