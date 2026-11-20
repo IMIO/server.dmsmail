@@ -4,8 +4,8 @@ Changelog
 3.1.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Upgraded various dev packages to use P4 branch.
+  [sgeulette,chris-adam]
 
 3.1.7 (2026-11-17)
 ------------------
