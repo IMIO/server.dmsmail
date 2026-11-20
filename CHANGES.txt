@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.1.7.1 (unreleased)
+--------------------
+- Upgraded imio.dms.mail to fix amqp consumer crash on scanned outgoing mail
+  [sgeulette]
+
 3.1.7 (2026-11-17)
 ------------------
 
