@@ -45,7 +45,7 @@ services:
 
   collabora:
     image: collabora/code:latest
-    restart: no
+    restart: "no"
     container_name: collabora-server
     # Shares the host network: Collabora is on localhost:9980 and reaches
     # Plone on localhost:8081. (ports/extra_hosts are unused with host net.)
